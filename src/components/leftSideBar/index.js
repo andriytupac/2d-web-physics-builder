@@ -7,7 +7,9 @@ import './style.scss'
 
 const World = Matter.World;
 const Events = Matter.Events;
+let inspector;
 
+// List of bodies
 const MenageElements = props => {
   const { obj } = props;
   const world = useStoreState(state => state.general.render);
@@ -21,46 +23,75 @@ const MenageElements = props => {
     </Button>
   )
 };
-let inspector;
 
 const SidebarExampleSidebar = (props) => {
 
+  //Store
   const world = useStoreState(state => state.general.render);
-  console.log(world)
-  // store
   const menuLeft = useStoreState(state => state.general.menuLeft);
   const general = useStoreState(state => state.general.render);
-  const turnMenuLeft = useStoreActions(
-    actions => actions.general.turnMenuLeft
-  );
-  const runInspector = value => {
-    inspector = value;
-    console.log(value)
-    Events.on(inspector.render, 'afterRender', afterRender);
-  }
 
   const bodiesState = general.bodies || [];
-  const turnMenu = () => {
-    turnMenuLeft(!menuLeft);
+  const constraintState = general.constraints || [];
+
+  console.log(general)
+
+  //Elements inspector
+  const runInspector = value => {
+    inspector = value;
+    Events.on(inspector.render, 'afterRender', afterRender);
   };
-  const activateBlock = (event,data) => {
+  //Get active body
+  const activateBody = (event,data) => {
     const key = data.content.split(' ')
-    const findObject = world.bodies.find((val)=>{
+    const findObject = bodiesState.find((val)=>{
       if(val.id == key[0]){
         return val
       }
     });
     inspector.selected[0]={ data: findObject}
   };
+  //Get active constraint
+  const activateConstraint = (event,data) => {
+    const key = data.content.split(' ')
+    const findObject = constraintState.find((val)=>{
+      if(val.id == key[0]){
+        return val
+      }
+    });
+    inspector.selected[0]={ data: findObject}
+  };
+  //List of bodies
   const bodies = bodiesState.map(val=> {
-    return { key: `body-${val.id}`, title:`${val.id} ${val.label}`, content: {content: <MenageElements obj={val}/> }}
+    return {
+      key: `body-${val.id}`,
+      title:`${val.id} ${val.label}`,
+      content: {
+        content: <MenageElements obj={val}/>
+      }
+    }
   });
-
-  const Level1Content = (
+  const LevelBodies = (
     <div>
-      <Accordion.Accordion onTitleClick={activateBlock} panels={bodies} />
+      <Accordion.Accordion onTitleClick={activateBody} panels={bodies} />
     </div>
   );
+  //List of constraints
+  const constraints = constraintState.map(val=> {
+    return {
+      key: `constaraint-${val.id}`,
+      title:`${val.id} ${val.label}`,
+      content: {
+        content: <MenageElements obj={val}/>
+      }
+    }
+  });
+  const LevelConstraints = (
+    <div>
+      <Accordion.Accordion onTitleClick={activateConstraint} panels={constraints} />
+    </div>
+  );
+
   const level2Panels = [
     { key: 'panel-2a', title: 'Level 2A', content: 'Level 2A Contents' },
     { key: 'panel-2b', title: 'Level 2B', content: 'Level 2B Contents' },
@@ -73,9 +104,9 @@ const SidebarExampleSidebar = (props) => {
   );
 
   const rootPanels = [
-    { key: 'bodies', title: `Bodies (${bodies.length})`, content: {content: Level1Content } },
+    { key: 'bodies', title: `Bodies (${bodies.length})`, content: {content: LevelBodies } },
     { key: 'composites', title: 'Composites', content: { content: Level2Content } },
-    { key: 'constraints', title: 'Constraints', content: { content: Level2Content } },
+    { key: 'constraints', title: `Constraints (${constraints.length})`, content: { content: LevelConstraints } },
   ];
   const AccordionExampleNested = () => (
     <Accordion panels={rootPanels} styled />

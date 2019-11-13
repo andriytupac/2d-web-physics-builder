@@ -64,13 +64,20 @@ function HomeMatter(props){
 
     const ballA = Bodies.circle(210, 100, 30, { restitution: 0.5 , render:{ zIndex: -1 }});
     const ballB = Bodies.circle(110, 50, 30, { restitution: 0.5, render:{ zIndex: -1} });
+    const constraintAB = Matter.Constraint.create({
+      pointA: {x:0,y:5},
+      pointB: {x:5,y:0},
+      bodyA: ballA,
+      bodyB: ballB
+    });
 
     World.add(engine.world, [
       // walls
       Bodies.rectangle(200, 0, 600, 50, { isStatic: true }),
       Bodies.rectangle(200, 600, 600, 50, { isStatic: true }),
       Bodies.rectangle(260, 300, 50, 600, { isStatic: true }),
-      Bodies.rectangle(0, 300, 50, 600, { isStatic: true })
+      Bodies.rectangle(0, 300, 50, 600, { isStatic: true }),
+      constraintAB
     ]);
 
     World.add(engine.world, [ballA, ballB]);
