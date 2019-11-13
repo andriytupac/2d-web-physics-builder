@@ -5,11 +5,14 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import 'semantic-ui-css/semantic.min.css';
 import { StoreProvider } from 'easy-peasy';
+import { BrowserRouter } from 'react-router-dom';
 import store from './store';
 
 ReactDOM.render(
   <StoreProvider store={store}>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </StoreProvider>
   , document.getElementById('root'));
 
