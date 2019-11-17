@@ -3,10 +3,13 @@ import Matter from 'matter-js';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 
 import IndexPosition from '../../../mattetPlugins/IndexPosition';
+import ConstraintInspector from '../../../mattetPlugins/ConstraintInspector';
 
 Matter.Plugin.register(IndexPosition);
+Matter.Plugin.register(ConstraintInspector);
 Matter.use(
   'matter-zIndex-plugin',
+  'constraint-inspector',
 );
 
 
@@ -18,6 +21,7 @@ function HomeMatter(props){
     Bodies = Matter.Bodies,
     Mouse = Matter.Mouse,
     Events = Matter.Events,
+    Composites = Matter.Composites,
     MouseConstraint = Matter.MouseConstraint;
 
   const engine = Engine.create({
@@ -51,6 +55,8 @@ function HomeMatter(props){
         showBounds: false
       }
     });
+    //render.options.showBounds = true;
+    //console.log('render',render);
     let inspector = {
       engine: engine,
       render: render,
@@ -65,18 +71,21 @@ function HomeMatter(props){
     const ballA = Bodies.circle(210, 100, 30, { restitution: 0.5 , render:{ zIndex: -1 }});
     const ballB = Bodies.circle(110, 50, 30, { restitution: 0.5, render:{ zIndex: -1} });
     const constraintAB = Matter.Constraint.create({
-      pointA: {x:0,y:5},
-      pointB: {x:5,y:0},
+      pointA: {x:0,y:30},
+      pointB: {x:30,y:0},
       bodyA: ballA,
       bodyB: ballB
     });
 
+    const scale = 1;
     World.add(engine.world, [
       // walls
       Bodies.rectangle(200, 0, 600, 50, { isStatic: true }),
       Bodies.rectangle(200, 600, 600, 50, { isStatic: true }),
       Bodies.rectangle(260, 300, 50, 600, { isStatic: true }),
       Bodies.rectangle(0, 300, 50, 600, { isStatic: true }),
+      Composites.car(150, 300, 150 * scale, 30 * scale, 30 * scale),
+      //Composites.car(200, 200, 200, 30, {xx:50,yy: 100, width: 100,height: 100,wheelSize: 30 }),
       constraintAB
     ]);
 

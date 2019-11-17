@@ -6,16 +6,15 @@ const General = {
       bodies:[]
     },
   },
-  tupac:{},
-  //globalRender: {},
   menuLeft: true,
+  menuRight: true,
 
   turnMenuLeft: action((state, payload) => {
-    //state.menuLeft = payload;
-    return {
-      ...state,
+    state.menuLeft = payload;
+    /*return {
+      //...state,
       menuLeft: payload
-    }
+    }*/
   }),
 
   addRender: action((state, payload) => {

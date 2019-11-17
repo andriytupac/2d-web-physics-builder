@@ -20,3 +20,24 @@
 .App-link {
   color: #09d3ac;
 }
+
+.range-block{
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 10px;
+  div:nth-child(2){
+    flex: 1 1 auto;
+  }
+}
+.bodiesForms{
+  margin-top: 5px;
+  margin-bottom: 5px;
+  .ui.focus.input{
+    margin-bottom: 5px;
+  }
+  .inline{
+    .modify-label{
+      width: 100px!important;
+    }
+  }
+}
