@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Label, Input } from "semantic-ui-react";
+import { Form, Label, Input, Dropdown } from "semantic-ui-react";
 import { Slider } from "react-semantic-ui-range";
 
 const renderCheckbox = field => (
@@ -21,8 +21,8 @@ const renderRadio = field => (
 );
 
 const renderSelect = field => {
-  const { meta: { touched, error, warning }, input } = field;
-  const props = {}
+  const { meta: { touched, error }, input } = field;
+  const props = {};
   if(error && touched){
     props.error = {content: error, pointing: 'below'}
   }
@@ -47,20 +47,28 @@ const renderTextArea = field => (
     placeholder={field.placeholder}
   />
 );
-const renderTextInput = field => (
-  <Form.Field
-    inline={field.simple ? false : true}
-    width={field.width}
-  >
-    <label className={field.simple ? '' : 'modify-label ui label'}>{field.label}</label>
-    <Input
-      size={field.size}
-      {...field.input}
-      type={field.type}
-      placeholder={field.placeholder}
-    />
-  </Form.Field>
-);
+const renderTextInput = field => {
+  const { meta: { touched, error } } = field;
+  const props = {};
+  if(error && touched){
+    props.error = true
+  }
+  return (
+    <Form.Field
+      inline={field.simple ? false : true}
+      width={field.width}
+      {...props}
+    >
+      <label className={field.simple ? '' : 'modify-label ui label'}>{field.label}</label>
+      <Input
+        size={field.size}
+        {...field.input}
+        type={field.type}
+        placeholder={field.placeholder}
+      />
+    </Form.Field>
+  );
+}
 
 const renderRange = field => {
   const settings = {
@@ -74,9 +82,38 @@ const renderRange = field => {
   return (
     <div className="range-block">
       <Label>{field.label}</Label>
-      <Slider className="slider-range" value color="red" value={field.input.value || 0} settings={settings} />
+      <Slider className="slider-range" color="red" value={field.input.value} settings={settings} />
       <Label color="red">{field.input.value || 0}</Label>
     </div>
+  )
+};
+
+const renderDropdown = field => {
+  const { meta: { touched, error } } = field;
+  const props = {};
+  if(error && touched){
+    props.error = true
+  }
+  return (
+    <Form.Field
+      inline={field.simple ? false : true}
+      width={field.width}
+      {...props}
+    >
+      <label className={field.simple ? '' : 'modify-label ui label'}>{field.label}</label>
+      <Dropdown
+        //size={field.size}
+        className={field.size}
+        //{...field.input}
+        defaultValue={field.input.value}
+        placeholder={field.placeholder}
+        search
+        selection
+        options={field.options}
+        onChange={(event,obj) => {field.input.onChange(obj.value)}}
+      />
+
+    </Form.Field>
   )
 };
 
@@ -84,6 +121,7 @@ const reduxInputs = {
   renderCheckbox,
   renderRadio,
   renderSelect,
+  renderDropdown,
   renderTextArea,
   renderRange,
   renderTextInput

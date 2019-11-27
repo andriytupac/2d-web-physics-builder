@@ -3,14 +3,21 @@ import { Header, Accordion, Menu, Segment, Sidebar, Icon, Button } from 'semanti
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import MatterForm from '../matterForm';
 import AddBodies from '../addBodies';
+import AddComposites from '../addComposites';
+import AddConstraints from '../addConstraints';
+import EditBody from '../editBody';
 import Matter from 'matter-js';
 
 import './style.scss'
+import {Slider} from "react-semantic-ui-range";
 
 const World = Matter.World;
 const Events = Matter.Events;
 const Composite = Matter.Composite;
 const Bodies = Matter.Bodies;
+const Body = Matter.Body;
+const Composites = Matter.Composites;
+const Constraint = Matter.Constraint;
 let inspector = {};
 
 // List of bodies
@@ -22,10 +29,42 @@ const MenageElements = props => {
     World.remove(world, obj);
     inspector.selected.pop();
   };
+  const modifyBody = (data,key) => {
+    if(key === 'rotate'){
+      Body.rotate(obj, +data.angle,{ x: obj.position.x + +data.x, y: obj.position.y+ +data.y })
+    }else if(key === 'scale'){
+      Body.scale(obj,data.scaleX,data.scaleY,{x: obj.position.x + +data.x,y: obj.position.y+ +data.y})
+    }else{
+      Body.set(obj,key,data)
+    }
+    console.log('modify',obj)
+    //Body.setAngle(obj,50)
+    //Body.setAngularVelocity(obj,0.5)
+    //Body.setDensity(obj,100)
+    //Body.setInertia(obj,4)
+    //Body.setMass(obj,90)
+    //Body.setPosition(obj,{x:100,y:100})
+    //Body.setStatic(obj,true)
+    //Body.set(obj,'width',50)
+    console.log('modify',obj)
+
+
+    /*Body.translate(obj,{x:100,y:100})*/
+    /*Body.setVelocity(obj,{x:300,y:300})*/
+    /*Body.applyForce(obj,{x:0,y:0},{x:300,y:300})*/
+  };
   return (
-    <Button icon onClick={deleteObj}>
-      <Icon name='trash' />
-    </Button>
+    <div>
+      <Button icon onClick={deleteObj}>
+        <Icon name='trash' />
+      </Button>
+      <Button icon primary onClick={deleteObj}>
+        <Icon name='pencil' />
+      </Button>
+      <div className="edit-form">
+        <EditBody modifyBody={modifyBody} />
+      </div>
+    </div>
   )
 };
 
@@ -44,6 +83,11 @@ const SidebarExampleSidebar = (props) => {
 
   const addBody = obj => {
     let dataObj = {};
+    var particleOptions = {
+      friction: 0.05,
+      frictionStatic: 0.1,
+      render: { visible: true }
+    };
     if(obj.body === 'circle'){
       dataObj = Bodies.circle(+obj.x, +obj.y, +obj.radius, obj.options)
     }else if(obj.body === 'polygon'){
@@ -52,9 +96,39 @@ const SidebarExampleSidebar = (props) => {
       dataObj = Bodies.rectangle(+obj.x, +obj.y,+obj.width, +obj.height, obj.options)
     }else if(obj.body === 'trapezoid'){
       dataObj = Bodies.trapezoid(+obj.x, +obj.y,+obj.width, +obj.height,+obj.slope, obj.options)
+    }else if(obj.body === 'fromVertices'){
+      const newVertices = obj.vertices.map((val, index) => {
+        val.body = undefined;
+        val.index = index;
+        val.isInternal = false;
+        val.x = +val.x;
+        val.y = +val.y;
+        return val
+      });
+      dataObj = Bodies.fromVertices(+obj.x, +obj.y, newVertices, obj.options)
+    }else if(obj.body === 'pyramid'){
+      dataObj = Composites.pyramid(+obj.x, +obj.y, +obj.columns, +obj.rows, +obj.columnGap, +obj.rowGap , (x, y) => {
+        return Bodies.rectangle(x, y,+obj.rectWidth, +obj.rectHeight, obj.options)
+      })
+    }else if(obj.body === 'stack'){
+      dataObj = Composites.stack(+obj.x, +obj.y, +obj.columns, +obj.rows, +obj.columnGap, +obj.rowGap , (x, y) => {
+        return Bodies.rectangle(x, y,+obj.rectWidth, +obj.rectHeight, obj.options)
+      })
+    }else if(obj.body === 'newtonsCradle'){
+      dataObj = Composites.newtonsCradle(+obj.x, +obj.y, +obj.number, +obj.size, +obj.length )
+    }else if(obj.body === 'softBody'){
+      dataObj = Composites.softBody(+obj.x, +obj.y, +obj.columns, +obj.rows, +obj.columnGap, +obj.rowGap, true, +obj.particleRadius, particleOptions)
+    }else if(obj.body === 'car'){
+      dataObj = Composites.car(+obj.x, +obj.y, +obj.width, +obj.height, +obj.wheelSize )
     }
+
     World.add(general, [dataObj])
-  }
+  };
+
+  const addConstraint = obj =>{
+    const constraint = Constraint.create(obj);
+    World.add(general, [constraint])
+  };
 
   //Elements inspector
   const runInspector = value => {
@@ -72,6 +146,9 @@ const SidebarExampleSidebar = (props) => {
       }
     });
     inspector.selected[0]={ data: findObject}
+  };
+  const activateBodyConstraint = (body,item) => {
+    inspector.selected[item]={ data: body}
   };
   //add Body mouse Event
   const addBodyMouseEvent = (obj) =>{
@@ -179,7 +256,7 @@ const SidebarExampleSidebar = (props) => {
     //console.log(inspector.render.options);
   };
 
-  const [open, setOpen] = useState(1);
+  const [open, setOpen] = useState(3);
 
   const openMenuContent = (e, titleProps) => {
     const { index } = titleProps;
@@ -204,6 +281,7 @@ const SidebarExampleSidebar = (props) => {
         visible={menuLeft}
         width='wide'
       >
+
         {AccordionExampleNested(general)}
         <Accordion  styled>
             <Accordion.Title
@@ -212,7 +290,7 @@ const SidebarExampleSidebar = (props) => {
               onClick={openMenuContent}
               index={0}
             />
-            <Accordion.Content
+          <Accordion.Content
               active={open === 0}
               content={
                 inspector.options && <MatterForm changeOptions={changeOptions} inspectorOptions={inspector.options} />
@@ -227,11 +305,45 @@ const SidebarExampleSidebar = (props) => {
             <Accordion.Content
               active={open === 1}
               content={
-                inspector.options &&
+                inspector.options && open === 1 &&
                 <AddBodies
                   addBodyMouseEvent={addBodyMouseEvent}
                   updateBodyMouseEvent={updateBodyMouseEvent}
                   addBody={addBody}
+                />
+              }
+            />
+            <Accordion.Title
+              active={open === 2}
+              content='Add Composites'
+              onClick={openMenuContent}
+              index={2}
+            />
+            <Accordion.Content
+              active={open === 2}
+              content={
+                inspector.options &&
+                <AddComposites
+                  addBodyMouseEvent={addBodyMouseEvent}
+                  updateBodyMouseEvent={updateBodyMouseEvent}
+                  addBody={addBody}
+                />
+              }
+            />
+            <Accordion.Title
+              active={open === 3}
+              content='Add Constraint'
+              onClick={openMenuContent}
+              index={3}
+            />
+            <Accordion.Content
+              active={open === 3}
+              content={
+                inspector.options &&
+                <AddConstraints
+                  inspectorOptions={general}
+                  activateBodyConstraint={activateBodyConstraint}
+                  addConstraint={addConstraint}
                 />
               }
             />

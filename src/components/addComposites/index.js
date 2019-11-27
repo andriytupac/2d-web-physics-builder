@@ -5,7 +5,7 @@ import {Label, Button, Form, Icon, Message} from "semantic-ui-react";
 
 import reduxInput from '../../common/reduxInputs';
 
-const selector = formValueSelector('addBodyForm');
+const selector = formValueSelector('addCompositeForm');
 
 const validate = values => {
   const errors = {};
@@ -58,33 +58,49 @@ const generalFields = [
   { name: 'restitution', start: 0, min: 0, max: 0.1, step: 0.1 },
   { name: 'chamfer', start: 0, min: 0, max: 30, step: 1 },
 ];
-const circle = [
+const pyramid = [
   { name: 'x' },
   { name: 'y' },
-  { name: 'radius' },
+  { name: 'columns' },
+  { name: 'rows' },
+  { name: 'columnGap' },
+  { name: 'rowGap' },
+  { name: 'rectWidth' },
+  { name: 'rectHeight' },
 ];
-const polygon = [
+const stack = [
   { name: 'x' },
   { name: 'y' },
-  { name: 'sides' },
-  { name: 'radius' },
+  { name: 'columns' },
+  { name: 'rows' },
+  { name: 'columnGap' },
+  { name: 'rowGap' },
+  { name: 'rectWidth' },
+  { name: 'rectHeight' },
 ];
-const rectangle = [
+const newtonsCradle = [
   { name: 'x' },
   { name: 'y' },
-  { name: 'width' },
-  { name: 'height' },
+  { name: 'number' },
+  { name: 'size' },
+  { name: 'length' },
 ];
-const trapezoid = [
+const softBody = [
   { name: 'x' },
   { name: 'y' },
-  { name: 'width' },
-  { name: 'height' },
-  { name: 'slope' },
+  { name: 'columns' },
+  { name: 'rows' },
+  { name: 'columnGap' },
+  { name: 'rowGap' },
+  { name: 'crossBrace' },
+  { name: 'particleRadius' },
 ];
-const fromVertices = [
+const car = [
   { name: 'x' },
   { name: 'y'},
+  { name: 'width'},
+  { name: 'height'},
+  { name: 'wheelSize'},
 ];
 
 const renderVertices = (props) => {
@@ -144,7 +160,7 @@ const renderVertices = (props) => {
   )
 }
 
-let AddBodies = props => {
+let AddComposites = props => {
   const {
     addBodyMouseEvent,
     initialize,
@@ -179,11 +195,11 @@ let AddBodies = props => {
     }
   };
 
-  const circleForm = () => {
+  const pyramidForm = () => {
     return (
       <div className="bodiesForms">
         {
-          circle.map((value, index) => {
+          pyramid.map((value, index) => {
             return (
               <div className="ui focus input" key={index}>
                 <Field
@@ -202,11 +218,11 @@ let AddBodies = props => {
       </div>
     )
   };
-  const polygonForm = () => {
+  const stackForm = () => {
     return (
       <div className="bodiesForms">
         {
-          polygon.map((value, index) => {
+          stack.map((value, index) => {
             return (
               <div className="ui focus input" key={index}>
                 <Field
@@ -225,11 +241,11 @@ let AddBodies = props => {
       </div>
     )
   };
-  const rectangleForm = () => {
+  const newtonsCradleForm = () => {
     return (
       <div className="bodiesForms">
         {
-          rectangle.map((value, index) => {
+          newtonsCradle.map((value, index) => {
             return (
               <div className="ui focus input" key={index}>
                 <Field
@@ -248,11 +264,11 @@ let AddBodies = props => {
       </div>
     )
   };
-  const trapezoidForm = () => {
+  const softBodyForm = () => {
     return (
       <div className="bodiesForms">
         {
-          trapezoid.map((value, index) => {
+          softBody.map((value, index) => {
             return (
               <div className="ui focus input" key={index}>
                 <Field
@@ -271,11 +287,11 @@ let AddBodies = props => {
       </div>
     )
   };
-  const fromVerticesForm = () => {
+  const carForm = () => {
     return (
       <div className="bodiesForms">
         {
-          fromVertices.map((value, index) => {
+          car.map((value, index) => {
             return (
               <div className="ui focus input" key={index}>
                 <Field
@@ -291,28 +307,52 @@ let AddBodies = props => {
             )
           })
         }
-        <FieldArray name="vertices" component={renderVertices} />
+        {/*<FieldArray name="vertices" component={renderVertices} />*/}
       </div>
     )
   };
 
   const  onchange = (val,name) => {
     let data = {};
-    if(name === 'circle'){
-      data = {x: options.width / 2, y: options.height / 2, radius: 30 };
-    }else if(name === 'polygon'){
-      data = {x: options.width / 2, y: options.height / 2, radius: 30, sides: 5 };
-    }else if(name === 'rectangle'){
-      data = {x: options.width / 2, y: options.height / 2, width: 50, height: 50 };
-    }else if(name === 'trapezoid'){
-      data = {x: options.width / 2, y: options.height / 2, width: 50, height: 50, slope: 1 };
-    }else if(name === 'fromVertices'){
-      data = {x: options.width / 2, y: options.height / 2, vertices:[
-          {x:0,y:0},
-          {x:30,y:30},
-          {x:-30,y:30},
-        ]};
-    }
+    if(name === 'pyramid'){
+      data = {
+        x: options.width / 2,
+        y: options.height / 2,
+        columns: 10,
+        rows: 10,
+        columnGap: 0,
+        rowGap:0,
+        rectWidth: 30,
+        rectHeight: 30
+      };
+    }else if(name === 'stack'){
+      data = {
+        x: options.width / 2,
+        y: options.height / 2,
+        columns: 6,
+        rows: 10,
+        columnGap: 0,
+        rowGap:0,
+        rectWidth: 30,
+        rectHeight: 30
+      };
+    }else if(name === 'newtonsCradle'){
+      data = {x: options.width / 2, y: options.height / 2, number: 10, size: 10, length: 100 };
+    }else if(name === 'softBody'){
+      data = {
+        x: options.width / 2,
+        y: options.height / 2,
+        columns: 5,
+        rows: 5,
+        columnGap: 0,
+        rowGap: 0,
+        crossBrace: 1,
+        particleRadius: 18,
+        //particleOptions: 1,
+      };
+    }else if(name === 'car'){
+      data = {x: options.width / 2, y: options.height / 2, width:200, height:30, wheelSize: 30}
+    };
 
     initialize({
       ...initialVal,
@@ -325,7 +365,6 @@ let AddBodies = props => {
     console.log(value,next,third)
     addBody(value)
   };
-
   return (
     <Form onSubmit={handleSubmit(sendFormToAddBody)}>
       <div>
@@ -336,32 +375,32 @@ let AddBodies = props => {
           onChange={onchange}
           options={[
             { key: 'choose', value: 'choose', text: 'Select body' },
-            { key: 'circle', value: 'circle', text: 'circle' },
-            { key: 'polygon', value: 'polygon', text: 'polygon' },
-            { key: 'rectangle', value: 'rectangle', text: 'rectangle' },
-            { key: 'trapezoid', value: 'trapezoid', text: 'trapezoid' },
-            { key: 'fromVertices', value: 'fromVertices', text: 'fromVertices' },
+            { key: 'pyramid', value: 'pyramid', text: 'pyramid' },
+            { key: 'stack', value: 'stack', text: 'stack' },
+            { key: 'newtonsCradle', value: 'newtonsCradle', text: 'newtonsCradle' },
+            { key: 'softBody', value: 'softBody', text: 'softBody' },
+            { key: 'car', value: 'car', text: 'car' },
           ]}
           label="Choose body"
         />
-        {allFields.body === 'circle' && circleForm()}
-        {allFields.body === 'polygon' && polygonForm()}
-        {allFields.body === 'rectangle' && rectangleForm()}
-        {allFields.body === 'trapezoid' && trapezoidForm()}
-        {allFields.body === 'fromVertices' && fromVerticesForm()}
+        {allFields.body === 'pyramid' && pyramidForm()}
+        {allFields.body === 'stack' && stackForm()}
+        {allFields.body === 'newtonsCradle' && newtonsCradleForm()}
+        {allFields.body === 'softBody' && softBodyForm()}
+        {allFields.body === 'car' && carForm()}
         {
-          generalFields.map((value, index) => {
+         /* generalFields.map((value, index) => {
             return (
               <Field
-                settings={{...value}}
-                key={index}
-                name={`options.${value.name}`}
-                component={renderRange}
-                type="text"
-                label={value.name}
-              />
+              settings={{...value}}
+              key={index}
+              name={`options.${value.name}`}
+              component={renderRange}
+              type="text"
+              label={value.name}
+            />
             )
-          })
+          })*/
         }
         <Button primary={!invalid} type="submit" >Add</Button>
       </div>
@@ -369,16 +408,16 @@ let AddBodies = props => {
   )
 };
 
-AddBodies = reduxForm({
+AddComposites = reduxForm({
   initialValues: {
     ...initialVal,
     body: 'choose',
   },
   validate,
-  form: 'addBodyForm',
+  form: 'addCompositeForm',
   enableReinitialize : true,
   keepDirtyOnReinitialize:true,
-})(AddBodies);
+})(AddComposites);
 
 
-export default AddBodies
+export default AddComposites

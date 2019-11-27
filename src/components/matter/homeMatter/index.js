@@ -4,9 +4,12 @@ import { useStoreActions, useStoreState } from 'easy-peasy';
 
 import IndexPosition from '../../../mattetPlugins/IndexPosition';
 import ConstraintInspector from '../../../mattetPlugins/ConstraintInspector';
+import decomp from 'poly-decomp';
+window.decomp = decomp;
 
 Matter.Plugin.register(IndexPosition);
 Matter.Plugin.register(ConstraintInspector);
+Matter.Plugin.register(decomp);
 Matter.use(
   'matter-zIndex-plugin',
   'constraint-inspector',
@@ -49,7 +52,7 @@ function HomeMatter(props){
       element: sceneEl.current,
       engine: engine,
       options: {
-        width: 600,
+        width: 800,
         height: 600,
         wireframes: true,
         showBounds: false
@@ -68,7 +71,7 @@ function HomeMatter(props){
     };
     props.runInspector(inspector)
 
-    const ballA = Bodies.circle(210, 100, 30, { restitution: 0.5 , render:{ zIndex: -1 }});
+    const ballA = Bodies.rectangle(210, 100, 30,30, { restitution: 0.5 , isStatic: false, render:{ zIndex: -1 }});
     const ballB = Bodies.circle(110, 50, 30, { restitution: 0.5, render:{ zIndex: -1} });
     const constraintAB = Matter.Constraint.create({
       pointA: {x:0,y:30},
@@ -80,13 +83,13 @@ function HomeMatter(props){
     const scale = 1;
     World.add(engine.world, [
       // walls
-      Bodies.rectangle(200, 0, 600, 50, { isStatic: true }),
-      Bodies.rectangle(200, 600, 600, 50, { isStatic: true }),
-      Bodies.rectangle(260, 300, 50, 600, { isStatic: true }),
+      Bodies.rectangle(400, 0, 800, 50, { isStatic: true }),
+      Bodies.rectangle(400, 600, 800, 50, { isStatic: true }),
+      Bodies.rectangle(800, 300, 50, 600, { isStatic: true }),
       Bodies.rectangle(0, 300, 50, 600, { isStatic: true }),
       Composites.car(150, 300, 150 * scale, 30 * scale, 30 * scale),
       //Composites.car(200, 200, 200, 30, {xx:50,yy: 100, width: 100,height: 100,wheelSize: 30 }),
-      constraintAB
+      //constraintAB
     ]);
 
     World.add(engine.world, [ballA, ballB]);
@@ -107,7 +110,7 @@ function HomeMatter(props){
     World.add(engine.world, mouseConstraint);
 
     Matter.Events.on(mouseConstraint, "mousedown", function(event) {
-      World.add(engine.world, Bodies.circle(150, 50, 30, { restitution: 0.7 }));
+      //World.add(engine.world, Bodies.circle(150, 50, 30, { restitution: 0.7 }));
     });
 
     Engine.run(engine);

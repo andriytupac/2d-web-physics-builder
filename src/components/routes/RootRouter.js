@@ -5,7 +5,6 @@ import LeftSideBar from '../leftSideBar';
 //import HomeMatter from '../matter/homeMatter';
 
 /*Client part*/
-import Matter from '../matter';
 import HomeMatter from '../matter/homeMatter';
 
 
