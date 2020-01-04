@@ -6,24 +6,35 @@ import AddBodies from '../addBodies';
 import AddComposites from '../addComposites';
 import AddConstraints from '../addConstraints';
 import EditBody from '../editBody';
+import EditComposite from "../editComposite";
+import EditConstraint from "../editConstraint";
 import Matter from 'matter-js';
 
 import './style.scss'
-import {Slider} from "react-semantic-ui-range";
 
 const World = Matter.World;
 const Events = Matter.Events;
-const Composite = Matter.Composite;
 const Bodies = Matter.Bodies;
 const Body = Matter.Body;
+const Composite = Matter.Composite;
 const Composites = Matter.Composites;
 const Constraint = Matter.Constraint;
 let inspector = {};
+let allCategories = [];
+for(let i = 0; i<=28; i++){
+  let cat = Body.nextCategory();
+  allCategories.push({value: cat, key: cat, text: cat})
+}
 
 // List of bodies
 const MenageElements = props => {
   const { obj } = props;
   const world = useStoreState(state => state.general.render);
+  const [edit, setEdit] = useState(false);
+
+  const addRender = useStoreActions(
+    actions => actions.general.addRender
+  );
 //Delete obj
   const deleteObj = () =>{
     World.remove(world, obj);
@@ -34,35 +45,145 @@ const MenageElements = props => {
       Body.rotate(obj, +data.angle,{ x: obj.position.x + +data.x, y: obj.position.y+ +data.y })
     }else if(key === 'scale'){
       Body.scale(obj,data.scaleX,data.scaleY,{x: obj.position.x + +data.x,y: obj.position.y+ +data.y})
+    }else if(key === 'render'){
+      console.log('key',key,data);
+      const render = { ...obj.render, ...data}
+      Body.set(obj,key,render)
+    }else if(key === 'collisionFilter'){
+      console.log('key',key,data);
+      const render = { ...obj.collisionFilter, ...data}
+      Body.set(obj,key,render)
+    }else if(key === 'applyForce'){
+      Body.applyForce(obj,{ x: obj.position.x, y: obj.position.y },data)
     }else{
+      console.log('key',key,data)
       Body.set(obj,key,data)
     }
-    console.log('modify',obj)
-    //Body.setAngle(obj,50)
-    //Body.setAngularVelocity(obj,0.5)
-    //Body.setDensity(obj,100)
-    //Body.setInertia(obj,4)
-    //Body.setMass(obj,90)
-    //Body.setPosition(obj,{x:100,y:100})
-    //Body.setStatic(obj,true)
-    //Body.set(obj,'width',50)
-    console.log('modify',obj)
+    if(key === 'label'){
+      addRender(world)
+    }
 
-
-    /*Body.translate(obj,{x:100,y:100})*/
-    /*Body.setVelocity(obj,{x:300,y:300})*/
-    /*Body.applyForce(obj,{x:0,y:0},{x:300,y:300})*/
   };
   return (
     <div>
       <Button icon onClick={deleteObj}>
         <Icon name='trash' />
       </Button>
-      <Button icon primary onClick={deleteObj}>
+      <Button icon primary onClick={ () => {setEdit(!edit)}}>
         <Icon name='pencil' />
       </Button>
       <div className="edit-form">
-        <EditBody modifyBody={modifyBody} />
+        {edit && (
+          <EditBody
+            objectData={obj}
+            modifyBody={modifyBody}
+            allCategories={allCategories}
+          />
+        )}
+      </div>
+    </div>
+  )
+};
+
+const MenageElementsComposite = props => {
+  const { obj } = props;
+  const world = useStoreState(state => state.general.render);
+
+  const addRender = useStoreActions(
+    actions => actions.general.addRender
+  );
+
+  const [edit, setEdit] = useState(false);
+
+  const clearObj = () => {
+    Composite.clear(obj, false, true);
+    addRender({...world})
+  };
+
+  const deleteObj = () => {
+    Composite.clear(obj, false, true);
+    World.remove(world, obj, true);
+  };
+
+  const modifyComposite = (data,key) => {
+    const position =  Composite.bounds(obj);
+
+    const positionX = (position.max.x+position.min.x)/2
+    const positionY = (position.max.y+position.min.y)/2
+
+    if(key === 'rotate'){
+      const width = position.max.x-position.min.x;
+      const height = position.max.y-position.min.y;
+      Composite.rotate(obj, +data.angle,{ x: positionX + +data.x, y: positionY+ +data.y })
+    }else if(key === 'scale'){
+      Composite.scale(obj,data.scaleX,data.scaleY,{x: positionX + +data.x,y: positionY+ +data.y})
+    }else if(key === 'label'){
+      obj.label = data
+      addRender(world)
+    }
+
+  };
+
+  return (
+    <div>
+      <Button icon color='orange' onClick={clearObj}>
+        <Icon name='eraser' />
+      </Button>
+      <Button icon color='red' onClick={deleteObj}>
+        <Icon name='trash' />
+      </Button>
+      <Button icon primary onClick={ () => {setEdit(!edit)}}>
+        <Icon name='pencil' />
+      </Button>
+      <div className="edit-form">
+        {edit && (
+          <EditComposite
+            objectData={obj}
+            modifyComposite={modifyComposite}
+          />
+        )}
+      </div>
+    </div>
+  )
+};
+
+const MenageElementsConstraint = props => {
+  const { obj, general } = props;
+  const world = useStoreState(state => state.general.render);
+
+  const [edit, setEdit] = useState(false);
+
+  const addRender = useStoreActions(
+    actions => actions.general.addRender
+  );
+
+  const deleteObj = () => {
+    World.remove(world, obj, true);
+  };
+
+  const modifyConstraint = (data,key) => {
+      obj[key] = data;
+      if(key==='label'){
+        addRender({...world})
+      }
+  };
+
+  return (
+    <div>
+      <Button icon color='red' onClick={deleteObj}>
+        <Icon name='trash' />
+      </Button>
+      <Button icon primary onClick={ () => {setEdit(!edit)}}>
+        <Icon name='pencil' />
+      </Button>
+      <div className="edit-form">
+        {edit && (
+          <EditConstraint
+            objectData={obj}
+            modifyConstraint={modifyConstraint}
+            inspectorOptions={general}
+          />
+        )}
       </div>
     </div>
   )
@@ -70,7 +191,7 @@ const MenageElements = props => {
 
 const SidebarExampleSidebar = (props) => {
   //Store
-  const world = useStoreState(state => state.general.render);
+  //const world = useStoreState(state => state.general.render);
   const menuLeft = useStoreState(state => state.general.menuLeft);
   const general = useStoreState(state => state.general.render);
 
@@ -113,16 +234,20 @@ const SidebarExampleSidebar = (props) => {
     }else if(obj.body === 'stack'){
       dataObj = Composites.stack(+obj.x, +obj.y, +obj.columns, +obj.rows, +obj.columnGap, +obj.rowGap , (x, y) => {
         return Bodies.rectangle(x, y,+obj.rectWidth, +obj.rectHeight, obj.options)
-      })
+      });
     }else if(obj.body === 'newtonsCradle'){
       dataObj = Composites.newtonsCradle(+obj.x, +obj.y, +obj.number, +obj.size, +obj.length )
     }else if(obj.body === 'softBody'){
       dataObj = Composites.softBody(+obj.x, +obj.y, +obj.columns, +obj.rows, +obj.columnGap, +obj.rowGap, true, +obj.particleRadius, particleOptions)
     }else if(obj.body === 'car'){
       dataObj = Composites.car(+obj.x, +obj.y, +obj.width, +obj.height, +obj.wheelSize )
+    }else if(obj.body === 'custom'){
+      dataObj = Composite.create({label:obj.label})
+      console.log(dataObj)
     }
-
-    World.add(general, [dataObj])
+    //if(obj.body !== 'custom'){
+      World.add(general, [dataObj]);
+    //}
   };
 
   const addConstraint = obj =>{
@@ -195,7 +320,7 @@ const SidebarExampleSidebar = (props) => {
         key: `constaraint-${val.id}`,
         title: `${val.id} ${val.label}`,
         content: {
-          content: <MenageElements obj={val}/>
+          content: <MenageElementsConstraint obj={val} general={general}/>
         }
       }
     });
@@ -212,7 +337,7 @@ const SidebarExampleSidebar = (props) => {
         key: `composites-${val.id}`,
         title: `${val.id} ${val.label}`,
         content: {
-          content: (<div><MenageElements obj={val}/>  {AccordionExampleNested(val)}</div>)
+          content: (<div><MenageElementsComposite obj={val}/>  {AccordionExampleNested(val)}</div>)
         }
       }
     });
@@ -256,7 +381,7 @@ const SidebarExampleSidebar = (props) => {
     //console.log(inspector.render.options);
   };
 
-  const [open, setOpen] = useState(3);
+  const [open, setOpen] = useState();
 
   const openMenuContent = (e, titleProps) => {
     const { index } = titleProps;

@@ -19,13 +19,13 @@ const initialVal = {
     y: 0,
   },
   options: {
-    stiffness: 0.001,
+    stiffness: 0.1,
     damping: 0.1
   }
 };
 const generalFields = {
-  stiffness: { name: 'stiffness', start: 0.001, min: 0, max: 0.1, step: 0.001 },
-  damping: { name: 'damping', start: 0.1, min: 0, max: 1, step: 0.1 },
+  stiffness: { name: 'stiffness', start: 0.1, min: 0, max: 1, step: 0.1 },
+  damping: { name: 'damping', start: 0.1, min: 0, max: 0.1, step: 0.01 },
 };
 
 const validate = values => {

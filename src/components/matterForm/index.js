@@ -83,6 +83,6 @@ MatterForm = connect(
       initialValues: props.inspectorOptions
     }
   },
-)(MatterForm)
+)(MatterForm);
 
 export default MatterForm

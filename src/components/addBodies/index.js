@@ -47,6 +47,7 @@ const initialVal = {
     frictionAir: 0.01,
     restitution: 0,
     chamfer: 0,
+    label: 'label'
   }
 };
 
@@ -152,8 +153,10 @@ let AddBodies = props => {
     invalid,
     handleSubmit,
     addBody,
+    change,
     pristine
   } = props;
+  //console.log(props)
   const { renderSelect, renderRange, renderTextInput } = reduxInput;
   const options = useStoreState(state => state.matterOptions.options);
 
@@ -161,6 +164,10 @@ let AddBodies = props => {
   const addOptions = useStoreActions(
     actions => actions.matterOptions.addOptions
   );
+
+  /*const changeValue = useStoreActions(
+
+  );*/
 
   const allFields = useStoreState(state => {
     const allFields = selector(
@@ -300,18 +307,23 @@ let AddBodies = props => {
     let data = {};
     if(name === 'circle'){
       data = {x: options.width / 2, y: options.height / 2, radius: 30 };
+      data.options = { ...initialVal.options, label: 'circle'};
     }else if(name === 'polygon'){
       data = {x: options.width / 2, y: options.height / 2, radius: 30, sides: 5 };
+      data.options = { ...initialVal.options, label: 'polygon'};
     }else if(name === 'rectangle'){
       data = {x: options.width / 2, y: options.height / 2, width: 50, height: 50 };
+      data.options = { ...initialVal.options, label: 'rectangle'};
     }else if(name === 'trapezoid'){
       data = {x: options.width / 2, y: options.height / 2, width: 50, height: 50, slope: 1 };
+      data.options = { ...initialVal.options, label: 'trapezoid'};
     }else if(name === 'fromVertices'){
       data = {x: options.width / 2, y: options.height / 2, vertices:[
           {x:0,y:0},
           {x:30,y:30},
           {x:-30,y:30},
         ]};
+      data.options = { ...initialVal.options, label: 'fromVertices'};
     }
 
     initialize({
@@ -322,7 +334,7 @@ let AddBodies = props => {
   };
 
   const sendFormToAddBody = (value,next,third) => {
-    console.log(value,next,third)
+    // console.log(value,next,third)
     addBody(value)
   };
 
@@ -343,6 +355,14 @@ let AddBodies = props => {
             { key: 'fromVertices', value: 'fromVertices', text: 'fromVertices' },
           ]}
           label="Choose body"
+        />
+        <Field
+          name={`options.label`}
+          component={renderTextInput}
+          type="text"
+          label={`label:`}
+          placeholder={`label`}
+          size="mini"
         />
         {allFields.body === 'circle' && circleForm()}
         {allFields.body === 'polygon' && polygonForm()}

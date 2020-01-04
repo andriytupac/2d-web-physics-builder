@@ -49,3 +49,48 @@
     display: inline;
   }
 }
+.edit-bodies{
+  .segment{
+    padding-bottom: 0px;
+  }
+}
+.picker-click{
+  padding: 5px;
+  background: rgb(255, 255, 255);
+  border-radius: 1px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 0px 1px;
+  display: inline-block;
+  cursor: pointer;
+  .picker-color{
+    width: 36px;
+    height: 14px;
+    border-radius: 2px;
+    background: rgb(179, 85, 10)
+  }
+}
+.picker-block{
+  margin-top: 5px;
+  .label{
+    vertical-align: top;
+  }
+  .picker-cover{
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+  }
+}
+.edit-bodies{
+  .message{
+    margin-bottom: 10px!important;
+  }
+}
+.ui.green.segment{
+  .range-block{
+    width: 100%;
+    div:nth-child(1){
+      width: 90%;
+    }
+  }
+}

@@ -12,29 +12,15 @@ const validate = values => {
   if (!values.body) {
     errors.body = 'Required'
   } else if (values.body === 'choose') {
-    errors.body = 'You must choose a body'
+    errors.body = 'You must choose a composite'
   }
-  if(values.body === 'fromVertices'){
-    if (!values.vertices || values.vertices.length < 3) {
-      errors.vertices = { _error: 'At least three vertices must be entered' }
-    } else {
-      const membersArrayErrors = [];
-      values.vertices.forEach((member, memberIndex) => {
-        const memberErrors = {};
-        if (!member || typeof member.x == "undefined") {
-          memberErrors.x = 'Required';
-          membersArrayErrors[memberIndex] = memberErrors
-        }
-        if (!member || typeof member.y == "undefined") {
-          memberErrors.y = 'Required';
-          membersArrayErrors[memberIndex] = memberErrors
-        }
-      });
-      if (membersArrayErrors.length) {
-        errors.vertices = membersArrayErrors
-      }
+
+  if(values.body === 'custom'){
+    if (!values.label || values.label.length < 3) {
+      errors.label = { _error: 'At least three characters must be entered' }
     }
-    //return errors
+
+    return errors
   }
   return errors
 };
@@ -59,6 +45,7 @@ const generalFields = [
   { name: 'chamfer', start: 0, min: 0, max: 30, step: 1 },
 ];
 const pyramid = [
+  { name: 'label' },
   { name: 'x' },
   { name: 'y' },
   { name: 'columns' },
@@ -69,6 +56,7 @@ const pyramid = [
   { name: 'rectHeight' },
 ];
 const stack = [
+  { name: 'label' },
   { name: 'x' },
   { name: 'y' },
   { name: 'columns' },
@@ -79,6 +67,7 @@ const stack = [
   { name: 'rectHeight' },
 ];
 const newtonsCradle = [
+  { name: 'label' },
   { name: 'x' },
   { name: 'y' },
   { name: 'number' },
@@ -86,6 +75,7 @@ const newtonsCradle = [
   { name: 'length' },
 ];
 const softBody = [
+  { name: 'label' },
   { name: 'x' },
   { name: 'y' },
   { name: 'columns' },
@@ -96,11 +86,15 @@ const softBody = [
   { name: 'particleRadius' },
 ];
 const car = [
+  { name: 'label' },
   { name: 'x' },
   { name: 'y'},
   { name: 'width'},
   { name: 'height'},
   { name: 'wheelSize'},
+];
+const custom = [
+  { name: 'label' },
 ];
 
 const renderVertices = (props) => {
@@ -207,7 +201,7 @@ let AddComposites = props => {
                   onChange={changeEvent}
                   name={value.name}
                   component={renderTextInput}
-                  type="number"
+                  type={value.name === 'label' ? 'text' : 'number'}
                   placeholder={value.name}
                   size="mini"
                 />
@@ -230,7 +224,7 @@ let AddComposites = props => {
                   onChange={changeEvent}
                   name={value.name}
                   component={renderTextInput}
-                  type="number"
+                  type={value.name === 'label' ? 'text' : 'number'}
                   placeholder={value.name}
                   size="mini"
                 />
@@ -253,7 +247,7 @@ let AddComposites = props => {
                   onChange={changeEvent}
                   name={value.name}
                   component={renderTextInput}
-                  type="number"
+                  type={value.name === 'label' ? 'text' : 'number'}
                   placeholder={value.name}
                   size="mini"
                 />
@@ -276,7 +270,7 @@ let AddComposites = props => {
                   onChange={changeEvent}
                   name={value.name}
                   component={renderTextInput}
-                  type="number"
+                  type={value.name === 'label' ? 'text' : 'number'}
                   placeholder={value.name}
                   size="mini"
                 />
@@ -299,7 +293,7 @@ let AddComposites = props => {
                   onChange={changeEvent}
                   name={value.name}
                   component={renderTextInput}
-                  type="number"
+                  type={value.name === 'label' ? 'text' : 'number'}
                   placeholder={value.name}
                   size="mini"
                 />
@@ -312,10 +306,35 @@ let AddComposites = props => {
     )
   };
 
+  const customForm = () => {
+    return (
+      <div className="bodiesForms">
+        {
+          custom.map((value, index) => {
+            return (
+              <div className="ui focus input" key={index}>
+                <Field
+                  label={`${value.name}:`}
+                  onChange={changeEvent}
+                  name={value.name}
+                  component={renderTextInput}
+                  type="text"
+                  placeholder={value.name}
+                  size="mini"
+                />
+              </div>
+            )
+          })
+        }
+      </div>
+    )
+  };
+
   const  onchange = (val,name) => {
     let data = {};
     if(name === 'pyramid'){
       data = {
+        label: 'pyramid',
         x: options.width / 2,
         y: options.height / 2,
         columns: 10,
@@ -327,6 +346,7 @@ let AddComposites = props => {
       };
     }else if(name === 'stack'){
       data = {
+        label: 'stack',
         x: options.width / 2,
         y: options.height / 2,
         columns: 6,
@@ -337,9 +357,17 @@ let AddComposites = props => {
         rectHeight: 30
       };
     }else if(name === 'newtonsCradle'){
-      data = {x: options.width / 2, y: options.height / 2, number: 10, size: 10, length: 100 };
+      data = {
+        label: 'newtonsCradle',
+        x: options.width / 2,
+        y: options.height / 2,
+        number: 10,
+        size: 10,
+        length: 100
+      };
     }else if(name === 'softBody'){
       data = {
+        label: 'softBody',
         x: options.width / 2,
         y: options.height / 2,
         columns: 5,
@@ -350,9 +378,11 @@ let AddComposites = props => {
         particleRadius: 18,
         //particleOptions: 1,
       };
-    }else if(name === 'car'){
-      data = {x: options.width / 2, y: options.height / 2, width:200, height:30, wheelSize: 30}
-    };
+    }else if(name === 'car') {
+      data = { label: 'car', x: options.width / 2, y: options.height / 2, width:200, height:30, wheelSize: 30}
+    }else if(name === 'custom') {
+      data = { label: 'custom' }
+    }
 
     initialize({
       ...initialVal,
@@ -362,7 +392,7 @@ let AddComposites = props => {
   };
 
   const sendFormToAddBody = (value,next,third) => {
-    console.log(value,next,third)
+    console.log(value,next,third);
     addBody(value)
   };
   return (
@@ -375,6 +405,7 @@ let AddComposites = props => {
           onChange={onchange}
           options={[
             { key: 'choose', value: 'choose', text: 'Select body' },
+            { key: 'custom', value: 'custom', text: 'custom' },
             { key: 'pyramid', value: 'pyramid', text: 'pyramid' },
             { key: 'stack', value: 'stack', text: 'stack' },
             { key: 'newtonsCradle', value: 'newtonsCradle', text: 'newtonsCradle' },
@@ -388,6 +419,7 @@ let AddComposites = props => {
         {allFields.body === 'newtonsCradle' && newtonsCradleForm()}
         {allFields.body === 'softBody' && softBodyForm()}
         {allFields.body === 'car' && carForm()}
+        {allFields.body === 'custom' && customForm()}
         {
          /* generalFields.map((value, index) => {
             return (

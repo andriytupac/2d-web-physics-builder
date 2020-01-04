@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Form, Label, Input, Dropdown } from "semantic-ui-react";
 import { Slider } from "react-semantic-ui-range";
+import { SketchPicker } from 'react-color';
 
 const renderCheckbox = field => (
   <Form.Checkbox
@@ -51,22 +52,27 @@ const renderTextInput = field => {
   const { meta: { touched, error } } = field;
   const props = {};
   if(error && touched){
-    props.error = true
+    props.error =  error
   }
-  return (
-    <Form.Field
+  {/*<label className={field.simple ? '' : 'modify-label ui label'}>{field.label}</label>*/}
+  {/*<Form.Field
       inline={field.simple ? false : true}
       width={field.width}
-      {...props}
-    >
-      <label className={field.simple ? '' : 'modify-label ui label'}>{field.label}</label>
-      <Input
+    >*/}
+  // </Form.Field>
+
+  return (
+      <Form.Input
+        inline={field.simple ? false : true}
+        width={field.width}
+        label={{ className: field.simple ? '' : 'modify-label ui label',   children: field.label}}
+        {...props}
+        //error={{ content: 'Please enter your first name', pointing: 'above' }}
         size={field.size}
         {...field.input}
         type={field.type}
         placeholder={field.placeholder}
       />
-    </Form.Field>
   );
 }
 
@@ -81,7 +87,7 @@ const renderRange = field => {
   };
   return (
     <div className="range-block">
-      <Label>{field.label}</Label>
+      {field.label && (<Label>{field.label}</Label>)}
       <Slider className="slider-range" color="red" value={field.input.value} settings={settings} />
       <Label color="red">{field.input.value || 0}</Label>
     </div>
@@ -117,6 +123,41 @@ const renderDropdown = field => {
   )
 };
 
+const ColorPicker = field => {
+  const [open, setOpen] = useState(false);
+  const [color, setColor] = useState(field.input.value);
+
+  const handleOpen = () => {
+    setOpen(!open)
+  };
+  const handleClose = () => {
+    setOpen(false)
+  };
+
+  const handleChange = color => {
+    setColor(color.hex);
+    field.input.onChange(color.hex);
+  };
+
+
+  return (
+    <div className="picker-block field">
+      <label className={field.simple ? '' : 'modify-label ui label'}>{field.label}:</label>
+      <div className="picker-click" onClick={handleOpen}>
+        <div className="picker-color" style={{backgroundColor: color}}/>
+      </div>
+      {
+        open && (
+          <div>
+            <div className="picker-cover" onClick={ handleClose }/>
+            <SketchPicker color={ color } onChange={ handleChange }  />
+          </div>
+        )
+      }
+    </div>
+  )
+};
+
 const reduxInputs = {
   renderCheckbox,
   renderRadio,
@@ -124,6 +165,7 @@ const reduxInputs = {
   renderDropdown,
   renderTextArea,
   renderRange,
-  renderTextInput
+  renderTextInput,
+  ColorPicker
 }
 export default reduxInputs;
