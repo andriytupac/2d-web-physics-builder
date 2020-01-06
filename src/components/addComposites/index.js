@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import { Field, reduxForm, formValueSelector, FieldArray } from 'redux-form';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import {Label, Button, Form, Icon, Message} from "semantic-ui-react";
 
 import reduxInput from '../../common/reduxInputs';
+import GeneralBodies from "../codeModal/generalBodies";
 
 const selector = formValueSelector('addCompositeForm');
 
@@ -33,7 +34,8 @@ const initialVal = {
     frictionAir: 0.01,
     restitution: 0,
     chamfer: 0,
-  }
+  },
+  composite: 0
 };
 
 const generalFields = [
@@ -162,19 +164,24 @@ let AddComposites = props => {
     invalid,
     handleSubmit,
     addBody,
+    getAllComposites,
     pristine
   } = props;
-  const { renderSelect, renderRange, renderTextInput } = reduxInput;
+  const { renderSelect, renderDropdown, renderTextInput } = reduxInput;
   const options = useStoreState(state => state.matterOptions.options);
 
+  const compositeOptions = [{ key: 0, value: 0, text: 'Stage' }];
+  getAllComposites.forEach(obj => {
+    compositeOptions.push({ key: obj.id, value: obj.id, text: `${obj.id} ${obj.label}` })
+  });
 
-  const addOptions = useStoreActions(
-    actions => actions.matterOptions.addOptions
-  );
+
+  const [code, setCode] = useState(false);
 
   const allFields = useStoreState(state => {
     const allFields = selector(
-      state, 'body', 'density'
+      state, 'body', 'label', 'x', 'y', 'columns', 'rows', 'columnGap', 'rowGap', 'number', 'size', 'length',
+      'wheelSize', 'crossBrace', 'particleRadius', 'rectWidth', 'rectHeight','width','height'
     );
     return {
       ...allFields
@@ -334,7 +341,7 @@ let AddComposites = props => {
     let data = {};
     if(name === 'pyramid'){
       data = {
-        label: 'pyramid',
+        label: 'Pyramid',
         x: options.width / 2,
         y: options.height / 2,
         columns: 10,
@@ -346,7 +353,7 @@ let AddComposites = props => {
       };
     }else if(name === 'stack'){
       data = {
-        label: 'stack',
+        label: 'Stack',
         x: options.width / 2,
         y: options.height / 2,
         columns: 6,
@@ -358,7 +365,7 @@ let AddComposites = props => {
       };
     }else if(name === 'newtonsCradle'){
       data = {
-        label: 'newtonsCradle',
+        label: 'NewtonsCradle',
         x: options.width / 2,
         y: options.height / 2,
         number: 10,
@@ -367,7 +374,7 @@ let AddComposites = props => {
       };
     }else if(name === 'softBody'){
       data = {
-        label: 'softBody',
+        label: 'SoftBody',
         x: options.width / 2,
         y: options.height / 2,
         columns: 5,
@@ -379,9 +386,9 @@ let AddComposites = props => {
         //particleOptions: 1,
       };
     }else if(name === 'car') {
-      data = { label: 'car', x: options.width / 2, y: options.height / 2, width:200, height:30, wheelSize: 30}
+      data = { label: 'Car', x: options.width / 2, y: options.height / 2, width:200, height:30, wheelSize: 30}
     }else if(name === 'custom') {
-      data = { label: 'custom' }
+      data = { label: 'Custom' }
     }
 
     initialize({
@@ -414,6 +421,15 @@ let AddComposites = props => {
           ]}
           label="Choose body"
         />
+        <Field
+          name="composite"
+          type="text"
+          component={renderDropdown}
+          // onChange={onchange}
+          options={compositeOptions}
+          label="composite"
+          size="mini"
+        />
         {allFields.body === 'pyramid' && pyramidForm()}
         {allFields.body === 'stack' && stackForm()}
         {allFields.body === 'newtonsCradle' && newtonsCradleForm()}
@@ -435,6 +451,15 @@ let AddComposites = props => {
           })*/
         }
         <Button primary={!invalid} type="submit" >Add</Button>
+        <Button
+          type={!invalid ? 'button' :'submit'}
+          icon
+          color={!invalid ? 'green' : 'grey'}
+          onClick={() => {if(!invalid){setCode(!code)}}}
+        >
+          <Icon name='code' />
+        </Button>
+        {code && <GeneralBodies element="composite" objectData={allFields} handlerClose={() => {setCode(!code)}}/>}
       </div>
     </Form>
   )

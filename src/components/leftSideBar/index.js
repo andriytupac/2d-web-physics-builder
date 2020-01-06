@@ -6,6 +6,7 @@ import AddBodies from '../addBodies';
 import AddComposites from '../addComposites';
 import AddConstraints from '../addConstraints';
 import EditBody from '../editBody';
+import CodeModal from '../codeModal';
 import EditComposite from "../editComposite";
 import EditConstraint from "../editConstraint";
 import Matter from 'matter-js';
@@ -31,16 +32,19 @@ const MenageElements = props => {
   const { obj } = props;
   const world = useStoreState(state => state.general.render);
   const [edit, setEdit] = useState(false);
+  const [code, setCode] = useState(false);
 
   const addRender = useStoreActions(
     actions => actions.general.addRender
   );
+
 //Delete obj
   const deleteObj = () =>{
-    World.remove(world, obj);
+    World.remove(world, obj, true);
     inspector.selected.pop();
   };
   const modifyBody = (data,key) => {
+    //console.log(Composite.get(world,obj.id, 'body'))
     if(key === 'rotate'){
       Body.rotate(obj, +data.angle,{ x: obj.position.x + +data.x, y: obj.position.y+ +data.y })
     }else if(key === 'scale'){
@@ -72,6 +76,11 @@ const MenageElements = props => {
       <Button icon primary onClick={ () => {setEdit(!edit)}}>
         <Icon name='pencil' />
       </Button>
+
+      <Button icon color={"green"} onClick={ () => {setCode(!code)}}>
+        <Icon name='code' />
+      </Button>
+      {code && <CodeModal element="body" objectData={obj} handlerClose={() => {setCode(!code)}}/>}
       <div className="edit-form">
         {edit && (
           <EditBody
@@ -94,15 +103,21 @@ const MenageElementsComposite = props => {
   );
 
   const [edit, setEdit] = useState(false);
+  const [code, setCode] = useState(false);
 
   const clearObj = () => {
     Composite.clear(obj, false, true);
     addRender({...world})
+    Composite.setModified(obj, true, true, true);
+
   };
 
   const deleteObj = () => {
+
     Composite.clear(obj, false, true);
-    World.remove(world, obj, true);
+    Composite.remove(world, obj, true );
+    Composite.setModified(obj, true, true, true);
+    //World.remove(world, obj, true);
   };
 
   const modifyComposite = (data,key) => {
@@ -118,7 +133,7 @@ const MenageElementsComposite = props => {
     }else if(key === 'scale'){
       Composite.scale(obj,data.scaleX,data.scaleY,{x: positionX + +data.x,y: positionY+ +data.y})
     }else if(key === 'label'){
-      obj.label = data
+      obj.label = data;
       addRender(world)
     }
 
@@ -135,6 +150,10 @@ const MenageElementsComposite = props => {
       <Button icon primary onClick={ () => {setEdit(!edit)}}>
         <Icon name='pencil' />
       </Button>
+      <Button icon color={"green"} onClick={ () => {setCode(!code)}}>
+        <Icon name='code' />
+      </Button>
+      {code && <CodeModal element="composite" objectData={obj} handlerClose={() => {setCode(!code)}}/>}
       <div className="edit-form">
         {edit && (
           <EditComposite
@@ -152,6 +171,7 @@ const MenageElementsConstraint = props => {
   const world = useStoreState(state => state.general.render);
 
   const [edit, setEdit] = useState(false);
+  const [code, setCode] = useState(false);
 
   const addRender = useStoreActions(
     actions => actions.general.addRender
@@ -176,6 +196,10 @@ const MenageElementsConstraint = props => {
       <Button icon primary onClick={ () => {setEdit(!edit)}}>
         <Icon name='pencil' />
       </Button>
+      <Button icon color={"green"} onClick={ () => {setCode(!code)}}>
+        <Icon name='code' />
+      </Button>
+      {code && <CodeModal element="constraint" objectData={obj} handlerClose={() => {setCode(!code)}}/>}
       <div className="edit-form">
         {edit && (
           <EditConstraint
@@ -194,9 +218,21 @@ const SidebarExampleSidebar = (props) => {
   //const world = useStoreState(state => state.general.render);
   const menuLeft = useStoreState(state => state.general.menuLeft);
   const general = useStoreState(state => state.general.render);
+  let getAllComposites = [];
+
+  //const getAllComposites = Composite.allComposites(general);
+  if(general.type){
+    getAllComposites = Composite.allComposites(general);
+    console.log(getAllComposites)
+  }
+
 
   const addOptions = useStoreActions(
     actions => actions.matterOptions.addOptions
+  );
+
+  const addRender = useStoreActions(
+    actions => actions.general.addRender
   );
 
   // const bodiesState = general.bodies || [];
@@ -230,29 +266,44 @@ const SidebarExampleSidebar = (props) => {
     }else if(obj.body === 'pyramid'){
       dataObj = Composites.pyramid(+obj.x, +obj.y, +obj.columns, +obj.rows, +obj.columnGap, +obj.rowGap , (x, y) => {
         return Bodies.rectangle(x, y,+obj.rectWidth, +obj.rectHeight, obj.options)
-      })
+      });
+      dataObj.label = obj.label;
     }else if(obj.body === 'stack'){
       dataObj = Composites.stack(+obj.x, +obj.y, +obj.columns, +obj.rows, +obj.columnGap, +obj.rowGap , (x, y) => {
         return Bodies.rectangle(x, y,+obj.rectWidth, +obj.rectHeight, obj.options)
       });
+      dataObj.label = obj.label;
     }else if(obj.body === 'newtonsCradle'){
-      dataObj = Composites.newtonsCradle(+obj.x, +obj.y, +obj.number, +obj.size, +obj.length )
+      dataObj = Composites.newtonsCradle(+obj.x, +obj.y, +obj.number, +obj.size, +obj.length );
+      dataObj.label = obj.label;
     }else if(obj.body === 'softBody'){
-      dataObj = Composites.softBody(+obj.x, +obj.y, +obj.columns, +obj.rows, +obj.columnGap, +obj.rowGap, true, +obj.particleRadius, particleOptions)
+      dataObj = Composites.softBody(+obj.x, +obj.y, +obj.columns, +obj.rows, +obj.columnGap, +obj.rowGap, true, +obj.particleRadius, particleOptions);
+      dataObj.label = obj.Composites;
     }else if(obj.body === 'car'){
-      dataObj = Composites.car(+obj.x, +obj.y, +obj.width, +obj.height, +obj.wheelSize )
+      dataObj = Composites.car(+obj.x, +obj.y, +obj.width, +obj.height, +obj.wheelSize );
+      dataObj.label = obj.label;
     }else if(obj.body === 'custom'){
       dataObj = Composite.create({label:obj.label})
       console.log(dataObj)
     }
-    //if(obj.body !== 'custom'){
+    if(obj.composite === 0){
       World.add(general, [dataObj]);
-    //}
+    }else{
+      const compositeObj = Composite.get(general, obj.composite, 'composite');
+      World.add(compositeObj, [dataObj]);
+      addRender({...general})
+    }
   };
 
   const addConstraint = obj =>{
     const constraint = Constraint.create(obj);
-    World.add(general, [constraint])
+    if(obj.composite === 0){
+      World.add(general, [constraint])
+    }else{
+      const compositeObj = Composite.get(general, obj.composite, 'composite');
+      World.add(compositeObj, [constraint])
+      addRender({...general})
+    }
   };
 
   //Elements inspector
@@ -418,7 +469,7 @@ const SidebarExampleSidebar = (props) => {
           <Accordion.Content
               active={open === 0}
               content={
-                inspector.options && <MatterForm changeOptions={changeOptions} inspectorOptions={inspector.options} />
+                inspector.options  && <MatterForm changeOptions={changeOptions} inspectorOptions={inspector.options} />
               }
             />
             <Accordion.Title
@@ -432,6 +483,7 @@ const SidebarExampleSidebar = (props) => {
               content={
                 inspector.options && open === 1 &&
                 <AddBodies
+                  getAllComposites={getAllComposites}
                   addBodyMouseEvent={addBodyMouseEvent}
                   updateBodyMouseEvent={updateBodyMouseEvent}
                   addBody={addBody}
@@ -447,8 +499,9 @@ const SidebarExampleSidebar = (props) => {
             <Accordion.Content
               active={open === 2}
               content={
-                inspector.options &&
+                inspector.options && open === 2 &&
                 <AddComposites
+                  getAllComposites={getAllComposites}
                   addBodyMouseEvent={addBodyMouseEvent}
                   updateBodyMouseEvent={updateBodyMouseEvent}
                   addBody={addBody}
@@ -464,8 +517,9 @@ const SidebarExampleSidebar = (props) => {
             <Accordion.Content
               active={open === 3}
               content={
-                inspector.options &&
+                inspector.options && open === 3 &&
                 <AddConstraints
+                  getAllComposites={getAllComposites}
                   inspectorOptions={general}
                   activateBodyConstraint={activateBodyConstraint}
                   addConstraint={addConstraint}

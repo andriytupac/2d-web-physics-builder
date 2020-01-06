@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import { Field, reduxForm, formValueSelector, FieldArray } from 'redux-form';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import {Label, Button, Form, Icon, Message} from "semantic-ui-react";
 
 import reduxInput from '../../common/reduxInputs';
+import GeneralBodies from '../codeModal/generalBodies';
 
 const selector = formValueSelector('addBodyForm');
 
@@ -48,7 +49,8 @@ const initialVal = {
     restitution: 0,
     chamfer: 0,
     label: 'label'
-  }
+  },
+  composite: 0
 };
 
 const generalFields = [
@@ -153,25 +155,23 @@ let AddBodies = props => {
     invalid,
     handleSubmit,
     addBody,
-    change,
+    getAllComposites,
     pristine
   } = props;
   //console.log(props)
-  const { renderSelect, renderRange, renderTextInput } = reduxInput;
+  const { renderSelect, renderRange, renderTextInput, renderDropdown } = reduxInput;
   const options = useStoreState(state => state.matterOptions.options);
 
+  const compositeOptions = [{ key: 0, value: 0, text: 'Stage' }];
+  getAllComposites.forEach(obj => {
+    compositeOptions.push({ key: obj.id, value: obj.id, text: `${obj.id} ${obj.label}` })
+  });
 
-  const addOptions = useStoreActions(
-    actions => actions.matterOptions.addOptions
-  );
-
-  /*const changeValue = useStoreActions(
-
-  );*/
+  const [code, setCode] = useState(false);
 
   const allFields = useStoreState(state => {
     const allFields = selector(
-      state, 'body', 'density'
+      state, 'body', 'options', 'x', 'y', 'radius', 'sides', 'width', 'height', 'slope','vertices'
     );
     return {
       ...allFields
@@ -357,6 +357,15 @@ let AddBodies = props => {
           label="Choose body"
         />
         <Field
+          name="composite"
+          type="text"
+          component={renderDropdown}
+          // onChange={onchange}
+          options={compositeOptions}
+          label="composite"
+          size="mini"
+        />
+        <Field
           name={`options.label`}
           component={renderTextInput}
           type="text"
@@ -384,6 +393,16 @@ let AddBodies = props => {
           })
         }
         <Button primary={!invalid} type="submit" >Add</Button>
+        <Button
+          type={!invalid ? 'button' :'submit'}
+          icon
+          color={!invalid ? 'green' : 'grey'}
+          onClick={() => {if(!invalid){setCode(!code)}}}
+        >
+          <Icon name='code' />
+        </Button>
+        {code && <GeneralBodies element="composite" objectData={allFields} handlerClose={() => {setCode(!code)}}/>}
+
       </div>
     </Form>
   )

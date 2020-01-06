@@ -48,7 +48,7 @@ let EditConstraint = props => {
 
   const selectOptions = {};
 
-
+  console.log(objectData)
   let allBodies = [];
   let allBodiesSelect = [];
 
@@ -65,8 +65,8 @@ let EditConstraint = props => {
   };
   getAllBodies(inspectorOptions);
 
-  selectOptions.bodyA = allBodiesSelect;
-  selectOptions.bodyB = allBodiesSelect;
+  selectOptions.bodyA = [{ key: 0, value: 0, text: 'Stage'}, ...allBodiesSelect];
+  selectOptions.bodyB = [{ key: 0, value: 0, text: 'Stage'}, ...allBodiesSelect];
   selectOptions.type = [
     { key: 'line', value: 'line', text: 'line'},
     { key: 'pin', value: 'pin', text: 'pin'},
@@ -140,8 +140,8 @@ EditConstraint = connect(
     const constraint = props.objectData;
     const bodyThings = {
       ...initialVal,
-      bodyA: constraint.bodyA.id,
-      bodyB: constraint.bodyB.id,
+      bodyA:  constraint.bodyA ? constraint.bodyA.id : 0,
+      bodyB:  constraint.bodyB ? constraint.bodyB.id : 0,
       length: constraint.length,
       label: constraint.label,
       stiffness: constraint.stiffness,

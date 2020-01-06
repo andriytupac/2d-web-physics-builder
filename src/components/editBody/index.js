@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import InputFields from './InputFields'
 import reduxInput from '../../common/reduxInputs';
 
-const { numberField, selectField, colorField } = InputFields;
+const { numberField, selectField, colorField, rangeField  } = InputFields;
 
 const selector = formValueSelector('editBodyForm');
 
@@ -45,7 +45,6 @@ const generalFields = [
   { name: 'label', key: 'label', label: 'label', type: 'text'},
   { name: 'angle', key: 'angle', label: 'setAngle', type: 'number'},
   { name: 'angularVelocity', key: 'angularVelocity', label: 'setAngularVelocity', type: 'number'},
-  { name: 'density', key: 'density', label: 'setDensity', type: 'number'},
   { name: 'inertia', key: 'inertia', label: 'setInertia', type: 'number'},
   { name: 'mass', key: 'mass', label: 'setMass', type: 'number'},
   { name: 'render.zIndex', key: 'render', label: 'zIndex', type: 'number'},
@@ -56,7 +55,12 @@ const generalFields = [
   { name: 'collisionFilter.group', key: 'collisionFilter', label: 'group', type: 'number'},
   { name: 'collisionFilter.category', key: 'collisionFilter', label: 'category', type: 'select'},
   { name: 'collisionFilter.mask', key: 'collisionFilter', label: 'mask', type: 'select'},
-
+  { name: 'density', key: 'density', label: 'density', type: 'range', settings: { min: 0, max: 0.1, step: 0.001 }},
+  { name: 'friction', key: 'friction', label: 'friction', type: 'range', settings: { min: 0, max: 1, step: 0.05 }},
+  { name: 'frictionStatic', key: 'frictionStatic', label: 'frictionStatic', type: 'range', settings: {  min: 0, max: 10, step: 0.1 }},
+  { name: 'frictionAir', key: 'frictionAir', label: 'frictionAir', type: 'range', settings: { min: 0, max: 0.1, step: 0.01 }},
+  { name: 'restitution', key: 'restitution', label: 'restitution', type: 'range', settings: { min: 0, max: 1, step: 0.1  }},
+  //{ name: 'chamfer', key: 'chamfer', label: 'chamfer', type: 'range', settings: { min: 0, max: 30, step: 1 }},
 ];
 
 const validate = values => {
@@ -105,7 +109,8 @@ let EditBody = (props) => {
   const allFields = useStoreState(state => {
     const allFields = selector(
       state, 'bodyA', 'rotate', 'scale', 'position', 'isStatic', 'angle', 'angularVelocity', 'density', 'inertia',
-      'mass', 'render', 'collisionFilter', 'velocity', 'applyForce', 'label'
+      'mass', 'render', 'collisionFilter', 'velocity', 'applyForce', 'label', 'friction', 'frictionStatic','frictionAir',
+      'restitution'
     );
     return {
       ...allFields
@@ -363,6 +368,8 @@ let EditBody = (props) => {
           return colorField(val, runBodyEvent)
         }else if (val.type === 'text'){
           return numberField(val, runBodyEvent, true)
+        }else if (val.type === 'range'){
+          return rangeField(val, runBodyEvent)
         }
 
       })}
@@ -383,12 +390,19 @@ EditBody = reduxForm({
 
 EditBody = connect(
   (state,props) => {
-    console.log('props', props.objectData);
+    console.log('props', props.objectData.parent);
     const body = props.objectData;
     const bodyThings = {
       ...initialVal,
       isStatic: body.isStatic,
       label: body.label,
+      density: body.density,
+      frictionStatic: body.frictionStatic,
+      friction: body.friction,
+      frictionAir: body.frictionAir,
+      restitution: body.restitution,
+      chamfer: body.chamfer,
+      mass: body.mass,
       render: {
         zIndex: body.render.zIndex,
         strokeStyle: body.render.strokeStyle,

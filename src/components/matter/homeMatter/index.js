@@ -73,10 +73,11 @@ function HomeMatter(props){
 
     const ballA = Bodies.rectangle(310, 100, 30,30, { restitution: 0.5 , isStatic: true, render:{ zIndex: -1 }});
     const ballB = Bodies.circle(110, 50, 30, { restitution: 0.5, render:{ zIndex: -1} });
+
     const constraintAB = Matter.Constraint.create({
-      //pointA: {x:0,y:30},
+      pointA: {x:400,y:100},
       //pointB: {x:15,y:15},
-      bodyA: ballA,
+      //bodyA: ballA,
       bodyB: ballB
     });
 

@@ -24,7 +24,7 @@ const listOfCheckbox = [
     { name: 'showInternalEdges', value: false },
     { name: 'enabled', value: false },
 ];
-const selector = formValueSelector('redForm');
+const selector = formValueSelector('generalSettings');
 
 let MatterForm1 = props => {
   const { changeOptions, inspectorOptions } = props;
@@ -72,7 +72,7 @@ let MatterForm1 = props => {
 };
 
 let MatterForm = reduxForm({
-    form: 'redForm',
+    form: 'generalSettings',
     enableReinitialize : true,
     keepDirtyOnReinitialize:true,
 })(MatterForm1);

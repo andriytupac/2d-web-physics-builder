@@ -1,13 +1,15 @@
-import React, { useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import { Field, reduxForm, formValueSelector, FieldArray } from 'redux-form';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import {Label, Button, Form, Icon, Message, Dropdown} from "semantic-ui-react";
 
 import reduxInput from '../../common/reduxInputs';
+import GeneralBodies from "../codeModal/generalBodies";
 
 const selector = formValueSelector('addConstraintsForm');
 
 const initialVal = {
+  label: 'Constraint',
   bodyA: 0,
   length: 0,
   pointA:{
@@ -21,7 +23,8 @@ const initialVal = {
   options: {
     stiffness: 0.1,
     damping: 0.1
-  }
+  },
+  composite: 0
 };
 const generalFields = {
   stiffness: { name: 'stiffness', start: 0.1, min: 0, max: 1, step: 0.1 },
@@ -30,9 +33,9 @@ const generalFields = {
 
 const validate = values => {
   const errors = {};
-  if (!values.bodyA) {
+  /*if (!values.bodyA) {
     errors.bodyA = 'You must choose a bodyA'
-  }
+  }*/
   if (!values.bodyB) {
     errors.bodyB = 'You must choose a bodyB'
   }
@@ -40,14 +43,21 @@ const validate = values => {
 };
 
 let AddConstraints = (props) => {
-  const { inspectorOptions, activateBodyConstraint, handleSubmit, addConstraint, invalid } =  props;
-  const { renderDropdown, renderTextInput, renderRange } = reduxInput;
+  const { inspectorOptions, activateBodyConstraint, handleSubmit, addConstraint, invalid, getAllComposites } =  props;
+  const { renderDropdown, renderTextInput, renderRange, renderSelect } = reduxInput;
   let allBodies = [];
   let allBodiesSelect = [];
 
+  const compositeOptions = [{ key: 0, value: 0, text: 'Stage' }];
+  getAllComposites.forEach(obj => {
+    compositeOptions.push({ key: obj.id, value: obj.id, text: `${obj.id} ${obj.label}` })
+  });
+
+  const [code, setCode] = useState(false);
+
   const allFields = useStoreState(state => {
     const allFields = selector(
-      state, 'bodyA', 'bodyB'
+      state, 'bodyA', 'bodyB', 'pointA', 'pointB', 'label', 'length', 'options'
     );
     return {
       ...allFields
@@ -99,6 +109,24 @@ let AddConstraints = (props) => {
 
   return(
     <Form onSubmit={handleSubmit(sendFormAddConstraintToBody)}>
+      <Field
+        label="label:"
+        // onChange={changeEvent}
+        name="label"
+        component={renderTextInput}
+        type="text"
+        placeholder="label"
+        size="mini"
+      />
+      <Field
+        name="composite"
+        type="text"
+        component={renderDropdown}
+        // onChange={onchange}
+        options={compositeOptions}
+        label="composite"
+        size="mini"
+      />
       <Field
         label="bodyA:"
         onChange={changePositionA}
@@ -193,6 +221,15 @@ let AddConstraints = (props) => {
         label="damping"
       />
       <Button primary={!invalid} type="submit" >Add</Button>
+      <Button
+        type={!invalid ? 'button' :'submit'}
+        icon
+        color={!invalid ? 'green' : 'grey'}
+        onClick={() => {if(!invalid){setCode(!code)}}}
+      >
+        <Icon name='code' />
+      </Button>
+      {code && <GeneralBodies objectData={allFields} handlerClose={() => {setCode(!code)}}/>}
     </Form>
   )
 };
@@ -200,7 +237,7 @@ let AddConstraints = (props) => {
 AddConstraints = reduxForm({
   initialValues: {
     ...initialVal,
-    //body: 'choose',
+    body: 'constraint',
   },
   validate,
   form: 'addConstraintsForm',
