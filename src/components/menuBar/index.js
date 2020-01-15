@@ -16,15 +16,11 @@ function MenuBar() {
   return (
    <Menu>
      <Menu.Item>
-       <Segment
-         compact
-       >
          <Checkbox
            onChange = {event => {turnMenuLeft(!menuLeft)}}
            toggle
            checked={menuLeft}
          />
-       </Segment>
      </Menu.Item>
      <Menu.Item
        name='editorials'

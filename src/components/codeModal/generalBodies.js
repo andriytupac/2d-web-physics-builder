@@ -1,5 +1,6 @@
 import React from 'react'
 import { Button, Header, Icon, Modal, Message } from 'semantic-ui-react'
+import { bodyElement } from '../codeModal';
 
 const circleBody = obj => {
   return (
@@ -108,13 +109,52 @@ const customComposite = obj => {
     </pre>
   )
 };
+const constraintCon = (obj, getBody) => {
+  const label = (obj.options && obj.options.label) ? obj.options.label : obj.label;
+  const generalParams = {...obj.options};
+  generalParams.label = label;
+  generalParams.pointA = obj.pointA;
+  generalParams.pointB = obj.pointB;
+  generalParams.length = obj.length;
+  let bodyA = {};
+  let bodyB = {};
+
+  if(obj.bodyA){
+    bodyA = getBody(obj.bodyA);
+    generalParams.bodyA = bodyA.label.replace(/\s/g, '')+bodyA.id;
+  }
+  if(obj.bodyB){
+    bodyB = getBody(obj.bodyB);
+    generalParams.bodyB = bodyB.label.replace(/\s/g, '')+bodyB.id;
+  }
+
+  let finalJSON = JSON.stringify(generalParams, null, '\t');
+  if(obj.bodyA){
+    finalJSON = finalJSON.replace(`"${generalParams.bodyA}"`,generalParams.bodyA);
+  }
+  if(obj.bodyB){
+    finalJSON = finalJSON.replace(`"${generalParams.bodyB}"`,generalParams.bodyB);
+  }
+
+  return (
+    <>
+      {obj.bodyA !==0  && bodyElement(bodyA)}
+      {obj.bodyB !==0  && bodyElement(bodyB)}
+    <pre>
+{`const ${label.replace(/\s/g, '')} = Constraint.create( ${finalJSON} );`}
+    </pre>
+    </>
+  )
+};
 
 const GeneralBodies = props => {
   const {
     handlerClose,
     objectData,
+    getBody,
     element
   } = props;
+
   console.log(objectData)
   const label = (objectData.options && objectData.options.label) ? objectData.options.label : objectData.label;
   return (
@@ -137,6 +177,7 @@ const GeneralBodies = props => {
             {objectData.body === 'custom' && customComposite(objectData)}
             {objectData.body === 'pyramid' && pyramidComposite(objectData)}
             {objectData.body === 'stack' && stackComposite(objectData)}
+            {objectData.body === 'constraint' && constraintCon(objectData,getBody)}
           </code>
         </Message>
       </Modal.Content>

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import { Header, Accordion, Menu, Segment, Sidebar, Icon, Button } from 'semantic-ui-react'
+import { Header, Accordion, Menu, Segment, Sidebar, Icon, Button, Popup } from 'semantic-ui-react'
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import MatterForm from '../matterForm';
 import AddBodies from '../addBodies';
@@ -51,6 +51,10 @@ const MenageElements = props => {
       Body.scale(obj,data.scaleX,data.scaleY,{x: obj.position.x + +data.x,y: obj.position.y+ +data.y})
     }else if(key === 'render'){
       console.log('key',key,data);
+      let newData = data;
+      if(newData.sprite && newData.sprite.texture === 'none'){
+        delete newData.sprite.texture
+      }
       const render = { ...obj.render, ...data}
       Body.set(obj,key,render)
     }else if(key === 'collisionFilter'){
@@ -70,16 +74,39 @@ const MenageElements = props => {
   };
   return (
     <div>
-      <Button icon onClick={deleteObj}>
-        <Icon name='trash' />
-      </Button>
-      <Button icon primary onClick={ () => {setEdit(!edit)}}>
-        <Icon name='pencil' />
-      </Button>
-
-      <Button icon color={"green"} onClick={ () => {setCode(!code)}}>
-        <Icon name='code' />
-      </Button>
+      <Popup
+        trigger={
+          <Button color="red" icon onClick={deleteObj}>
+            <Icon  name='trash' />
+          </Button>
+        }
+        content='Delete Body'
+        position='top center'
+        size='tiny'
+        inverted
+      />
+      <Popup
+        trigger={
+          <Button icon primary onClick={ () => {setEdit(!edit)}}>
+            <Icon name='pencil' />
+          </Button>
+        }
+        content='Edit Body'
+        position='top center'
+        size='tiny'
+        inverted
+      />
+      <Popup
+        trigger={
+          <Button icon color={"green"} onClick={ () => {setCode(!code)}}>
+            <Icon name='code' />
+          </Button>
+        }
+        content='Get Code'
+        position='top center'
+        size='tiny'
+        inverted
+      />
       {code && <CodeModal element="body" objectData={obj} handlerClose={() => {setCode(!code)}}/>}
       <div className="edit-form">
         {edit && (
@@ -107,8 +134,8 @@ const MenageElementsComposite = props => {
 
   const clearObj = () => {
     Composite.clear(obj, false, true);
+    //Composite.setModified(obj, true, true, true);
     addRender({...world})
-    Composite.setModified(obj, true, true, true);
 
   };
 
@@ -141,18 +168,50 @@ const MenageElementsComposite = props => {
 
   return (
     <div>
-      <Button icon color='orange' onClick={clearObj}>
-        <Icon name='eraser' />
-      </Button>
-      <Button icon color='red' onClick={deleteObj}>
-        <Icon name='trash' />
-      </Button>
-      <Button icon primary onClick={ () => {setEdit(!edit)}}>
-        <Icon name='pencil' />
-      </Button>
-      <Button icon color={"green"} onClick={ () => {setCode(!code)}}>
-        <Icon name='code' />
-      </Button>
+      <Popup
+        trigger={
+          <Button icon color='orange' onClick={clearObj}>
+            <Icon name='eraser' />
+          </Button>
+        }
+        content='Clear Bodies inside Composite'
+        position='top left'
+        size='tiny'
+        inverted
+      />
+      <Popup
+        trigger={
+          <Button icon color='red' onClick={deleteObj}>
+            <Icon name='trash' />
+          </Button>
+        }
+        content='Delete Composite'
+        position='top center'
+        size='tiny'
+        inverted
+      />
+      <Popup
+        trigger={
+          <Button icon primary onClick={ () => {setEdit(!edit)}}>
+            <Icon name='pencil' />
+          </Button>
+        }
+        content='Edit Composite'
+        position='top center'
+        size='tiny'
+        inverted
+      />
+      <Popup
+        trigger={
+          <Button icon color={"green"} onClick={ () => {setCode(!code)}}>
+            <Icon name='code' />
+          </Button>
+        }
+        content='Get Code'
+        position='top center'
+        size='tiny'
+        inverted
+      />
       {code && <CodeModal element="composite" objectData={obj} handlerClose={() => {setCode(!code)}}/>}
       <div className="edit-form">
         {edit && (
@@ -190,15 +249,39 @@ const MenageElementsConstraint = props => {
 
   return (
     <div>
-      <Button icon color='red' onClick={deleteObj}>
-        <Icon name='trash' />
-      </Button>
-      <Button icon primary onClick={ () => {setEdit(!edit)}}>
-        <Icon name='pencil' />
-      </Button>
-      <Button icon color={"green"} onClick={ () => {setCode(!code)}}>
-        <Icon name='code' />
-      </Button>
+      <Popup
+        trigger={
+          <Button icon color='red' onClick={deleteObj}>
+            <Icon name='trash' />
+          </Button>
+        }
+        content='Delete Constraint'
+        position='top center'
+        size='tiny'
+        inverted
+      />
+      <Popup
+        trigger={
+          <Button icon primary onClick={ () => {setEdit(!edit)}}>
+            <Icon name='pencil' />
+          </Button>
+        }
+        content='Edit Constraint'
+        position='top center'
+        size='tiny'
+        inverted
+      />
+      <Popup
+        trigger={
+          <Button icon color={"green"} onClick={ () => {setCode(!code)}}>
+            <Icon name='code' />
+          </Button>
+        }
+        content='Get Code'
+        position='top center'
+        size='tiny'
+        inverted
+      />
       {code && <CodeModal element="constraint" objectData={obj} handlerClose={() => {setCode(!code)}}/>}
       <div className="edit-form">
         {edit && (
@@ -248,11 +331,12 @@ const SidebarExampleSidebar = (props) => {
     if(obj.body === 'circle'){
       dataObj = Bodies.circle(+obj.x, +obj.y, +obj.radius, obj.options)
     }else if(obj.body === 'polygon'){
-      dataObj = Bodies.polygon(+obj.x, +obj.y,+obj.sides, +obj.radius, obj.options)
+      console.log(obj)
+      dataObj = Bodies.polygon(+obj.x, +obj.y,+obj.sides, +obj.radius, {...obj.options, chamfer: obj.chamfer})
     }else if(obj.body === 'rectangle'){
-      dataObj = Bodies.rectangle(+obj.x, +obj.y,+obj.width, +obj.height, obj.options)
+      dataObj = Bodies.rectangle(+obj.x, +obj.y,+obj.width, +obj.height, {...obj.options, chamfer: obj.chamfer})
     }else if(obj.body === 'trapezoid'){
-      dataObj = Bodies.trapezoid(+obj.x, +obj.y,+obj.width, +obj.height,+obj.slope, obj.options)
+      dataObj = Bodies.trapezoid(+obj.x, +obj.y,+obj.width, +obj.height,+obj.slope, {...obj.options, chamfer: obj.chamfer})
     }else if(obj.body === 'fromVertices'){
       const newVertices = obj.vertices.map((val, index) => {
         val.body = undefined;
@@ -459,7 +543,7 @@ const SidebarExampleSidebar = (props) => {
       >
 
         {AccordionExampleNested(general)}
-        <Accordion  styled>
+        <Accordion styled>
             <Accordion.Title
               active={open === 0}
               content='General Setting'

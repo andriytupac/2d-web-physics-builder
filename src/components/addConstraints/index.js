@@ -36,6 +36,9 @@ const validate = values => {
   /*if (!values.bodyA) {
     errors.bodyA = 'You must choose a bodyA'
   }*/
+  if(typeof values.label !== "undefined" && values.label.length < 3){
+    errors.label = 'Should be at least 3 characters'
+  }
   if (!values.bodyB) {
     errors.bodyB = 'You must choose a bodyB'
   }
@@ -57,7 +60,7 @@ let AddConstraints = (props) => {
 
   const allFields = useStoreState(state => {
     const allFields = selector(
-      state, 'bodyA', 'bodyB', 'pointA', 'pointB', 'label', 'length', 'options'
+      state, 'bodyA', 'bodyB', 'pointA', 'pointB', 'label', 'length', 'options', 'body'
     );
     return {
       ...allFields
@@ -220,6 +223,11 @@ let AddConstraints = (props) => {
         type="text"
         label="damping"
       />
+      <Field
+        name="body"
+        type="hidden"
+        component="input"
+      />
       <Button primary={!invalid} type="submit" >Add</Button>
       <Button
         type={!invalid ? 'button' :'submit'}
@@ -229,7 +237,7 @@ let AddConstraints = (props) => {
       >
         <Icon name='code' />
       </Button>
-      {code && <GeneralBodies objectData={allFields} handlerClose={() => {setCode(!code)}}/>}
+      {code && <GeneralBodies getBody={getBody} objectData={allFields} handlerClose={() => {setCode(!code)}}/>}
     </Form>
   )
 };

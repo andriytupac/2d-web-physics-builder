@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { Field, reduxForm, formValueSelector, FieldArray } from 'redux-form';
+import { Field, reduxForm, formValueSelector, FieldArray, getFormSyncErrors } from 'redux-form';
 import { connect } from 'react-redux'
 import { Button, Form, Icon, Label, Segment, Message } from "semantic-ui-react";
 
@@ -21,8 +21,17 @@ const initialVal = {
     y:0
   },
 };
+
+const validate = values => {
+  const errors = {};
+  if (typeof values.label !== 'undefined' && values.label.length <3) {
+    errors.label = 'Should be at least 3 characters'
+  }
+  return errors
+};
+
 let EditComposite = props => {
-  const  { objectData, modifyComposite } = props;
+  const  { objectData, modifyComposite, invalid } = props;
 
   const { renderDropdown, renderTextInput, renderCheckbox } = reduxInput;
 
@@ -33,6 +42,10 @@ let EditComposite = props => {
     return {
       ...allFields
     }
+  });
+
+  const syncErrors = useStoreState(state => {
+    return getFormSyncErrors('editCompositeForm')(state)
   });
 
   const runBodyEvent = (event, props) => {
@@ -53,7 +66,7 @@ let EditComposite = props => {
       {/*Rotation*/}
       <Segment color="green">
         <Label>Label:</Label>
-        <Form.Button type="button" key_event="label" onClick={runBodyEvent} size="mini" icon primary width={2} inline>
+        <Form.Button type="button" key_event="label" disabled={syncErrors.label ? true : false} onClick={runBodyEvent} size="mini" icon primary width={2} inline>
           <Icon name='save' />
         </Form.Button>
         <Form.Group className="items-end">
@@ -76,6 +89,7 @@ let EditComposite = props => {
         </Form.Button>
         <Form.Group className="items-end">
           <Field
+            parse={Number}
             width={6}
             name="rotate.angle"
             component={renderTextInput}
@@ -86,6 +100,7 @@ let EditComposite = props => {
             simple={true}
           />
           <Field
+            parse={Number}
             width={5}
             name="rotate.x"
             component={renderTextInput}
@@ -96,6 +111,7 @@ let EditComposite = props => {
             simple={true}
           />
           <Field
+            parse={Number}
             width={5}
             name="rotate.y"
             component={renderTextInput}
@@ -115,6 +131,7 @@ let EditComposite = props => {
         </Form.Button>
         <Form.Group className="items-end">
           <Field
+            parse={Number}
             width={8}
             name="scale.scaleX"
             component={renderTextInput}
@@ -125,6 +142,7 @@ let EditComposite = props => {
             simple={true}
           />
           <Field
+            parse={Number}
             width={8}
             name="scale.scaleY"
             component={renderTextInput}
@@ -137,6 +155,7 @@ let EditComposite = props => {
         </Form.Group>
         <Form.Group className="items-end">
           <Field
+            parse={Number}
             width={8}
             name="scale.x"
             component={renderTextInput}
@@ -147,6 +166,7 @@ let EditComposite = props => {
             simple={true}
           />
           <Field
+            parse={Number}
             width={8}
             name="scale.y"
             component={renderTextInput}
@@ -178,7 +198,7 @@ EditComposite = reduxForm({
     ...initialVal,
     //body: 'choose',
   },
-  //validate,
+  validate,
   form: 'editCompositeForm',
   enableReinitialize : true,
   keepDirtyOnReinitialize:true,
@@ -192,6 +212,7 @@ EditComposite = connect(
       ...initialVal,
       label: composite.label
     };
+    //console.log(getFormSyncErrors('editCompositeForm')(state))
     return {
       initialValues: bodyThings
     }

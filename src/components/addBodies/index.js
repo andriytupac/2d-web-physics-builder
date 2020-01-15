@@ -15,6 +15,9 @@ const validate = values => {
   } else if (values.body === 'choose') {
     errors.body = 'You must choose a body'
   }
+  if(values.options && typeof values.options.label !== "undefined" && values.options.label.length < 3){
+    errors.options = {label: 'Should be at least 3 characters'}
+  }
   if(values.body === 'fromVertices'){
     if (!values.vertices || values.vertices.length < 3) {
       errors.vertices = { _error: 'At least three vertices must be entered' }
@@ -47,7 +50,6 @@ const initialVal = {
     frictionStatic: 0.5,
     frictionAir: 0.01,
     restitution: 0,
-    chamfer: 0,
     label: 'label'
   },
   composite: 0
@@ -59,7 +61,6 @@ const generalFields = [
   { name: 'frictionStatic', start: 0.5, min: 0, max: 10, step: 0.1 },
   { name: 'frictionAir', start: 0.01, min: 0, max: 0.1, step: 0.001 },
   { name: 'restitution', start: 0, min: 0, max: 0.1, step: 0.1 },
-  { name: 'chamfer', start: 0, min: 0, max: 30, step: 1 },
 ];
 const circle = [
   { name: 'x' },
@@ -71,12 +72,14 @@ const polygon = [
   { name: 'y' },
   { name: 'sides' },
   { name: 'radius' },
+  { name: 'chamfer.radius' },
 ];
 const rectangle = [
   { name: 'x' },
   { name: 'y' },
   { name: 'width' },
   { name: 'height' },
+  { name: 'chamfer.radius' },
 ];
 const trapezoid = [
   { name: 'x' },
@@ -84,6 +87,7 @@ const trapezoid = [
   { name: 'width' },
   { name: 'height' },
   { name: 'slope' },
+  { name: 'chamfer.radius' },
 ];
 const fromVertices = [
   { name: 'x' },
@@ -171,7 +175,7 @@ let AddBodies = props => {
 
   const allFields = useStoreState(state => {
     const allFields = selector(
-      state, 'body', 'options', 'x', 'y', 'radius', 'sides', 'width', 'height', 'slope','vertices'
+      state, 'body', 'options', 'x', 'y', 'radius', 'sides', 'width', 'height', 'slope','vertices', 'chamfer'
     );
     return {
       ...allFields
@@ -217,6 +221,7 @@ let AddBodies = props => {
             return (
               <div className="ui focus input" key={index}>
                 <Field
+                  parse={Number}
                   label={`${value.name}:`}
                   onChange={changeEvent}
                   name={value.name}
@@ -240,6 +245,7 @@ let AddBodies = props => {
             return (
               <div className="ui focus input" key={index}>
                 <Field
+                  parse={Number}
                   label={`${value.name}:`}
                   onChange={changeEvent}
                   name={value.name}
@@ -263,6 +269,7 @@ let AddBodies = props => {
             return (
               <div className="ui focus input" key={index}>
                 <Field
+                  parse={Number}
                   label={`${value.name}:`}
                   onChange={changeEvent}
                   name={value.name}
@@ -309,13 +316,13 @@ let AddBodies = props => {
       data = {x: options.width / 2, y: options.height / 2, radius: 30 };
       data.options = { ...initialVal.options, label: 'circle'};
     }else if(name === 'polygon'){
-      data = {x: options.width / 2, y: options.height / 2, radius: 30, sides: 5 };
+      data = {x: options.width / 2, y: options.height / 2, radius: 30, sides: 5, chamfer: { radius: 0 } };
       data.options = { ...initialVal.options, label: 'polygon'};
     }else if(name === 'rectangle'){
-      data = {x: options.width / 2, y: options.height / 2, width: 50, height: 50 };
+      data = {x: options.width / 2, y: options.height / 2, width: 50, height: 50, chamfer: { radius: 0 } };
       data.options = { ...initialVal.options, label: 'rectangle'};
     }else if(name === 'trapezoid'){
-      data = {x: options.width / 2, y: options.height / 2, width: 50, height: 50, slope: 1 };
+      data = {x: options.width / 2, y: options.height / 2, width: 50, height: 50, slope: 1, chamfer: { radius: 0 } };
       data.options = { ...initialVal.options, label: 'trapezoid'};
     }else if(name === 'fromVertices'){
       data = {x: options.width / 2, y: options.height / 2, vertices:[

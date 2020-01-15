@@ -6,6 +6,7 @@ import {Label, Button, Form, Icon, Message} from "semantic-ui-react";
 import reduxInput from '../../common/reduxInputs';
 import GeneralBodies from "../codeModal/generalBodies";
 
+
 const selector = formValueSelector('addCompositeForm');
 
 const validate = values => {
@@ -16,13 +17,17 @@ const validate = values => {
     errors.body = 'You must choose a composite'
   }
 
-  if(values.body === 'custom'){
+  if(typeof values.label !== "undefined" && values.label.length < 3){
+    errors.label = 'Should be at least 3 characters'
+  }
+
+  /*if(values.body === 'custom'){
     if (!values.label || values.label.length < 3) {
-      errors.label = { _error: 'At least three characters must be entered' }
+      errors.label = 'At least three characters must be entered'
     }
 
     return errors
-  }
+  }*/
   return errors
 };
 
@@ -174,6 +179,9 @@ let AddComposites = props => {
   getAllComposites.forEach(obj => {
     compositeOptions.push({ key: obj.id, value: obj.id, text: `${obj.id} ${obj.label}` })
   });
+
+  const general = useStoreState(state => state.general.render);
+
 
 
   const [code, setCode] = useState(false);
@@ -459,7 +467,7 @@ let AddComposites = props => {
         >
           <Icon name='code' />
         </Button>
-        {code && <GeneralBodies element="composite" objectData={allFields} handlerClose={() => {setCode(!code)}}/>}
+        {code && <GeneralBodies objectData={allFields} handlerClose={() => {setCode(!code)}}/>}
       </div>
     </Form>
   )

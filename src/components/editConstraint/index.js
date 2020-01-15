@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { Field, reduxForm, formValueSelector, FieldArray } from 'redux-form';
+import {Field, reduxForm, formValueSelector, FieldArray, getFormSyncErrors} from 'redux-form';
 import { connect } from 'react-redux'
 import { Button, Form, Icon, Label, Segment, Message } from "semantic-ui-react";
 import {useStoreState} from "easy-peasy";
@@ -25,6 +25,15 @@ const initialVal = {
     y:0
   },
 };
+
+const validate = values => {
+  const errors = {};
+  if (typeof values.label !== 'undefined' && values.label.length < 3) {
+    errors.label = 'Should be at least 3 characters'
+  }
+  return errors
+};
+
 const generalFields = [
   { name: 'label', key: 'label', label: 'label', type: 'text' },
   { name: 'bodyA', key: 'bodyA', label: 'bodyA', type: 'select' },
@@ -63,6 +72,13 @@ let EditConstraint = props => {
       });
     }
   };
+
+  const syncErrors = useStoreState(state => {
+    return getFormSyncErrors('editConstraintForm')(state)
+  });
+
+  console.log(syncErrors);
+
   getAllBodies(inspectorOptions);
 
   selectOptions.bodyA = [{ key: 0, value: 0, text: 'Stage'}, ...allBodiesSelect];
@@ -108,7 +124,7 @@ let EditConstraint = props => {
         } else if (val.type === 'select'){
           return selectField(val, runBodyEvent, selectOptions[val.label])
         }  else if (val.type === 'text'){
-          return numberField(val, runBodyEvent, true)
+          return numberField(val, runBodyEvent, true, syncErrors[val.name])
         } else if (val.type === 'color'){
           return colorField(val, runBodyEvent)
         } else if (val.type === 'coordinate'){
@@ -128,7 +144,7 @@ EditConstraint = reduxForm({
     ...initialVal,
     //body: 'choose',
   },
-  //validate,
+  validate,
   form: 'editConstraintForm',
   enableReinitialize : true,
   keepDirtyOnReinitialize:true,

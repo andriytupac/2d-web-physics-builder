@@ -72,6 +72,7 @@ function HomeMatter(props){
     props.runInspector(inspector)
 
     const ballA = Bodies.rectangle(310, 100, 30,30, { restitution: 0.5 , isStatic: true, render:{ zIndex: -1 }});
+    const ballC = Bodies.rectangle(310, 100, 30,30, { restitution: 0.5 , isStatic: false, render:{ zIndex: -1 }});
     const ballB = Bodies.circle(110, 50, 30, { restitution: 0.5, render:{ zIndex: -1} });
 
     const constraintAB = Matter.Constraint.create({
@@ -93,7 +94,7 @@ function HomeMatter(props){
       //constraintAB
     ]);
 
-    World.add(engine.world, [ballA, ballB,constraintAB]);
+    World.add(engine.world, [ballA, ballB,ballC,constraintAB]);
     Matter.Bounds.create(ballB.bounds)
 
 

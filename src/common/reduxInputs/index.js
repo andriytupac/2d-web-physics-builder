@@ -3,14 +3,19 @@ import { Form, Label, Input, Dropdown } from "semantic-ui-react";
 import { Slider } from "react-semantic-ui-range";
 import { SketchPicker } from 'react-color';
 
-const renderCheckbox = field => (
-  <Form.Checkbox
-    checked={!!field.input.value}
-    name={field.input.name}
-    label={field.label}
-    onChange={(e, { checked }) => field.input.onChange(checked)}
-  />
-);
+const renderCheckbox = field => {
+  return (
+    <Form.Checkbox
+      checked={field.input.value  ? true : false}
+      //toggle={true}
+      //defaultChecked={field.input.value  ? true : false}
+      name={field.input.name}
+      label={field.label}
+      onBlur={field.input.onBlur}
+      onFocus={field.input.onFocus}
+      onChange={(e, { checked }) => field.input.onChange(checked)}
+    />
+)};
 
 const renderRadio = field => (
   <Form.Radio

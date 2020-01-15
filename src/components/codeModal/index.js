@@ -4,7 +4,7 @@ import { Button, Header, Icon, Modal, Message } from 'semantic-ui-react'
 
 let multiplyElements = [];
 
-const bodyElement = obj => {
+export const bodyElement = obj => {
   const width = Math.abs(obj.bounds.max.x - obj.bounds.min.x).toFixed();
   const height = Math.abs(obj.bounds.max.y - obj.bounds.min.y).toFixed();
   const vector = [];
@@ -103,7 +103,7 @@ const compositeElement = obj => {
 `}
     </pre>
       {obj.bodies.map((val,index) => {
-        multiplyElements.push(val.id)
+        multiplyElements.push(val.id);
         return (<div key={index}>{bodyElement(val)}</div>)
       })}
       {obj.constraints.map((val,index) => {
@@ -144,5 +144,4 @@ const CodeModal = props => {
       </Modal.Actions>
     </Modal>
 )};
-
 export default CodeModal

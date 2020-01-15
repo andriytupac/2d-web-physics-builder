@@ -1,11 +1,16 @@
 import React, {useEffect, useState} from 'react';
-import { Field, reduxForm, formValueSelector, FieldArray } from 'redux-form';
+import {Field, reduxForm, formValueSelector, FieldArray, getFormSyncErrors} from 'redux-form';
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import {Label, Button, Form, Icon, Message, Dropdown, Segment, Input} from "semantic-ui-react";
+import {Label, Button, Form, Icon, Message, Dropdown, Segment, Input, Popup} from "semantic-ui-react";
 import { connect } from 'react-redux'
 import InputFields from './InputFields'
 import reduxInput from '../../common/reduxInputs';
 
+import ball from '../../img/ball.png'
+import block from '../../img/block.png'
+import block2 from '../../img/block-2.png'
+import box from '../../img/box.png'
+import rock from '../../img/rock.png'
 const { numberField, selectField, colorField, rangeField  } = InputFields;
 
 const selector = formValueSelector('editBodyForm');
@@ -41,35 +46,76 @@ const initialVal = {
   inertia: 0.1,
   mass: 0.1,
 };
+const info = {
+  isStaticFalse: (<><b>Bodies --> isStatic</b> should be <b>false</b></>),
+  wireframes: (<><b>General Setting --> wireframes</b> should be <b>false</b></>)
+}
+
 const generalFields = [
-  { name: 'label', key: 'label', label: 'label', type: 'text'},
-  { name: 'angle', key: 'angle', label: 'setAngle', type: 'number'},
-  { name: 'angularVelocity', key: 'angularVelocity', label: 'setAngularVelocity', type: 'number'},
-  { name: 'inertia', key: 'inertia', label: 'setInertia', type: 'number'},
-  { name: 'mass', key: 'mass', label: 'setMass', type: 'number'},
-  { name: 'render.zIndex', key: 'render', label: 'zIndex', type: 'number'},
-  { name: 'render.lineWidth', key: 'render', label: 'lineWidth', type: 'number'},
-  { name: 'render.opacity', key: 'render', label: 'opacity', type: 'number'},
-  { name: 'render.strokeStyle', key: 'render', label: 'lineWidth', type: 'color'},
-  { name: 'render.fillStyle', key: 'render', label: 'fillStyle', type: 'color'},
+  { name: 'label', key: 'label', label: 'label', type: 'text' },
+  { name: 'angle', key: 'angle', label: 'setAngle', type: 'number' },
+  { name: 'angularVelocity', key: 'angularVelocity', label: 'setAngularVelocity', type: 'number', info: info.isStaticFalse },
+  { name: 'inertia', key: 'inertia', label: 'setInertia', type: 'number', info: info.isStaticFalse },
+  { name: 'mass', key: 'mass', label: 'setMass', type: 'number', info: info.isStaticFalse },
+  { name: 'render.zIndex', key: 'render', label: 'zIndex', type: 'number', info: info.wireframes },
+  { name: 'render.lineWidth', key: 'render', label: 'lineWidth', type: 'number', info: info.wireframes },
+  { name: 'render.opacity', key: 'render', label: 'opacity', type: 'number', info: info.wireframes },
+  { name: 'render.strokeStyle', key: 'render', label: 'lineWidth', type: 'color', info: info.wireframes },
+  { name: 'render.fillStyle', key: 'render', label: 'fillStyle', type: 'color', info: info.wireframes },
+  { name: 'render.sprite.texture', key: 'render', label: 'sprite.texture', type: 'dropdown', info: info.wireframes },
   { name: 'collisionFilter.group', key: 'collisionFilter', label: 'group', type: 'number'},
   { name: 'collisionFilter.category', key: 'collisionFilter', label: 'category', type: 'select'},
   { name: 'collisionFilter.mask', key: 'collisionFilter', label: 'mask', type: 'select'},
-  { name: 'density', key: 'density', label: 'density', type: 'range', settings: { min: 0, max: 0.1, step: 0.001 }},
+  { name: 'density', key: 'density', label: 'density', type: 'range', settings: { min: 0, max: 0.1, step: 0.001 }, info: info.isStaticFalse },
   { name: 'friction', key: 'friction', label: 'friction', type: 'range', settings: { min: 0, max: 1, step: 0.05 }},
-  { name: 'frictionStatic', key: 'frictionStatic', label: 'frictionStatic', type: 'range', settings: {  min: 0, max: 10, step: 0.1 }},
-  { name: 'frictionAir', key: 'frictionAir', label: 'frictionAir', type: 'range', settings: { min: 0, max: 0.1, step: 0.01 }},
-  { name: 'restitution', key: 'restitution', label: 'restitution', type: 'range', settings: { min: 0, max: 1, step: 0.1  }},
-  //{ name: 'chamfer', key: 'chamfer', label: 'chamfer', type: 'range', settings: { min: 0, max: 30, step: 1 }},
+  { name: 'frictionStatic', key: 'frictionStatic', label: 'frictionStatic', type: 'range', settings: {  min: 0, max: 10, step: 0.1 }, info: info.isStaticFalse },
+  { name: 'frictionAir', key: 'frictionAir', label: 'frictionAir', type: 'range', settings: { min: 0, max: 0.1, step: 0.01 }, info: info.isStaticFalse },
+  { name: 'restitution', key: 'restitution', label: 'restitution', type: 'range', settings: { min: 0, max: 1, step: 0.1  }, info: info.isStaticFalse },
+];
+
+const textureOptions = [
+  {
+    key: 'none',
+    text: 'none',
+    value: 'none',
+    //image: { avatar: true, src: ball },
+  },
+  {
+    key: 'ball',
+    text: 'ball',
+    value: ball,
+    image: { avatar: true, src: ball },
+  },
+  {
+    key: 'block',
+    text: 'block',
+    value: block,
+    image: { avatar: true, src: block },
+  },
+  {
+    key: 'block2',
+    text: 'block2',
+    value: block2,
+    image: { avatar: true, src: block2 },
+  },
+  {
+    key: 'box',
+    text: 'box',
+    value: box,
+    image: { avatar: true, src: box },
+  },
+  {
+    key: 'rock',
+    text: 'rock',
+    value: rock,
+    image: { avatar: true, src: rock },
+  }
 ];
 
 const validate = values => {
   const errors = {};
-  if (!values.bodyA) {
-    errors.bodyA = 'You must choose a bodyA'
-  }
-  if (!values.bodyB) {
-    errors.bodyB = 'You must choose a bodyB'
+  if (typeof values.label !== 'undefined' && values.label.length <3) {
+    errors.label = 'Should be at least 3 characters'
   }
   return errors
 };
@@ -106,11 +152,15 @@ let EditBody = (props) => {
     setObjBounds({...HandW})
   };
 
+  const syncErrors = useStoreState(state => {
+    return getFormSyncErrors('editBodyForm')(state)
+  });
+
   const allFields = useStoreState(state => {
     const allFields = selector(
       state, 'bodyA', 'rotate', 'scale', 'position', 'isStatic', 'angle', 'angularVelocity', 'density', 'inertia',
       'mass', 'render', 'collisionFilter', 'velocity', 'applyForce', 'label', 'friction', 'frictionStatic','frictionAir',
-      'restitution'
+      'restitution', 'chamfer'
     );
     return {
       ...allFields
@@ -149,6 +199,7 @@ let EditBody = (props) => {
         </Form.Button>
         <Form.Group className="items-end">
           <Field
+            parse={Number}
             width={6}
             name="rotate.angle"
             component={renderTextInput}
@@ -159,6 +210,7 @@ let EditBody = (props) => {
             simple={true}
           />
           <Field
+            parse={Number}
             width={5}
             name="rotate.x"
             component={renderTextInput}
@@ -169,6 +221,7 @@ let EditBody = (props) => {
             simple={true}
           />
           <Field
+            parse={Number}
             width={5}
             name="rotate.y"
             component={renderTextInput}
@@ -188,6 +241,7 @@ let EditBody = (props) => {
         </Form.Button>
         <Form.Group className="items-end">
           <Field
+            parse={Number}
             width={8}
             name="scale.scaleX"
             component={renderTextInput}
@@ -198,6 +252,7 @@ let EditBody = (props) => {
             simple={true}
           />
           <Field
+            parse={Number}
             width={8}
             name="scale.scaleY"
             component={renderTextInput}
@@ -210,6 +265,7 @@ let EditBody = (props) => {
         </Form.Group>
         <Form.Group className="items-end">
           <Field
+            parse={Number}
             width={8}
             name="scale.x"
             component={renderTextInput}
@@ -220,6 +276,7 @@ let EditBody = (props) => {
             simple={true}
           />
           <Field
+            parse={Number}
             width={8}
             name="scale.y"
             component={renderTextInput}
@@ -250,6 +307,7 @@ let EditBody = (props) => {
         </Form.Button>
         <Form.Group className="items-end">
           <Field
+            parse={Number}
             width={8}
             name="position.x"
             component={renderTextInput}
@@ -260,6 +318,7 @@ let EditBody = (props) => {
             simple={true}
           />
           <Field
+            parse={Number}
             width={8}
             name="position.y"
             component={renderTextInput}
@@ -288,8 +347,17 @@ let EditBody = (props) => {
         <Form.Button type="button" key_event="velocity" onClick={runBodyEvent} size="mini" icon primary width={2} inline>
             <Icon name='save' />
         </Form.Button>
+        <div className="popup-info">
+          <Popup
+            trigger={<Icon name='question circle' color='orange' size='small' circular />}
+            content={info.isStaticFalse}
+            position='top right'
+          />
+        </div>
+
         <Form.Group className="items-end">
           <Field
+            parse={Number}
             width={8}
             name="velocity.x"
             component={renderTextInput}
@@ -300,6 +368,7 @@ let EditBody = (props) => {
             simple={true}
           />
           <Field
+            parse={Number}
             width={8}
             name="velocity.y"
             component={renderTextInput}
@@ -317,8 +386,16 @@ let EditBody = (props) => {
         <Form.Button type="button" key_event="applyForce" onClick={runBodyEvent} size="mini" icon primary width={2} inline>
             <Icon name='save' />
         </Form.Button>
+        <div className="popup-info">
+          <Popup
+            trigger={<Icon name='question circle' color='orange' size='small' circular />}
+            content={info.isStaticFalse}
+            position='top right'
+          />
+        </div>
         <Form.Group className="items-end">
           <Field
+            parse={Number}
             width={8}
             name="applyForce.x"
             component={renderTextInput}
@@ -329,6 +406,7 @@ let EditBody = (props) => {
             simple={true}
           />
           <Field
+            parse={Number}
             width={8}
             name="applyForce.y"
             component={renderTextInput}
@@ -351,7 +429,7 @@ let EditBody = (props) => {
             width={16}
             name="isStatic"
             component={renderCheckbox}
-            type="text"
+            type="checkbox"
             label="isStatic"
             placeholder="isStatic"
             size="mini"
@@ -367,9 +445,11 @@ let EditBody = (props) => {
         } else if (val.type === 'color'){
           return colorField(val, runBodyEvent)
         }else if (val.type === 'text'){
-          return numberField(val, runBodyEvent, true)
+          return numberField(val, runBodyEvent, true, syncErrors[val.name])
         }else if (val.type === 'range'){
           return rangeField(val, runBodyEvent)
+        }else if (val.type === 'dropdown'){
+          return selectField(val, runBodyEvent, textureOptions, true);
         }
 
       })}
@@ -385,13 +465,13 @@ EditBody = reduxForm({
   validate,
   form: 'editBodyForm',
   enableReinitialize : true,
-  keepDirtyOnReinitialize:true,
+  //keepDirtyOnReinitialize:true,
 })(EditBody);
 
 EditBody = connect(
   (state,props) => {
-    console.log('props', props.objectData.parent);
     const body = props.objectData;
+    console.log('props', body);
     const bodyThings = {
       ...initialVal,
       isStatic: body.isStatic,
@@ -409,6 +489,9 @@ EditBody = connect(
         fillStyle: body.render.fillStyle,
         lineWidth: body.render.lineWidth,
         opacity: body.render.opacity,
+        sprite:{
+          ...body.render.sprite
+        }
       },
       collisionFilter: {
         group: body.collisionFilter.group,

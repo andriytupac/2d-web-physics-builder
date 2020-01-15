@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import {Icon, Label, Segment, Form} from "semantic-ui-react";
+import {Icon, Label, Segment, Form, Popup} from "semantic-ui-react";
 import {Field} from "redux-form";
 import reduxInput from "../../common/reduxInputs";
 const { renderDropdown, renderTextInput, ColorPicker, renderRange, renderCheckbox } = reduxInput;
 
 
-const numberField = (val, callback, parse) => {
+const numberField = (val, callback, parse, syncError) => {
   return (
     <Segment color="green" key={val.name}>
       <Label>{val.label}:</Label>
@@ -18,9 +18,19 @@ const numberField = (val, callback, parse) => {
         primary
         width={2}
         inline
+        disabled={syncError ? true : false}
       >
         <Icon name='save' />
       </Form.Button>
+      {val.info && (
+        <div className="popup-info">
+          <Popup
+            trigger={<Icon name='question circle' color='orange' size='small' circular />}
+            content={val.info}
+            position='top right'
+          />
+        </div>
+      )}
       <Form.Group className="items-end">
         <Field
           parse={ parse ? String : Number }
@@ -75,6 +85,15 @@ const rangeField = (val, callback) => {
       >
         <Icon name='save' />
       </Form.Button>
+      {val.info && (
+        <div className="popup-info">
+          <Popup
+            trigger={<Icon name='question circle' color='orange' size='small' circular />}
+            content={val.info}
+            position='top right'
+          />
+        </div>
+      )}
       <Form.Group className="items-end">
         <Field
           settings={{...val.settings, name: val.name}}
@@ -130,7 +149,7 @@ const coordinateField = (val, callback) => {
     </Segment>
   )
 };
-const selectField = (val, callback, allCategories) => {
+const selectField = (val, callback, allCategories, additional) => {
   return (
     <Segment color="green" key={val.name}>
       <Label>{val.label}:</Label>
@@ -146,6 +165,67 @@ const selectField = (val, callback, allCategories) => {
       >
         <Icon name='save' />
       </Form.Button>
+      {val.info && (
+        <div className="popup-info">
+          <Popup
+            trigger={<Icon name='question circle' color='orange' size='small' circular />}
+            content={val.info}
+            position='top right'
+          />
+        </div>
+      )}
+      {additional && (
+      <>
+        <Form.Group className="items-end">
+          <Field
+            parse={Number}
+            width={8}
+            name="render.sprite.xScale"
+            component={renderTextInput}
+            type="number"
+            label="xScale:"
+            placeholder="xScale"
+            size="mini"
+            simple={true}
+          />
+          <Field
+            parse={Number}
+            width={8}
+            name="render.sprite.yScale"
+            component={renderTextInput}
+            type="number"
+            label="yScale:"
+            placeholder="yScale"
+            size="mini"
+            simple={true}
+          />
+        </Form.Group>
+        <Form.Group className="items-end">
+          <Field
+            parse={Number}
+            width={8}
+            name="render.sprite.xOffset"
+            component={renderTextInput}
+            type="number"
+            label="xOffset:"
+            placeholder="xOffset"
+            size="mini"
+            simple={true}
+          />
+          <Field
+            parse={Number}
+            width={8}
+            name="render.sprite.yOffset"
+            component={renderTextInput}
+            type="number"
+            label="yOffset:"
+            placeholder="yOffset"
+            size="mini"
+            simple={true}
+          />
+        </Form.Group>
+      </>
+      )}
       <Form.Group className="items-end">
         <Field
           label={val.name}
@@ -178,6 +258,15 @@ const colorField = (val, callback, allCategories) => {
       >
         <Icon name='save' />
       </Form.Button>
+      {val.info && (
+        <div className="popup-info">
+          <Popup
+            trigger={<Icon name='question circle' color='orange' size='small' circular />}
+            content={val.info}
+            position='top right'
+          />
+        </div>
+      )}
       <Field
         label={val.name}
         //onChange={changePositionA}
