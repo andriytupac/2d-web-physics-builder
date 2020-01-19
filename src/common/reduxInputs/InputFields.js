@@ -1,7 +1,7 @@
 import React from "react";
 import {Icon, Label, Segment, Form, Popup} from "semantic-ui-react";
 import {Field} from "redux-form";
-import reduxInput from "../../common/reduxInputs";
+import reduxInput from ".";
 const { renderDropdown, renderTextInput, ColorPicker, renderRange, renderCheckbox } = reduxInput;
 
 

@@ -2,9 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import Matter from 'matter-js';
 import { useStoreState } from 'easy-peasy';
 
-import IndexPosition from '../../../mattetPlugins/IndexPosition';
-import ConstraintInspector from '../../../mattetPlugins/ConstraintInspector';
-import rect from '../../../img/block.png'
+import IndexPosition from '../mattetPlugins/IndexPosition';
+import ConstraintInspector from '../mattetPlugins/ConstraintInspector';
+import rect from '../img/block.png'
 import decomp from 'poly-decomp';
 window.decomp = decomp;
 
@@ -18,7 +18,7 @@ Matter.use(
 
 let render;
 
-function HomeMatter(props){
+function MatterDemo(props){
 
   const { runInspector } = props;
 
@@ -194,4 +194,4 @@ function HomeMatter(props){
     <div ref={sceneEl} />
   )
 }
-export default HomeMatter
+export default MatterDemo

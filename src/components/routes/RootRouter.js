@@ -2,17 +2,16 @@ import React from 'react';
 import {/* Switch , */ withRouter,/* Route, */useRouteMatch } from 'react-router-dom';
 // import ContainerRouter from './ContainerRouter';
 import LeftSideBar from '../leftSideBar';
-//import HomeMatter from '../matter/homeMatter';
 
 /*Client part*/
-import HomeMatter from '../matter/homeMatter';
+import MatterDemo from '../../matterDemo';
 
 
 const RootRouter = props => {
   let match = useRouteMatch("/");
   //console.log(match)
   if(match){
-    return (<LeftSideBar><HomeMatter/></LeftSideBar>)
+    return (<LeftSideBar><MatterDemo/></LeftSideBar>)
   }else {
     return <LeftSideBar></LeftSideBar>
   }
@@ -21,7 +20,7 @@ const RootRouter = props => {
       <Switch>
         <ContainerRouter {...props} path="/"  component={Matter}>
           <Switch>
-            <Route path="/t" {...props} component={HomeMatter} />
+            <Route path="/t" {...props} component={MatterDemo} />
           </Switch>
         </ContainerRouter>
       </Switch>

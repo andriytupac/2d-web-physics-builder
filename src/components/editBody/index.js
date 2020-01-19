@@ -3,7 +3,7 @@ import { Field, reduxForm, formValueSelector, getFormSyncErrors } from 'redux-fo
 import { useStoreState } from 'easy-peasy';
 import { Label, Button, Form, Icon, Message, Segment, Popup } from "semantic-ui-react";
 import { connect } from 'react-redux'
-import InputFields from './InputFields'
+import InputFields from '../../common/reduxInputs/InputFields'
 import reduxInput from '../../common/reduxInputs';
 
 import ball from '../../img/ball.png'

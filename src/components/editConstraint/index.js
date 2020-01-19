@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { Form } from "semantic-ui-react";
 import { useStoreState } from "easy-peasy";
 
-import InputFields from '../editBody/InputFields';
+import InputFields from '../../common/reduxInputs/InputFields';
 
 const { numberField, selectField, colorField, coordinateField, rangeField, checkboxField } = InputFields;
 

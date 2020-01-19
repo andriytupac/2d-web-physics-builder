@@ -6,7 +6,7 @@ import {Icon, Label, Segment, Form, Button, Popup} from "semantic-ui-react";
 
 
 import reduxInput from '../../common/reduxInputs';
-import InputFields from '../../components/editBody/InputFields';
+import InputFields from '../../common/reduxInputs/InputFields';
 
 const listOfCheckbox = [
     { name: 'wireframes', value: false },
@@ -32,7 +32,7 @@ const colorPick = [
 ]
 const selector = formValueSelector('generalSettings');
 
-let GeneralSetting = props => {
+let GeneralSettings = props => {
   const { changeOptions, reloadCanvas, clearCanvas } = props;
   const { renderCheckbox, renderTextInput } = reduxInput;
   const { colorField } = InputFields;
@@ -163,18 +163,18 @@ let GeneralSetting = props => {
   )
 };
 
-GeneralSetting = reduxForm({
+GeneralSettings = reduxForm({
     form: 'generalSettings',
     enableReinitialize : true,
     keepDirtyOnReinitialize:true,
-})(GeneralSetting);
+})(GeneralSettings);
 
-GeneralSetting = connect(
+GeneralSettings = connect(
   (state,props) => {
     return {
       initialValues: props.inspectorOptions
     }
   },
-)(GeneralSetting);
+)(GeneralSettings);
 
-export default GeneralSetting
+export default GeneralSettings

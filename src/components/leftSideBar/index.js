@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import { Accordion, Menu, Segment, Sidebar, Icon, Button, Popup } from 'semantic-ui-react'
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import GeneralSetting from '../generalSetting';
+import GeneralSettings from '../generalSettings';
 import AddBodies from '../addBodies';
 import AddComposites from '../addComposites';
 import AddConstraints from '../addConstraints';
@@ -667,7 +667,7 @@ const SidebarExampleSidebar = (props) => {
             active={open === 0}
             content={
               inspector.options  &&
-              <GeneralSetting
+              <GeneralSettings
                 changeOptions={changeOptions}
                 clearCanvas={clearCanvas}
                 inspectorOptions={inspector.options}
