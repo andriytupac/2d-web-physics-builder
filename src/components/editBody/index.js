@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
-import {Field, reduxForm, formValueSelector, FieldArray, getFormSyncErrors} from 'redux-form';
-import { useStoreState, useStoreActions } from 'easy-peasy';
-import {Label, Button, Form, Icon, Message, Dropdown, Segment, Input, Popup} from "semantic-ui-react";
+import React, { useState } from 'react';
+import { Field, reduxForm, formValueSelector, getFormSyncErrors } from 'redux-form';
+import { useStoreState } from 'easy-peasy';
+import { Label, Button, Form, Icon, Message, Segment, Popup } from "semantic-ui-react";
 import { connect } from 'react-redux'
 import InputFields from './InputFields'
 import reduxInput from '../../common/reduxInputs';
@@ -129,8 +129,8 @@ let EditBody = (props) => {
 
 
   const { renderTextInput, renderCheckbox } = reduxInput;
-  let allBodies = [];
-  let allBodiesSelect = [];
+  // let allBodies = [];
+  // let allBodiesSelect = [];
 
   const [objPosition, setObjPosition] = useState(props.objectData.position);
 
@@ -167,7 +167,7 @@ let EditBody = (props) => {
     }
   });
 
-  const getAllBodies = constraint => {
+  /* const getAllBodies = constraint => {
     constraint.bodies.forEach((val) => {
       allBodies.push(val);
       allBodiesSelect.push({ key: val.id, value: val.id, text: `${val.id} ${val.label}` })
@@ -177,7 +177,7 @@ let EditBody = (props) => {
         getAllBodies(val);
       });
     }
-  };
+  }; */
 
   const runBodyEvent = (event, props) => {
     const { key_event } = props;
@@ -451,6 +451,7 @@ let EditBody = (props) => {
         }else if (val.type === 'dropdown'){
           return selectField(val, runBodyEvent, textureOptions, true);
         }
+        return ''
 
       })}
     </Form>

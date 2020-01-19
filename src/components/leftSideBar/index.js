@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
-import { Header, Accordion, Menu, Segment, Sidebar, Icon, Button, Popup } from 'semantic-ui-react'
+import { Accordion, Menu, Segment, Sidebar, Icon, Button, Popup } from 'semantic-ui-react'
 import { useStoreState, useStoreActions } from 'easy-peasy';
-import MatterForm from '../matterForm';
+import GeneralSetting from '../generalSetting';
 import AddBodies from '../addBodies';
 import AddComposites from '../addComposites';
 import AddConstraints from '../addConstraints';
@@ -16,6 +16,10 @@ import './style.scss'
 const World = Matter.World;
 const Events = Matter.Events;
 const Bodies = Matter.Bodies;
+const Render = Matter.Render;
+const Engine = Matter.Engine;
+const Mouse = Matter.Mouse;
+const MouseConstraint = Matter.MouseConstraint;
 const Body = Matter.Body;
 const Composite = Matter.Composite;
 const Composites = Matter.Composites;
@@ -76,7 +80,7 @@ const MenageElements = props => {
     <div>
       <Popup
         trigger={
-          <Button color="red" icon onClick={deleteObj}>
+          <Button type="button" color="red" icon onClick={deleteObj}>
             <Icon  name='trash' />
           </Button>
         }
@@ -87,7 +91,7 @@ const MenageElements = props => {
       />
       <Popup
         trigger={
-          <Button icon primary onClick={ () => {setEdit(!edit)}}>
+          <Button type="button" icon primary onClick={ () => {setEdit(!edit)}}>
             <Icon name='pencil' />
           </Button>
         }
@@ -98,7 +102,7 @@ const MenageElements = props => {
       />
       <Popup
         trigger={
-          <Button icon color={"green"} onClick={ () => {setCode(!code)}}>
+          <Button type="button" icon color={"green"} onClick={ () => {setCode(!code)}}>
             <Icon name='code' />
           </Button>
         }
@@ -154,8 +158,8 @@ const MenageElementsComposite = props => {
     const positionY = (position.max.y+position.min.y)/2
 
     if(key === 'rotate'){
-      const width = position.max.x-position.min.x;
-      const height = position.max.y-position.min.y;
+      // const width = position.max.x-position.min.x;
+      // const height = position.max.y-position.min.y;
       Composite.rotate(obj, +data.angle,{ x: positionX + +data.x, y: positionY+ +data.y })
     }else if(key === 'scale'){
       Composite.scale(obj,data.scaleX,data.scaleY,{x: positionX + +data.x,y: positionY+ +data.y})
@@ -298,29 +302,33 @@ const MenageElementsConstraint = props => {
 
 const SidebarExampleSidebar = (props) => {
   //Store
-  //const world = useStoreState(state => state.general.render);
-  const menuLeft = useStoreState(state => state.general.menuLeft);
+  const { menuLeft, staticBlocks, width, height } = useStoreState(state => state.general);
   const general = useStoreState(state => state.general.render);
   let getAllComposites = [];
 
-  //const getAllComposites = Composite.allComposites(general);
   if(general.type){
     getAllComposites = Composite.allComposites(general);
-    console.log(getAllComposites)
+    //console.log(getAllComposites)
   }
-
 
   const addOptions = useStoreActions(
     actions => actions.matterOptions.addOptions
   );
 
-  const addRender = useStoreActions(
-    actions => actions.general.addRender
+  const { addRender, runRestart, updateStaticBlocks } = useStoreActions(
+    actions => actions.general
   );
 
-  // const bodiesState = general.bodies || [];
-  // const constraintState = general.constraints || [];
+  // Change size canvas
+  useEffect(() => {
+    console.log(inspector)
+    if(width && height){
+      inspector.sceneElement.children[0].width = width;
+      inspector.sceneElement.children[0].height = height;
+    }
+  }, [width, height]);
 
+  //Add Body
   const addBody = obj => {
     let dataObj = {};
     var particleOptions = {
@@ -378,7 +386,7 @@ const SidebarExampleSidebar = (props) => {
       addRender({...general})
     }
   };
-
+  //Add Constraint
   const addConstraint = obj =>{
     const constraint = Constraint.create(obj);
     if(obj.composite === 0){
@@ -389,24 +397,57 @@ const SidebarExampleSidebar = (props) => {
       addRender({...general})
     }
   };
+  // Add static blocks
+  const addStaticBlocks = ({ render }) => {
+    const { width, height } = render.options;
 
+    const mouse = Mouse.create(render.canvas),
+      mouseConstraint = MouseConstraint.create(render.engine, {
+        mouse: mouse,
+        constraint: {
+          stiffness: 0.2,
+          render: {
+            visible: false
+          }
+        }
+      });
+    World.add(render.engine.world, [
+      // walls
+      Bodies.rectangle(width / 2, 0, width, 50, { isStatic: true, label: 'Top wall' }),
+      Bodies.rectangle(width / 2, height, width, 50, { isStatic: true, label: 'Bottom wall'  }),
+      Bodies.rectangle(width , height / 2, 50, height, { isStatic: true, label: 'Right wall' }),
+      Bodies.rectangle(0, height / 2, 50, height, { isStatic: true, label: 'Left wall' }),
+      mouseConstraint
+    ]);
+    updateStaticBlocks(false);
+  };
   //Elements inspector
   const runInspector = value => {
+
     inspector = value;
+    const { engine } = inspector.render;
+
+    if(staticBlocks){
+      addStaticBlocks(inspector)
+    }
     Events.on(inspector.render, 'afterRender', afterRender);
+
+    Events.on(engine.world, "afterAdd", () => {
+      addRender({...engine.world})
+    });
+    Events.on(engine.world, "afterRemove", () => {
+      addRender({...engine.world})
+    });
   };
   //Get active body
   const activateBody = (data, composite) => {
     //inspector.render.options.wireframes = false;
     if(data.active){ return inspector.selected.pop(); }
     const key = data.content.split(' ');
-    const findObject = Composite.allBodies(composite).find((val)=>{
-      if(val.id == key[0]){
-        return val
-      }
-    });
+    const findObject = Composite.allBodies(composite).find(val => +val.id === +key[0]);
     inspector.selected[0]={ data: findObject}
   };
+  //Get active Constraint
   const activateBodyConstraint = (body,item) => {
     inspector.selected[item]={ data: body}
   };
@@ -415,6 +456,7 @@ const SidebarExampleSidebar = (props) => {
     inspector.selected.pop();
     inspector.selected[0]={ data: {type: 'mousePosition', mouse: { x: obj.x, y: obj.y }}}
   };
+  // Update Body Mouse Event
   const updateBodyMouseEvent = (x,y) =>{
     const position = inspector.selected[0];
     inspector.selected[0].data.mouse.x = x === false ? position.data.mouse.x : x;
@@ -424,11 +466,7 @@ const SidebarExampleSidebar = (props) => {
   const activateConstraint = (data, composite) => {
     if(data.active){ return inspector.selected.pop(); }
     const key = data.content.split(' ');
-    const findObject = Composite.allConstraints(composite).find((val)=>{
-      if(val.id == key[0]){
-        return val
-      }
-    });
+    const findObject = Composite.allConstraints(composite).find( val => +val.id === +key[0]);
     inspector.selected[0]={ data: findObject}
   };
   //List of bodies
@@ -513,7 +551,7 @@ const SidebarExampleSidebar = (props) => {
 
   const changeOptions = (value, name) => {
     inspector.render.options[name] = value;
-    //console.log(inspector.render.options);
+    console.log(inspector.render.options);
   };
 
   const [open, setOpen] = useState();
@@ -522,6 +560,27 @@ const SidebarExampleSidebar = (props) => {
     const { index } = titleProps;
     const newIndex = open === index ? -1 : index;
     setOpen(newIndex);
+  };
+  // reload existing render
+  const reloadCanvas = () => {
+    const { render } = inspector;
+    Render.stop(render);
+    Engine.clear(render.engine);
+    World.clear(render.engine.world);
+    render.canvas.remove();
+    render.canvas = null;
+    render.context = null;
+    render.textures = {};
+    runRestart()
+    console.log(inspector)
+  };
+  // Clear existing render
+  const clearCanvas = () => {
+    const { render } = inspector;
+    Engine.clear(render.engine);
+    World.clear(render.engine.world);
+    addStaticBlocks(inspector);
+    //console.log(inspector)
   };
 
 
@@ -544,18 +603,6 @@ const SidebarExampleSidebar = (props) => {
 
         {AccordionExampleNested(general)}
         <Accordion styled>
-            <Accordion.Title
-              active={open === 0}
-              content='General Setting'
-              onClick={openMenuContent}
-              index={0}
-            />
-          <Accordion.Content
-              active={open === 0}
-              content={
-                inspector.options  && <MatterForm changeOptions={changeOptions} inspectorOptions={inspector.options} />
-              }
-            />
             <Accordion.Title
               active={open === 1}
               content='Add bodies'
@@ -610,6 +657,24 @@ const SidebarExampleSidebar = (props) => {
                 />
               }
             />
+            <Accordion.Title
+            active={open === 0}
+            content='General Setting'
+            onClick={openMenuContent}
+            index={0}
+          />
+            <Accordion.Content
+            active={open === 0}
+            content={
+              inspector.options  &&
+              <GeneralSetting
+                changeOptions={changeOptions}
+                clearCanvas={clearCanvas}
+                inspectorOptions={inspector.options}
+                reloadCanvas={reloadCanvas}
+              />
+            }
+          />
         </Accordion>
       </Sidebar>
 

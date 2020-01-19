@@ -1,11 +1,10 @@
-import React, {useEffect, useState} from 'react';
-import {Field, reduxForm, formValueSelector, FieldArray, getFormSyncErrors} from 'redux-form';
+import React from 'react';
+import { reduxForm, formValueSelector, getFormSyncErrors} from 'redux-form';
 import { connect } from 'react-redux'
-import { Button, Form, Icon, Label, Segment, Message } from "semantic-ui-react";
-import {useStoreState} from "easy-peasy";
+import { Form } from "semantic-ui-react";
+import { useStoreState } from "easy-peasy";
 
-import reduxInput from '../../common/reduxInputs';
-import InputFields from "../editBody/InputFields";
+import InputFields from '../editBody/InputFields';
 
 const { numberField, selectField, colorField, coordinateField, rangeField, checkboxField } = InputFields;
 
@@ -52,8 +51,6 @@ const generalFields = [
 
 let EditConstraint = props => {
   const  { objectData, modifyConstraint, inspectorOptions } = props;
-
-  const { renderDropdown, renderTextInput, renderCheckbox } = reduxInput;
 
   const selectOptions = {};
 
@@ -103,11 +100,7 @@ let EditConstraint = props => {
     const { key_event } = props;
     console.log(allFields,allFields[key_event],key_event);
     if(key_event === 'bodyA' || key_event === 'bodyB') {
-      const obj = allBodiesSelect.find(val => {
-        if(val.key === allFields[key_event]) {
-          return val
-        }
-      });
+      const obj = allBodiesSelect.find(val => val.key === allFields[key_event]);
       modifyConstraint(obj.body, key_event);
     } else {
       modifyConstraint(allFields[key_event], key_event);
@@ -118,23 +111,25 @@ let EditConstraint = props => {
 
   return (
     <Form className="edit-bodies">
-      {generalFields.map(val => {
-        if(val.type === 'number'){
-          return numberField(val, runBodyEvent)
-        } else if (val.type === 'select'){
-          return selectField(val, runBodyEvent, selectOptions[val.label])
-        }  else if (val.type === 'text'){
-          return numberField(val, runBodyEvent, true, syncErrors[val.name])
-        } else if (val.type === 'color'){
-          return colorField(val, runBodyEvent)
-        } else if (val.type === 'coordinate'){
-          return coordinateField(val, runBodyEvent)
-        } else if (val.type === 'range'){
-          return rangeField(val, runBodyEvent)
-        } else if (val.type === 'checkbox'){
-          return checkboxField(val, runBodyEvent)
-        }
-      })}
+      { generalFields.map(val => {
+          if(val.type === 'number'){
+            return numberField(val, runBodyEvent)
+          } else if (val.type === 'select'){
+            return selectField(val, runBodyEvent, selectOptions[val.label])
+          }  else if (val.type === 'text'){
+            return numberField(val, runBodyEvent, true, syncErrors[val.name])
+          } else if (val.type === 'color'){
+            return colorField(val, runBodyEvent)
+          } else if (val.type === 'coordinate'){
+            return coordinateField(val, runBodyEvent)
+          } else if (val.type === 'range'){
+            return rangeField(val, runBodyEvent)
+          } else if (val.type === 'checkbox'){
+            return checkboxField(val, runBodyEvent)
+          }
+          return ''
+        })
+      }
     </Form>
   )
 };

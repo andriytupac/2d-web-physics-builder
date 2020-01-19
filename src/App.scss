@@ -59,13 +59,16 @@
   background: rgb(255, 255, 255);
   border-radius: 1px;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 0px 1px;
-  display: inline-block;
+  margin-bottom: 10px;
   cursor: pointer;
+  flex-direction: row;
+  display: flex;
   .picker-color{
-    width: 36px;
-    height: 14px;
+    width: 30px;
+    height: 30px;
     border-radius: 2px;
-    background: rgb(179, 85, 10)
+    background: rgb(179, 85, 10);
+    margin-right: 3px;
   }
 }
 .picker-block{
@@ -104,3 +107,8 @@
 .ui.menu{
   margin-bottom: 0px;
 }
+.ui.segment{
+  //margin-top: 0px;
+  //padding: 0px;
+}
+

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {Icon, Label, Segment, Form, Popup} from "semantic-ui-react";
 import {Field} from "redux-form";
 import reduxInput from "../../common/reduxInputs";

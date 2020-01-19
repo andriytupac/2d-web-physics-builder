@@ -9,7 +9,7 @@ export const bodyElement = obj => {
   const height = Math.abs(obj.bounds.max.y - obj.bounds.min.y).toFixed();
   const vector = [];
   const render = obj.render;
-  delete render.sprite;
+  //delete render.sprite;
   const generalParams = {};
   generalParams.isStatic = obj.isStatic;
   generalParams.label = obj.label;

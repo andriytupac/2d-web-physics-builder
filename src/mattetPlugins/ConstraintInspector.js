@@ -12,13 +12,9 @@ const ConstraintInspector = {
   },
   Render: {
     inspector: function(inspector, context) {
-      var engine = inspector.engine,
-        selected = inspector.selected,
-        render = inspector.render,
-        options = render.options,
-        bounds;
+      var selected = inspector.selected;
 
-      /*if (options.hasBounds) {
+      /* if (options.hasBounds) {
         var boundsWidth = render.bounds.max.x - render.bounds.min.x,
           boundsHeight = render.bounds.max.y - render.bounds.min.y,
           boundsScaleX = boundsWidth / render.options.width,
@@ -26,7 +22,7 @@ const ConstraintInspector = {
 
         context.scale(1 / boundsScaleX, 1 / boundsScaleY);
         context.translate(-render.bounds.min.x, -render.bounds.min.y);
-      }*/
+      } */
 
       for (var i = 0; i < selected.length; i++) {
         var item = selected[i].data;

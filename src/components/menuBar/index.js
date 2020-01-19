@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Menu, Segment, Checkbox } from 'semantic-ui-react';
+import { Menu, Checkbox } from 'semantic-ui-react';
 import {useStoreActions, useStoreState} from "easy-peasy";
 
 function MenuBar() {

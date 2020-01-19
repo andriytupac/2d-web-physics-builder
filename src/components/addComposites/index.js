@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
-import { Field, reduxForm, formValueSelector, FieldArray } from 'redux-form';
-import { useStoreState, useStoreActions } from 'easy-peasy';
-import {Label, Button, Form, Icon, Message} from "semantic-ui-react";
+import React, { useState } from 'react';
+import { Field, reduxForm, formValueSelector } from 'redux-form';
+import { useStoreState } from 'easy-peasy';
+import { Button, Form, Icon } from "semantic-ui-react";
 
 import reduxInput from '../../common/reduxInputs';
 import GeneralBodies from "../codeModal/generalBodies";
@@ -43,14 +43,6 @@ const initialVal = {
   composite: 0
 };
 
-const generalFields = [
-  { name: 'density', start: 0.001, min: 0, max: 0.01, step: 0.001 },
-  { name: 'friction', start: 0.1, min: 0, max: 1, step: 0.05 },
-  { name: 'frictionStatic', start: 0.5, min: 0, max: 10, step: 0.1 },
-  { name: 'frictionAir', start: 0.01, min: 0, max: 0.1, step: 0.001 },
-  { name: 'restitution', start: 0, min: 0, max: 0.1, step: 0.1 },
-  { name: 'chamfer', start: 0, min: 0, max: 30, step: 1 },
-];
 const pyramid = [
   { name: 'label' },
   { name: 'x' },
@@ -104,63 +96,6 @@ const custom = [
   { name: 'label' },
 ];
 
-const renderVertices = (props) => {
-  const { renderTextInput } = reduxInput;
-  const { fields, meta: { error, submitFailed } } = props;
-  return (
-    <React.Fragment>
-      { fields.map((vertices, index) => (
-        <Form.Group inline key={index} >
-          <Field
-            width={6}
-            simple={true}
-            label="x:"
-            name={`${vertices}.x`}
-            component={renderTextInput}
-            type="number"
-            placeholder="x"
-            size="mini"
-          />
-          <Field
-            width={6}
-            simple={true}
-            label="y:"
-            name={`${vertices}.y`}
-            component={renderTextInput}
-            type="number"
-            placeholder="y"
-            size="mini"
-          />
-          <Form.Button
-            type="button"
-            width={4}
-            color="red"
-            size='mini'
-            content={<Icon name='trash' />}
-            onClick={() => fields.remove(index)}
-          />
-        </Form.Group>
-      ))}
-      { submitFailed && error &&
-        (
-          <Message negative>
-            <Message.Header>Error</Message.Header>
-            <p>{error}</p>
-          </Message>
-        )
-      }
-      <Button
-        type="button"
-        color="orange"
-        size='mini'
-        onClick={() => fields.push({})}
-      >
-        Add vertices
-      </Button>
-    </React.Fragment>
-  )
-}
-
 let AddComposites = props => {
   const {
     addBodyMouseEvent,
@@ -170,7 +105,6 @@ let AddComposites = props => {
     handleSubmit,
     addBody,
     getAllComposites,
-    pristine
   } = props;
   const { renderSelect, renderDropdown, renderTextInput } = reduxInput;
   const options = useStoreState(state => state.matterOptions.options);
@@ -180,9 +114,7 @@ let AddComposites = props => {
     compositeOptions.push({ key: obj.id, value: obj.id, text: `${obj.id} ${obj.label}` })
   });
 
-  const general = useStoreState(state => state.general.render);
-
-
+  // const general = useStoreState(state => state.general.render);
 
   const [code, setCode] = useState(false);
 

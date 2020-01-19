@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, { useState } from 'react';
 import { Field, reduxForm, formValueSelector, FieldArray } from 'redux-form';
-import { useStoreState, useStoreActions } from 'easy-peasy';
-import {Label, Button, Form, Icon, Message} from "semantic-ui-react";
+import { useStoreState } from 'easy-peasy';
+import { Button, Form, Icon, Message } from "semantic-ui-react";
 
 import reduxInput from '../../common/reduxInputs';
 import GeneralBodies from '../codeModal/generalBodies';
@@ -160,9 +160,8 @@ let AddBodies = props => {
     handleSubmit,
     addBody,
     getAllComposites,
-    pristine
   } = props;
-  //console.log(props)
+
   const { renderSelect, renderRange, renderTextInput, renderDropdown } = reduxInput;
   const options = useStoreState(state => state.matterOptions.options);
 

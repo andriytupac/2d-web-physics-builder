@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
-import { Field, reduxForm, formValueSelector, FieldArray, getFormSyncErrors } from 'redux-form';
+import React from 'react';
+import { Field, reduxForm, formValueSelector, getFormSyncErrors } from 'redux-form';
 import { connect } from 'react-redux'
-import { Button, Form, Icon, Label, Segment, Message } from "semantic-ui-react";
+import { Form, Icon, Label, Segment } from "semantic-ui-react";
 
 import reduxInput from '../../common/reduxInputs';
 import { useStoreState } from "easy-peasy";
@@ -31,9 +31,9 @@ const validate = values => {
 };
 
 let EditComposite = props => {
-  const  { objectData, modifyComposite, invalid } = props;
+  const  { objectData, modifyComposite } = props;
 
-  const { renderDropdown, renderTextInput, renderCheckbox } = reduxInput;
+  const { renderTextInput } = reduxInput;
 
   const allFields = useStoreState(state => {
     const allFields = selector(

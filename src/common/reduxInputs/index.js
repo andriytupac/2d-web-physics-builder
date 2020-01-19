@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Label, Input, Dropdown } from "semantic-ui-react";
+import {Form, Label, Dropdown, Button} from "semantic-ui-react";
 import { Slider } from "react-semantic-ui-range";
 import { SketchPicker } from 'react-color';
 
@@ -37,6 +37,8 @@ const renderSelect = field => {
       {...input}
       label={field.label}
       name={field.input.name}
+      onBlur={field.input.onBlur}
+      onFocus={field.input.onFocus}
       onChange={(e, {value}) => field.input.onChange(value)}
       options={field.options}
       placeholder={field.placeholder}
@@ -59,12 +61,6 @@ const renderTextInput = field => {
   if(error && touched){
     props.error =  error
   }
-  {/*<label className={field.simple ? '' : 'modify-label ui label'}>{field.label}</label>*/}
-  {/*<Form.Field
-      inline={field.simple ? false : true}
-      width={field.width}
-    >*/}
-  // </Form.Field>
 
   return (
       <Form.Input
@@ -116,6 +112,8 @@ const renderDropdown = field => {
         //size={field.size}
         className={field.size}
         //{...field.input}
+        //onBlur={field.input.onBlur}
+        onFocus={field.input.onFocus}
         defaultValue={field.input.value}
         placeholder={field.placeholder}
         search
@@ -133,29 +131,53 @@ const ColorPicker = field => {
   const [color, setColor] = useState(field.input.value);
 
   const handleOpen = () => {
-    setOpen(!open)
+    field.input.onBlur()
+    field.input.onFocus()
+    setOpen(true)
   };
-  const handleClose = () => {
+  /*const handleClose = () => {
     setOpen(false)
-  };
+  };*/
 
   const handleChange = color => {
     setColor(color.hex);
-    field.input.onChange(color.hex);
+    ///field.input.onChange(color.hex);
+  };
+  const cancelPick = () => {
+    setColor(field.input.value);
+    setOpen(false)
+  };
+  const confirmPick = () => {
+    console.log(color)
+    field.input.onChange(color);
+    setOpen(false)
   };
 
 
   return (
     <div className="picker-block field">
       <label className={field.simple ? '' : 'modify-label ui label'}>{field.label}:</label>
-      <div className="picker-click" onClick={handleOpen}>
-        <div className="picker-color" style={{backgroundColor: color}}/>
+      <div className="picker-click" >
+        <div
+          className="picker-color"
+          onClick={handleOpen}
+          style={{backgroundColor: color}}
+        />
+        {open && (
+          <>
+            <Button color="green" size="mini" onClick={confirmPick}>Choose</Button>
+            <Button color="orange" size="mini" onClick={cancelPick}>Cancel</Button>
+          </>
+        )}
       </div>
       {
         open && (
           <div>
-            <div className="picker-cover" onClick={ handleClose }/>
-            <SketchPicker color={ color } onChange={ handleChange }  />
+            {/*<div className="picker-cover" onClick={ handleClose }/>*/}
+            <SketchPicker
+              color={ color }
+              onChange={ handleChange }
+            />
           </div>
         )
       }

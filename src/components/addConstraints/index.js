@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
-import { Field, reduxForm, formValueSelector, FieldArray } from 'redux-form';
-import { useStoreState, useStoreActions } from 'easy-peasy';
-import {Label, Button, Form, Icon, Message, Dropdown} from "semantic-ui-react";
+import React, { useState } from 'react';
+import { Field, reduxForm, formValueSelector } from 'redux-form';
+import { useStoreState } from 'easy-peasy';
+import { Label, Button, Form, Icon } from "semantic-ui-react";
 
 import reduxInput from '../../common/reduxInputs';
 import GeneralBodies from "../codeModal/generalBodies";
@@ -47,7 +47,7 @@ const validate = values => {
 
 let AddConstraints = (props) => {
   const { inspectorOptions, activateBodyConstraint, handleSubmit, addConstraint, invalid, getAllComposites } =  props;
-  const { renderDropdown, renderTextInput, renderRange, renderSelect } = reduxInput;
+  const { renderDropdown, renderTextInput, renderRange } = reduxInput;
   let allBodies = [];
   let allBodiesSelect = [];
 
@@ -81,11 +81,7 @@ let AddConstraints = (props) => {
   getAllBodies(inspectorOptions);
 
   const  getBody = (value) => {
-    return allBodies.find(obj => {
-      if(obj.id == value){
-        return obj
-      }
-    })
+    return allBodies.find(obj => obj.id === value)
   };
 
   const changePositionA = (value) => {

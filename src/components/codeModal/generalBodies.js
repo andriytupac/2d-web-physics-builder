@@ -152,7 +152,6 @@ const GeneralBodies = props => {
     handlerClose,
     objectData,
     getBody,
-    element
   } = props;
 
   console.log(objectData)
