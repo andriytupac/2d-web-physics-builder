@@ -74,8 +74,6 @@ let EditConstraint = props => {
     return getFormSyncErrors('editConstraintForm')(state)
   });
 
-  console.log(syncErrors);
-
   getAllBodies(inspectorOptions);
 
   selectOptions.bodyA = [{ key: 0, value: 0, text: 'Stage'}, ...allBodiesSelect];

@@ -36,8 +36,6 @@ function MatterDemo(props){
         MouseConstraint = Matter.MouseConstraint;
 
   useEffect(() => {
-    console.log('tupac');
-
     const engine = Engine.create({
       // positionIterations: 20
     });
@@ -78,7 +76,7 @@ function MatterDemo(props){
       bodyB: ballB
     });
     //////r
-    const fromVertices1 = Bodies.fromVertices(400, 300,
+    const fromVertices1 = Bodies.fromVertices(400, 500,
       [
         {
           "x": 0,
@@ -147,8 +145,6 @@ function MatterDemo(props){
         texture: rect
       },
     };
-    console.log('fromVertices1',fromVertices1)
-
     //////r
 
     const scale = 1;

@@ -7,7 +7,7 @@ const renderCheckbox = field => {
   return (
     <Form.Checkbox
       checked={field.input.value  ? true : false}
-      //toggle={true}
+      toggle={field.toggle}
       //defaultChecked={field.input.value  ? true : false}
       name={field.input.name}
       label={field.label}

@@ -50,7 +50,8 @@ const initialVal = {
     frictionStatic: 0.5,
     frictionAir: 0.01,
     restitution: 0,
-    label: 'label'
+    label: 'label',
+    isStatic: false
   },
   composite: 0
 };
@@ -162,7 +163,7 @@ let AddBodies = props => {
     getAllComposites,
   } = props;
 
-  const { renderSelect, renderRange, renderTextInput, renderDropdown } = reduxInput;
+  const { renderSelect, renderRange, renderTextInput, renderDropdown, renderCheckbox } = reduxInput;
   const options = useStoreState(state => state.matterOptions.options);
 
   const compositeOptions = [{ key: 0, value: 0, text: 'Stage' }];
@@ -377,6 +378,15 @@ let AddBodies = props => {
           type="text"
           label={`label:`}
           placeholder={`label`}
+          size="mini"
+        />
+        <Field
+          name={`options.isStatic`}
+          component={renderCheckbox}
+          toggle
+          type="text"
+          label={`isStatic`}
+          placeholder={`isStatic`}
           size="mini"
         />
         {allFields.body === 'circle' && circleForm()}

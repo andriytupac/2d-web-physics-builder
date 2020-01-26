@@ -1,17 +1,23 @@
 import React, { useState } from 'react'
 import { Menu, Checkbox } from 'semantic-ui-react';
 import {useStoreActions, useStoreState} from "easy-peasy";
+import { useHistory } from "react-router-dom";
 
 function MenuBar() {
 
   const menuLeft = useStoreState(state => state.general.menuLeft);
+
+  const history = useHistory();
 
   const turnMenuLeft = useStoreActions(
     actions => actions.general.turnMenuLeft
   );
 
   const [activeItem, setActiveItem] = useState(false);
-  const handleItemClick = (e, { name }) => setActiveItem(name);
+  const handleItemClick = (e, { name }) => {
+    setActiveItem(name);
+    history.push(name)
+  }
 
   return (
    <Menu>
@@ -23,8 +29,8 @@ function MenuBar() {
          />
      </Menu.Item>
      <Menu.Item
-       name='editorials'
-       active={activeItem === 'editorials'}
+       name=''
+       active={activeItem === ''}
        onClick={handleItemClick}
      >
        Editorials

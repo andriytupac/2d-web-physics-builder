@@ -150,6 +150,13 @@ const coordinateField = (val, callback) => {
   )
 };
 const selectField = (val, callback, allCategories, additional) => {
+ /* console.log('val',val)
+  const additionalSelect = []
+  if(additional && val.parts.length > 1) {
+    val.parts.map((obj) => {
+      additionalSelect.push({ key: 0, value: 0, text: 'Stage'})
+    })
+  }*/
   return (
     <Segment color="green" key={val.name}>
       <Label>{val.label}:</Label>

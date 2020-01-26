@@ -300,7 +300,7 @@ const MenageElementsConstraint = props => {
   )
 };
 
-const SidebarExampleSidebar = (props) => {
+const LeftSideBar = (props) => {
   //Store
   const { menuLeft, staticBlocks, width, height } = useStoreState(state => state.general);
   const general = useStoreState(state => state.general.render);
@@ -321,7 +321,6 @@ const SidebarExampleSidebar = (props) => {
 
   // Change size canvas
   useEffect(() => {
-    console.log(inspector)
     if(width && height){
       inspector.sceneElement.children[0].width = width;
       inspector.sceneElement.children[0].height = height;
@@ -339,7 +338,7 @@ const SidebarExampleSidebar = (props) => {
     if(obj.body === 'circle'){
       dataObj = Bodies.circle(+obj.x, +obj.y, +obj.radius, obj.options)
     }else if(obj.body === 'polygon'){
-      console.log(obj)
+      console.log(obj);
       dataObj = Bodies.polygon(+obj.x, +obj.y,+obj.sides, +obj.radius, {...obj.options, chamfer: obj.chamfer})
     }else if(obj.body === 'rectangle'){
       dataObj = Bodies.rectangle(+obj.x, +obj.y,+obj.width, +obj.height, {...obj.options, chamfer: obj.chamfer})
@@ -476,7 +475,7 @@ const SidebarExampleSidebar = (props) => {
         key: `body-${val.id}`,
         title: `${val.id} ${val.label}`,
         content: {
-          content: <MenageElements obj={val}/>
+          content: <MenageElements key={val.id} obj={val}/>
         }
       }
     });
@@ -493,7 +492,7 @@ const SidebarExampleSidebar = (props) => {
         key: `constaraint-${val.id}`,
         title: `${val.id} ${val.label}`,
         content: {
-          content: <MenageElementsConstraint obj={val} general={general}/>
+          content: <MenageElementsConstraint key={val.id} obj={val} general={general}/>
         }
       }
     });
@@ -510,7 +509,7 @@ const SidebarExampleSidebar = (props) => {
         key: `composites-${val.id}`,
         title: `${val.id} ${val.label}`,
         content: {
-          content: (<div><MenageElementsComposite obj={val}/>  {AccordionExampleNested(val)}</div>)
+          content: (<div><MenageElementsComposite key={val.id} obj={val}/>  {AccordionExampleNested(val)}</div>)
         }
       }
     });
@@ -687,4 +686,4 @@ const SidebarExampleSidebar = (props) => {
   )
 }
 
-export default SidebarExampleSidebar
+export default LeftSideBar

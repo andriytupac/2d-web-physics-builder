@@ -5,15 +5,15 @@ import LeftSideBar from '../leftSideBar';
 
 /*Client part*/
 import MatterDemo from '../../matterDemo';
+import Page404 from '../../pages/page404';
 
 
 const RootRouter = props => {
   let match = useRouteMatch("/");
-  //console.log(match)
-  if(match){
+  if(match.isExact){
     return (<LeftSideBar><MatterDemo/></LeftSideBar>)
   }else {
-    return <LeftSideBar></LeftSideBar>
+    return <Page404/>
   }
   //return
   /*return (

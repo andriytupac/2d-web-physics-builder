@@ -127,6 +127,17 @@ let EditBody = (props) => {
     allCategories,
   } =  props;
 
+  const additionalSelect = [];
+  if(objectData.parts.length > 1) {
+    objectData.parts.forEach((obj, index) => {
+      if (index !== 0) {
+        additionalSelect.push({ key: obj.id, value: obj.id, text: `${obj.id} ${obj.label}`})
+      }
+    })
+  }
+
+  console.log('objectData',additionalSelect)
+
 
   const { renderTextInput, renderCheckbox } = reduxInput;
   // let allBodies = [];
