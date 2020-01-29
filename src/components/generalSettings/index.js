@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Field, reduxForm, formValueSelector } from 'redux-form';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import { connect } from 'react-redux'
@@ -7,6 +7,7 @@ import {Icon, Label, Segment, Form, Button, Popup} from "semantic-ui-react";
 
 import reduxInput from '../../common/reduxInputs';
 import InputFields from '../../common/reduxInputs/InputFields';
+import CodeModal from '../codeModal';
 
 const listOfCheckbox = [
     { name: 'wireframes', value: false },
@@ -40,10 +41,14 @@ let GeneralSettings = props => {
   const { chaneSize } = useStoreActions(
     actions => actions.general
   );
+  const [code, setCode] = useState(false);
 
   const allFields = useStoreState(state => {
     const allFields = selector(
-      state, 'width', 'height', 'background', 'wireframeBackground'
+      state, 'width', 'height', 'background', 'wireframeBackground', 'wireframes', 'showDebug', 'showPositions',
+      'showBroadphase', 'showBounds', 'showVelocity', 'showCollisions', 'showSeparations', 'showAxes',
+      'showAngleIndicator', 'showSleeping', 'showIds', 'showVertexNumbers', 'showConvexHulls', 'showInternalEdges',
+      'enabled'
     );
     return {
       ...allFields
@@ -61,12 +66,6 @@ let GeneralSettings = props => {
     console.log(allFields,allFields[key_event],key_event);
 
     onchange(allFields[key_event],key_event)
-
-
-    /* modifyBody(allFields[key_event], key_event);
-     if(key_event === 'scale'){
-       handlerGetBounds()
-     }*/
   };
   const  onchange = (val,name) => {
     changeOptions(val,name);
@@ -76,7 +75,7 @@ let GeneralSettings = props => {
     <Form className='edit-bodies'>
       <Popup
         trigger={
-          <Button icon primary>
+          <Button icon color="green" onClick={() => {setCode(!code)}}>
             <Icon name='code' />
           </Button>
         }
@@ -98,7 +97,7 @@ let GeneralSettings = props => {
       />
       <Popup
         trigger={
-          <Button icon primary onClick={clearCanvas}>
+          <Button icon color="orange" onClick={clearCanvas}>
             <Icon name='erase' />
           </Button>
         }
@@ -159,6 +158,12 @@ let GeneralSettings = props => {
           })
         }
       </div>
+      {code && <CodeModal
+                  element="general"
+                  objectData={{...allFields, id: '', label: 'General'}}
+                  handlerClose={() => {setCode(!code)}}
+                />
+      }
     </Form>
   )
 };

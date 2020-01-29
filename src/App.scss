@@ -107,6 +107,11 @@
 .ui.menu{
   margin-bottom: 0px;
 }
+.hide-textarea{
+  position: absolute;
+  top:-9999px;
+  left:-9999px;
+}
 .ui.segment{
   //margin-top: 0px;
   //padding: 0px;

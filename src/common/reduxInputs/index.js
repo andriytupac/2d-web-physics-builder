@@ -194,5 +194,5 @@ const reduxInputs = {
   renderRange,
   renderTextInput,
   ColorPicker
-}
+};
 export default reduxInputs;

@@ -1,10 +1,21 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import { Button, Header, Icon, Modal, Message } from 'semantic-ui-react'
 
-
 let multiplyElements = [];
+let textAreaRef;
 
-export const bodyElement = obj => {
+const generateCode = (textCode) => (
+  <pre>
+    {textCode}
+    <textarea
+      className="hide-textarea"
+      ref={textAreaRef}
+      defaultValue={textCode}
+    />
+  </pre>
+);
+
+export const bodyElement = (obj, getCode) => {
   const width = Math.abs(obj.bounds.max.x - obj.bounds.min.x).toFixed();
   const height = Math.abs(obj.bounds.max.y - obj.bounds.min.y).toFixed();
   const vector = [];
@@ -26,38 +37,39 @@ export const bodyElement = obj => {
   });
 
   if(obj.circleRadius) {
-    return (
-      <pre>
-{`const ${obj.label.replace(/\s/g, '')}${obj.id} = Bodies.circle(${obj.position.x.toFixed()}, ${obj.position.y.toFixed()}, ${(width/2).toFixed()},
+    const textCode = `const ${obj.label.replace(/\s/g, '')}${obj.id} = Bodies.circle(${obj.position.x.toFixed()}, ${obj.position.y.toFixed()}, ${(width/2).toFixed()},
   ${JSON.stringify(generalParams, null, '\t')}
 );
-`}
-    </pre>
-    )
+`;
+    if (getCode) return textCode;
+
+    return generateCode(textCode);
+
   } else if(obj.vertices.length === 4) {
-    return (
-      <pre>
-{`const ${obj.label.replace(/\s/g, '')}${obj.id} = Bodies.rectangle(${obj.position.x.toFixed()}, ${obj.position.y.toFixed()}, ${width}, ${height},
+    const textCode = `const ${obj.label.replace(/\s/g, '')}${obj.id} = Bodies.rectangle(${obj.position.x.toFixed()}, ${obj.position.y.toFixed()}, ${width}, ${height},
   ${JSON.stringify(generalParams, null, '\t')}
 );
-`}
-      </pre>
-    )
+`;
+    if (getCode) return textCode;
+
+    return generateCode(textCode);
+
   } else {
-    return (
-      <pre>
-{`const ${obj.label.replace(/\s/g, '')}${obj.id} = Bodies.fromVertices(${obj.position.x.toFixed()}, ${obj.position.y.toFixed()},
+    const textCode = `const ${obj.label.replace(/\s/g, '')}${obj.id} = Bodies.fromVertices(${obj.position.x.toFixed()}, ${obj.position.y.toFixed()},
   ${JSON.stringify(vector, null, '\t')},
   ${JSON.stringify(generalParams, null, '\t')}
 );
-`}
-      </pre>
-    )
+`;
+    if (getCode) return textCode;
+
+    return generateCode(textCode);
   }
 };
 
-const constraintElement = obj => {
+const constraintElement = (obj, getCode) => {
   const generalParams = {};
+  let  textCode = '';
+
   if(obj.bodyA){
     generalParams.bodyA = obj.bodyA.label.replace(/\s/g, '')+obj.bodyA.id;
   }
@@ -80,37 +92,57 @@ const constraintElement = obj => {
   if(obj.bodyB){
     finalJSON = finalJSON.replace(`"${generalParams.bodyB}"`,generalParams.bodyB);
   }
-  return (
-    <>
-    {obj.bodyA && !multiplyElements.includes(obj.bodyA.id) && bodyElement(obj.bodyA )}
-    {obj.bodyB && !multiplyElements.includes(obj.bodyB.id) && bodyElement(obj.bodyB )}
-    <pre>
-{`const ${obj.label.replace(/\s/g, '')}${obj.id} = Constraint.create(
+
+  textCode += (obj.bodyA && !multiplyElements.includes(obj.bodyA.id)) ? bodyElement(obj.bodyA, true ) : '';
+  textCode += (obj.bodyB && !multiplyElements.includes(obj.bodyB.id)) ? bodyElement(obj.bodyB, true ) : '';
+  textCode += `
+const ${obj.label.replace(/\s/g, '')}${obj.id} = Constraint.create(
   ${finalJSON}
 );
-`}
-    </pre>
-    </>
-  )
+`;
+
+  if (getCode) return textCode;
+
+  return generateCode(textCode);
 };
 
 const compositeElement = obj => {
   multiplyElements = [];
-  return (
-    <>
-    <pre>
-{`const ${obj.label.replace(/\s/g, '')}${obj.id} = Composite.create({ label:"${obj.label}" });
-`}
-    </pre>
-      {obj.bodies.map((val,index) => {
-        multiplyElements.push(val.id);
-        return (<div key={index}>{bodyElement(val)}</div>)
-      })}
-      {obj.constraints.map((val,index) => {
-        return (<div key={index}>{constraintElement(val)}</div>)
-      })}
-    </>
-  )
+  let  textCode = '';
+
+  textCode += `const ${obj.label.replace(/\s/g, '')}${obj.id} = Composite.create({ label:"${obj.label}" });
+`;
+  obj.bodies.forEach(val => {
+    multiplyElements.push(val.id);
+    textCode += bodyElement(val, true)
+  });
+  obj.constraints.forEach((val,index) => {
+    textCode += constraintElement(val, true)
+  });
+  textCode += `Composite.add(${obj.label.replace(/\\s/g, '')}${obj.id} , object)`;
+
+  return generateCode(textCode);
+};
+
+const generalElement = generalParams => {
+  console.log(generalParams)
+
+  let textCode = '';
+  delete generalParams.id;
+  delete generalParams.label;
+  let finalJSON = JSON.stringify(generalParams, null, '\t');
+
+
+  textCode += `const engine = Engine.create();
+`;
+  textCode += `const render = Render.create({
+      element: sceneEl.current,
+      engine: engine,
+      options:
+        ${finalJSON}
+});
+    `;
+  return generateCode(textCode);
 };
 
 const CodeModal = props => {
@@ -119,6 +151,17 @@ const CodeModal = props => {
     objectData,
     element
   } = props;
+
+  const [copySuccess, setCopySuccess] = useState(false);
+  textAreaRef = useRef(null);
+
+  const handlerCopy = (e) => {
+    textAreaRef.current.select();
+    document.execCommand('copy');
+    e.target.focus();
+    setCopySuccess(true);
+  };
+
   return (
     <Modal
       open={true}
@@ -128,18 +171,16 @@ const CodeModal = props => {
       <Modal.Content scrolling>
         <Message positive>
           <code>
-            {element === 'body' && bodyElement(objectData)}
-            {element === 'constraint' && constraintElement(objectData)}
+            {element === 'body' && bodyElement(objectData, false)}
+            {element === 'constraint' && constraintElement(objectData, false)}
             {element === 'composite' && compositeElement(objectData)}
+            {element === 'general' && generalElement(objectData)}
           </code>
         </Message>
       </Modal.Content>
       <Modal.Actions>
-        <Button color='red'>
-          <Icon name='remove' /> No
-        </Button>
-        <Button color='green'>
-          <Icon name='checkmark' /> Yes
+        <Button color='green' onClick={handlerCopy}>
+          <Icon name={ copySuccess ? 'checkmark' : 'copy' } /> Copy
         </Button>
       </Modal.Actions>
     </Modal>

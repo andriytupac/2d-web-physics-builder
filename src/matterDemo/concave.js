@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import Matter from 'matter-js';
 import { useStoreState } from 'easy-peasy';
+import MatterWrap from 'matter-wrap'
 
 import IndexPosition from '../mattetPlugins/IndexPosition';
 import ConstraintInspector from '../mattetPlugins/ConstraintInspector';
@@ -13,11 +14,12 @@ Matter.Plugin.register(ConstraintInspector);
 Matter.use(
   'matter-zIndex-plugin',
   'constraint-inspector',
+  MatterWrap
 );
 
 let render;
 
-function MatterDemo(props){
+const Concave = props => {
 
   const { runInspector } = props;
 
@@ -27,13 +29,15 @@ function MatterDemo(props){
   const sceneEl = useRef(null);
 
   const Engine = Matter.Engine,
-        Render = Matter.Render,
-        World = Matter.World,
-        Bodies = Matter.Bodies,
-        Mouse = Matter.Mouse,
-        Common = Matter.Common,
-        Runner = Matter.Runner,
-        MouseConstraint = Matter.MouseConstraint;
+    Render = Matter.Render,
+    Runner = Matter.Runner,
+    World = Matter.World,
+    Bodies = Matter.Bodies,
+    Mouse = Matter.Mouse,
+    Composites = Matter.Composites,
+    Vertices = Matter.Vertices,
+    Common = Matter.Common,
+    MouseConstraint = Matter.MouseConstraint;
 
   useEffect(() => {
     Common._nextId = 0;
@@ -48,11 +52,12 @@ function MatterDemo(props){
         width: 800,
         height: 600,
         wireframes: true,
-        showBounds: false
+        showAngleIndicator: true
       }
     });
 
     Render.run(render);
+
     // create runner
     const runner = Runner.create();
     Runner.run(runner, engine);
@@ -72,7 +77,25 @@ function MatterDemo(props){
     /******* connect inspector ******/
 
     /******* Body ******/
+
     // add bodies
+    const arrow = Vertices.fromPath('40 0 40 20 100 20 100 80 40 80 40 100 0 50'),
+      chevron = Vertices.fromPath('100 0 75 50 100 100 25 100 0 50 25 0'),
+      star = Vertices.fromPath('50 0 63 38 100 38 69 59 82 100 50 75 18 100 31 59 0 38 37 38'),
+      horseShoe = Vertices.fromPath('35 7 19 17 14 38 14 58 25 79 45 85 65 84 65 66 46 67 34 59 30 44 33 29 45 23 66 23 66 7 53 7');
+
+    const stack = Composites.stack(50, 50, 6, 4, 10, 10, function(x, y) {
+      const color = Common.choose(['#556270', '#4ECDC4', '#C7F464', '#FF6B6B', '#C44D58']);
+      return Bodies.fromVertices(x, y, Common.choose([arrow, chevron, star, horseShoe]), {
+        render: {
+          fillStyle: color,
+          strokeStyle: color,
+          lineWidth: 1
+        }
+      }, true);
+    });
+
+    World.add(world, stack);
 
     // add mouse control
     const mouse = Mouse.create(render.canvas),
@@ -91,7 +114,6 @@ function MatterDemo(props){
     // keep the mouse in sync with rendering
     render.mouse = mouse;
 
-
     const { width, height } = render.options;
 
     World.add(world, [
@@ -102,10 +124,11 @@ function MatterDemo(props){
       Bodies.rectangle(0, height / 2, 50, height, { isStatic: true, label: 'Left wall' }),
     ]);
     /******* Body ******/
-  // eslint-disable-next-line
+
+    // eslint-disable-next-line
   },[restart]);
   return (
     <div ref={sceneEl} />
   )
 }
-export default MatterDemo
+export default Concave

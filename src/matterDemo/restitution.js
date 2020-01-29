@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import Matter from 'matter-js';
 import { useStoreState } from 'easy-peasy';
+import MatterWrap from 'matter-wrap'
 
 import IndexPosition from '../mattetPlugins/IndexPosition';
 import ConstraintInspector from '../mattetPlugins/ConstraintInspector';
@@ -13,11 +14,12 @@ Matter.Plugin.register(ConstraintInspector);
 Matter.use(
   'matter-zIndex-plugin',
   'constraint-inspector',
+  MatterWrap
 );
 
 let render;
 
-function MatterDemo(props){
+const Restitution = props => {
 
   const { runInspector } = props;
 
@@ -27,13 +29,13 @@ function MatterDemo(props){
   const sceneEl = useRef(null);
 
   const Engine = Matter.Engine,
-        Render = Matter.Render,
-        World = Matter.World,
-        Bodies = Matter.Bodies,
-        Mouse = Matter.Mouse,
-        Common = Matter.Common,
-        Runner = Matter.Runner,
-        MouseConstraint = Matter.MouseConstraint;
+    Render = Matter.Render,
+    Runner = Matter.Runner,
+    World = Matter.World,
+    Bodies = Matter.Bodies,
+    Mouse = Matter.Mouse,
+    Common = Matter.Common,
+    MouseConstraint = Matter.MouseConstraint;
 
   useEffect(() => {
     Common._nextId = 0;
@@ -48,11 +50,12 @@ function MatterDemo(props){
         width: 800,
         height: 600,
         wireframes: true,
-        showBounds: false
+        showAngleIndicator: true
       }
     });
 
     Render.run(render);
+
     // create runner
     const runner = Runner.create();
     Runner.run(runner, engine);
@@ -72,7 +75,17 @@ function MatterDemo(props){
     /******* connect inspector ******/
 
     /******* Body ******/
-    // add bodies
+      // add bodies
+    const rest = 0.9,
+      space = 600 / 5;
+
+    World.add(world, [
+      Bodies.rectangle(100 + space * 0, 150, 50, 50, { restitution: rest }),
+      Bodies.rectangle(100 + space * 1, 150, 50, 50, { restitution: rest, angle: -Math.PI * 0.15 }),
+      Bodies.rectangle(100 + space * 2, 150, 50, 50, { restitution: rest, angle: -Math.PI * 0.25 }),
+      Bodies.circle(100 + space * 3, 150, 25, { restitution: rest }),
+      Bodies.rectangle(100 + space * 5, 150, 180, 20, { restitution: rest, angle: -Math.PI * 0.5 }),
+    ]);
 
     // add mouse control
     const mouse = Mouse.create(render.canvas),
@@ -102,10 +115,11 @@ function MatterDemo(props){
       Bodies.rectangle(0, height / 2, 50, height, { isStatic: true, label: 'Left wall' }),
     ]);
     /******* Body ******/
-  // eslint-disable-next-line
+
+    // eslint-disable-next-line
   },[restart]);
   return (
     <div ref={sceneEl} />
   )
 }
-export default MatterDemo
+export default Restitution

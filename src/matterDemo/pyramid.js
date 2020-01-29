@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import Matter from 'matter-js';
 import { useStoreState } from 'easy-peasy';
+import MatterWrap from 'matter-wrap'
 
 import IndexPosition from '../mattetPlugins/IndexPosition';
 import ConstraintInspector from '../mattetPlugins/ConstraintInspector';
@@ -13,11 +14,12 @@ Matter.Plugin.register(ConstraintInspector);
 Matter.use(
   'matter-zIndex-plugin',
   'constraint-inspector',
+  MatterWrap
 );
 
 let render;
 
-function MatterDemo(props){
+const Pyramid = props => {
 
   const { runInspector } = props;
 
@@ -27,13 +29,14 @@ function MatterDemo(props){
   const sceneEl = useRef(null);
 
   const Engine = Matter.Engine,
-        Render = Matter.Render,
-        World = Matter.World,
-        Bodies = Matter.Bodies,
-        Mouse = Matter.Mouse,
-        Common = Matter.Common,
-        Runner = Matter.Runner,
-        MouseConstraint = Matter.MouseConstraint;
+    Render = Matter.Render,
+    Runner = Matter.Runner,
+    World = Matter.World,
+    Bodies = Matter.Bodies,
+    Mouse = Matter.Mouse,
+    Composites = Matter.Composites,
+    Common = Matter.Common,
+    MouseConstraint = Matter.MouseConstraint;
 
   useEffect(() => {
     Common._nextId = 0;
@@ -48,11 +51,12 @@ function MatterDemo(props){
         width: 800,
         height: 600,
         wireframes: true,
-        showBounds: false
+        showAngleIndicator: true
       }
     });
 
     Render.run(render);
+
     // create runner
     const runner = Runner.create();
     Runner.run(runner, engine);
@@ -73,6 +77,13 @@ function MatterDemo(props){
 
     /******* Body ******/
     // add bodies
+    const stack = Composites.pyramid(100, 258, 15, 10, 0, 0, function(x, y) {
+        return Bodies.rectangle(x, y, 40, 40);
+      });
+
+    World.add(world, [
+      stack,
+    ]);
 
     // add mouse control
     const mouse = Mouse.create(render.canvas),
@@ -102,10 +113,11 @@ function MatterDemo(props){
       Bodies.rectangle(0, height / 2, 50, height, { isStatic: true, label: 'Left wall' }),
     ]);
     /******* Body ******/
-  // eslint-disable-next-line
+
+    // eslint-disable-next-line
   },[restart]);
   return (
     <div ref={sceneEl} />
   )
 }
-export default MatterDemo
+export default Pyramid

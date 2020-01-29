@@ -6,6 +6,7 @@
     "connected-react-router": "^6.5.2",
     "easy-peasy": "^3.2.1",
     "matter-js": "^0.14.2",
+    "matter-wrap": "^0.2.0",
     "node-sass": "^4.13.0",
     "poly-decomp": "^0.3.0",
     "prop-types": "^15.7.2",

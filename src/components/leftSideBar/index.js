@@ -24,8 +24,11 @@ const Body = Matter.Body;
 const Composite = Matter.Composite;
 const Composites = Matter.Composites;
 const Constraint = Matter.Constraint;
+const Runner = Matter.Runner;
+const Common = Matter.Common;
 let inspector = {};
 let allCategories = [];
+
 for(let i = 0; i<=28; i++){
   let cat = Body.nextCategory();
   allCategories.push({value: cat, key: cat, text: cat})
@@ -42,9 +45,9 @@ const MenageElements = props => {
     actions => actions.general.addRender
   );
 
-//Delete obj
-  const deleteObj = () =>{
-    World.remove(world, obj, true);
+  // Delete obj
+  const deleteObj = () => {
+    Composite.remove(inspector.world, obj, true);
     inspector.selected.pop();
   };
   const modifyBody = (data,key) => {
@@ -137,18 +140,18 @@ const MenageElementsComposite = props => {
   const [code, setCode] = useState(false);
 
   const clearObj = () => {
-    Composite.clear(obj, false, true);
-    //Composite.setModified(obj, true, true, true);
+    const findComposite = Composite.get(inspector.world, obj.id, obj.type);
+    Composite.clear(findComposite, false, true);
     addRender({...world})
 
   };
 
   const deleteObj = () => {
 
-    Composite.clear(obj, false, true);
-    Composite.remove(world, obj, true );
-    Composite.setModified(obj, true, true, true);
-    //World.remove(world, obj, true);
+    // Composite.clear(obj, false, true);
+    Composite.remove(inspector.world, obj, true );
+    // Composite.setModified(obj, true, true, true);
+    // World.remove(world, obj, true);
   };
 
   const modifyComposite = (data,key) => {
@@ -241,7 +244,7 @@ const MenageElementsConstraint = props => {
   );
 
   const deleteObj = () => {
-    World.remove(world, obj, true);
+    World.remove(inspector.world, obj, true);
   };
 
   const modifyConstraint = (data,key) => {
@@ -562,16 +565,19 @@ const LeftSideBar = (props) => {
   };
   // reload existing render
   const reloadCanvas = () => {
-    const { render } = inspector;
+    const { render, world, runner} = inspector;
     Render.stop(render);
+    Runner.stop(runner);
     Engine.clear(render.engine);
-    World.clear(render.engine.world);
+    World.clear(world);
     render.canvas.remove();
     render.canvas = null;
     render.context = null;
     render.textures = {};
+    Common._nextId = 0;
+    Common._seed = 0;
+    //render.engine.events = {}
     runRestart()
-    console.log(inspector)
   };
   // Clear existing render
   const clearCanvas = () => {

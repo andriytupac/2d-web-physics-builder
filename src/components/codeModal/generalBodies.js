@@ -1,123 +1,113 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import { Button, Header, Icon, Modal, Message } from 'semantic-ui-react'
 import { bodyElement } from '../codeModal';
 
+let textAreaRef;
+
+const generateCode = (textCode) => (
+  <pre>
+    {textCode}
+    <textarea
+      className="hide-textarea"
+      ref={textAreaRef}
+      defaultValue={textCode}
+    />
+  </pre>
+);
+
 const circleBody = obj => {
-  return (
-    <pre>
-{`const ${obj.options.label.replace(/\s/g, '')} = Bodies.circle(${obj.x}, ${obj.y}, ${obj.radius},
+  const textCode = `const ${obj.options.label.replace(/\s/g, '')} = Bodies.circle(${obj.x}, ${obj.y}, ${obj.radius},
   ${JSON.stringify(obj.options, null, '\t')}
-);
-`}
-    </pre>
-  )
+);`;
+  return generateCode(textCode)
 };
+
 const polygonBody = obj => {
-  return (
-    <pre>
-{`const ${obj.options.label.replace(/\s/g, '')} = Bodies.polygon(${obj.x}, ${obj.y}, ${obj.sides}, ${obj.radius},
+  const textCode = `const ${obj.options.label.replace(/\s/g, '')} = Bodies.polygon(${obj.x}, ${obj.y}, ${obj.sides}, ${obj.radius},
   ${JSON.stringify(obj.options, null, '\t')}
-);
-`}
-    </pre>
-  )
+);`;
+  return generateCode(textCode)
 };
+
 const rectangleBody = obj => {
-  return (
-    <pre>
-{`const ${obj.options.label.replace(/\s/g, '')} = Bodies.rectangle(${obj.x}, ${obj.y}, ${obj.width}, ${obj.height},
+  const textCode = `const ${obj.options.label.replace(/\s/g, '')} = Bodies.rectangle(${obj.x}, ${obj.y}, ${obj.width}, ${obj.height},
   ${JSON.stringify(obj.options, null, '\t')}
-);
-`}
-    </pre>
-  )
+);`;
+  return generateCode(textCode)
 };
+
 const trapezoidBody = obj => {
-  return (
-    <pre>
-{`const ${obj.options.label.replace(/\s/g, '')} = Bodies.trapezoid(${obj.x}, ${obj.y}, ${obj.width}, ${obj.height}, ${obj.slope},
+  const textCode = `const ${obj.options.label.replace(/\s/g, '')} = Bodies.trapezoid(${obj.x}, ${obj.y}, ${obj.width}, ${obj.height}, ${obj.slope},
   ${JSON.stringify(obj.options, null, '\t')}
 );
-`}
-    </pre>
-  )
+`;
+  return generateCode(textCode)
 };
+
 const fromVerticesBody = obj => {
-  return (
-    <pre>
-{`const ${obj.options.label.replace(/\s/g, '')} = Bodies.fromVertices(${obj.x}, ${obj.y},
+  const textCode = `const ${obj.options.label.replace(/\s/g, '')} = Bodies.fromVertices(${obj.x}, ${obj.y},
   ${JSON.stringify(obj.vertices, null, '\t')},
   ${JSON.stringify(obj.options, null, '\t')}
-);
-`}
-    </pre>
-  )
+);`;
+  return generateCode(textCode)
 };
+
 const carComposite = obj => {
   const label = obj.options ? obj.options.label : obj.label;
-  return (
-    <pre>
-{`const ${label.replace(/\s/g, '')} = Composites.car(${obj.x}, ${obj.y}, ${obj.width}, ${obj.height}, ${obj.wheelSize});`}
-    </pre>
-  )
+  const textCode = `const ${label.replace(/\s/g, '')} = Composites.car(${obj.x}, ${obj.y}, ${obj.width}, ${obj.height}, ${obj.wheelSize});`;
+  return generateCode(textCode)
 };
+
 const softBodyComposite = obj => {
   const label = obj.options ? obj.options.label : obj.label;
-  return (
-    <pre>
-{`const ${label.replace(/\s/g, '')} = Composites.softBody(${obj.x}, ${obj.y}, ${obj.columns}, ${obj.rows}, ${obj.columnGap}, ${obj.rowGap}, ${obj.crossBrace}, ${obj.particleRadius});`}
-    </pre>
-  )
+  const textCode = `const ${label.replace(/\s/g, '')} = Composites.softBody(${obj.x}, ${obj.y}, ${obj.columns}, ${obj.rows}, ${obj.columnGap}, ${obj.rowGap}, ${obj.crossBrace}, ${obj.particleRadius});`;
+  return generateCode(textCode)
 };
+
 const pyramidComposite = obj => {
   const label = obj.options ? obj.options.label : obj.label;
-  return (
-    <pre>
-{`const ${label.replace(/\s/g, '')} = Composites.pyramid(${obj.x}, ${obj.y}, ${obj.columns}, ${obj.rows}, ${obj.columnGap}, ${obj.rowGap},
+  const textCode = `const ${label.replace(/\s/g, '')} = Composites.pyramid(${obj.x}, ${obj.y}, ${obj.columns}, ${obj.rows}, ${obj.columnGap}, ${obj.rowGap},
   (x, y) => {
     return Bodies.rectangle(x, y, ${obj.rectWidth}, ${obj.rectHeight})
   }
-);`}
-    </pre>
-  )
+);`;
+  return generateCode(textCode)
 };
+
 const stackComposite = obj => {
   const label = obj.options ? obj.options.label : obj.label;
-  return (
-    <pre>
-{`const ${label.replace(/\s/g, '')} = Composites.stack(${obj.x}, ${obj.y}, ${obj.columns}, ${obj.rows}, ${obj.columnGap}, ${obj.rowGap},
+  const textCode = `const ${label.replace(/\s/g, '')} = Composites.stack(${obj.x}, ${obj.y}, ${obj.columns}, ${obj.rows}, ${obj.columnGap}, ${obj.rowGap},
   (x, y) => {
     return Bodies.rectangle(x, y, ${obj.rectWidth}, ${obj.rectHeight})
   }
-);`}
-    </pre>
-  )
+);`;
+  return generateCode(textCode)
 };
+
 const newtonsCradleComposite = obj => {
   const label = obj.options ? obj.options.label : obj.label;
-  return (
-    <pre>
-{`const ${label.replace(/\s/g, '')} = Composites.newtonsCradle(${obj.x}, ${obj.y}, ${obj.number}, ${obj.size}, ${obj.length});`}
-    </pre>
-  )
+  const textCode = `const ${label.replace(/\s/g, '')} = Composites.newtonsCradle(${obj.x}, ${obj.y}, ${obj.number}, ${obj.size}, ${obj.length});`;
+  return generateCode(textCode)
 };
+
 const customComposite = obj => {
   const label = obj.options ? obj.options.label : obj.label;
-  return (
-    <pre>
-{`const ${label.replace(/\s/g, '')} = Composite.create({ label: ${label} });`}
-    </pre>
-  )
+  const textCode = `const ${label.replace(/\s/g, '')} = Composite.create({ label: '${label}' });`;
+  return generateCode(textCode)
 };
+
 const constraintCon = (obj, getBody) => {
   const label = (obj.options && obj.options.label) ? obj.options.label : obj.label;
   const generalParams = {...obj.options};
+
   generalParams.label = label;
   generalParams.pointA = obj.pointA;
   generalParams.pointB = obj.pointB;
   generalParams.length = obj.length;
+
   let bodyA = {};
   let bodyB = {};
+  let textCode = '';
 
   if(obj.bodyA){
     bodyA = getBody(obj.bodyA);
@@ -136,15 +126,11 @@ const constraintCon = (obj, getBody) => {
     finalJSON = finalJSON.replace(`"${generalParams.bodyB}"`,generalParams.bodyB);
   }
 
-  return (
-    <>
-      {obj.bodyA !==0  && bodyElement(bodyA)}
-      {obj.bodyB !==0  && bodyElement(bodyB)}
-    <pre>
-{`const ${label.replace(/\s/g, '')} = Constraint.create( ${finalJSON} );`}
-    </pre>
-    </>
-  )
+  textCode += obj.bodyA !==0  ? bodyElement(bodyA, true) : '';
+  textCode += obj.bodyB !==0  ? bodyElement(bodyB, true) : '';
+  textCode += `const ${label.replace(/\s/g, '')} = Constraint.create( ${finalJSON} );`
+
+  return generateCode(textCode)
 };
 
 const GeneralBodies = props => {
@@ -153,6 +139,16 @@ const GeneralBodies = props => {
     objectData,
     getBody,
   } = props;
+
+  const [copySuccess, setCopySuccess] = useState(false);
+  textAreaRef = useRef(null);
+
+  const handlerCopy = (e) => {
+    textAreaRef.current.select();
+    document.execCommand('copy');
+    e.target.focus();
+    setCopySuccess(true);
+  };
 
   console.log(objectData)
   const label = (objectData.options && objectData.options.label) ? objectData.options.label : objectData.label;
@@ -181,11 +177,8 @@ const GeneralBodies = props => {
         </Message>
       </Modal.Content>
       <Modal.Actions>
-        <Button color='red'>
-          <Icon name='remove' /> No
-        </Button>
-        <Button color='green'>
-          <Icon name='checkmark' /> Yes
+        <Button color='green' onClick={handlerCopy}>
+          <Icon name={ copySuccess ? 'checkmark' : 'copy' } /> Copy
         </Button>
       </Modal.Actions>
     </Modal>
