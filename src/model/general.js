@@ -6,7 +6,8 @@ const General = {
       bodies:[]
     },
   },
-  menuLeft: true,
+  menuLeft: localStorage.getItem('leftMenu') === 'true',
+  activeOpacity: localStorage.getItem('activeOpacity') === 'true',
   menuRight: true,
   width: 0,
   height: 0,
@@ -15,6 +16,9 @@ const General = {
 
   updateStaticBlocks: action((state, payload) => {
     state.staticBlocks = payload
+  }),
+  changeActiveOpacity: action((state, payload) => {
+    state.activeOpacity = payload
   }),
   runRestart: action((state, payload) => {
     state.restart += 1

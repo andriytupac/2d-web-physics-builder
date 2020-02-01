@@ -305,7 +305,7 @@ const MenageElementsConstraint = props => {
 
 const LeftSideBar = (props) => {
   //Store
-  const { menuLeft, staticBlocks, width, height } = useStoreState(state => state.general);
+  const { menuLeft, staticBlocks, width, height, activeOpacity } = useStoreState(state => state.general);
   const general = useStoreState(state => state.general.render);
   let getAllComposites = [];
 
@@ -318,9 +318,13 @@ const LeftSideBar = (props) => {
     actions => actions.matterOptions.addOptions
   );
 
-  const { addRender, runRestart, updateStaticBlocks } = useStoreActions(
+  const { addRender, runRestart, updateStaticBlocks, changeActiveOpacity } = useStoreActions(
     actions => actions.general
   );
+
+  useEffect(() => {
+    localStorage.setItem('activeOpacity', activeOpacity);
+  }, [activeOpacity]);
 
   // Change size canvas
   useEffect(() => {
@@ -541,7 +545,7 @@ const LeftSideBar = (props) => {
 
   // Get info fromChild component
   const afterRender = function (param) {
-    var renderController = inspector.render.controller,
+    const renderController = inspector.render.controller,
       context = inspector.render.context;
     if (renderController.inspector) renderController.inspector(inspector, context);
   };
@@ -565,7 +569,8 @@ const LeftSideBar = (props) => {
   };
   // reload existing render
   const reloadCanvas = () => {
-    const { render, world, runner} = inspector;
+    const { render, world, runner
+    } = inspector;
     Render.stop(render);
     Runner.stop(runner);
     Engine.clear(render.engine);
@@ -594,7 +599,7 @@ const LeftSideBar = (props) => {
   });
 
   return (
-    <Sidebar.Pushable as={Segment}>
+    <Sidebar.Pushable as={Segment} >
       <Sidebar
         as={Menu}
         animation='overlay'
@@ -604,7 +609,18 @@ const LeftSideBar = (props) => {
         vertical
         visible={menuLeft}
         width='wide'
+        className={activeOpacity ? 'show-opacity-menu' : ''}
       >
+        <Button
+            className="opacity-button"
+            type="button"
+            color="teal"
+            icon
+            size="mini"
+            onClick={() => {changeActiveOpacity(!activeOpacity)}}
+        >
+          <Icon  name={!activeOpacity ? 'eye' : 'eye slash'} />
+        </Button>
 
         {AccordionExampleNested(general)}
         <Accordion styled>

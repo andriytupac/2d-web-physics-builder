@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Menu, Checkbox, Dropdown } from 'semantic-ui-react';
 import { useStoreActions, useStoreState } from "easy-peasy";
 import { useHistory, useRouteMatch } from "react-router-dom";
@@ -17,6 +17,9 @@ const exampleOptions = [
   { key: 'sprites', text: 'Sprites', value: 'sprites' },
   { key: 'wreckingBall', text: 'Wrecking Ball', value: 'wreckingBall' },
 ];
+const newModels = [
+  { key: 'excavator', text: 'Excavator', value: 'excavator' },
+];
 
 function MenuBar() {
 
@@ -27,11 +30,19 @@ function MenuBar() {
   const mashValue = useRouteMatch('/examples/:id');
   const selectExample = mashValue && mashValue.isExact ? mashValue.params.id : '';
 
+  const mashModelValue = useRouteMatch('/new-models/:id');
+  const selectModel = mashModelValue && mashModelValue.isExact ? mashModelValue.params.id : '';
+
   const turnMenuLeft = useStoreActions(
     actions => actions.general.turnMenuLeft
   );
 
+  useEffect(() => {
+      localStorage.setItem('leftMenu', menuLeft);
+  },[ menuLeft ]);
+
   const [activeItem, setActiveItem] = useState(false);
+
   const handleItemClick = (e, { name }) => {
     setActiveItem(name);
     history.push(name)
@@ -39,6 +50,9 @@ function MenuBar() {
 
   const handlerChooseExample = (event, data) => {
     history.push(`/examples/${data.value}`);
+  };
+  const handlerChooseModel = (event, data) => {
+    history.push(`/new-models/${data.value}`);
   };
 
   return (
@@ -51,9 +65,7 @@ function MenuBar() {
          />
      </Menu.Item>
      <Menu.Item
-       name=''
-       active={activeItem === ''}
-       onClick={handleItemClick}
+       name='examples'
      >
        <Dropdown
          button
@@ -70,11 +82,20 @@ function MenuBar() {
      </Menu.Item>
 
      <Menu.Item
-       name='reviews'
-       active={activeItem === 'reviews'}
-       onClick={handleItemClick}
+       name='new-model'
      >
-       Reviews
+       <Dropdown
+         button
+         className='icon'
+         floating
+         labeled
+         icon='truck'
+         options={newModels}
+         search
+         defaultValue={selectModel}
+         text='Select models'
+         onChange={handlerChooseModel}
+       />
      </Menu.Item>
 
      <Menu.Item

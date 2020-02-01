@@ -18,10 +18,13 @@ import Restitution from '../../matterDemo/restitution';
 import Sprites from '../../matterDemo/sprites';
 import WreckingBall from '../../matterDemo/wreckingBall';
 
+import Excavator from '../../newModels/excavator';
+
 
 const RootRouter = props => {
   // let match = useRouteMatch("/");
   let examples = useRouteMatch("/examples/:id");
+  let newModels = useRouteMatch("/new-models/:id");
   if(examples && examples.isExact){
     return (
       <>
@@ -39,6 +42,12 @@ const RootRouter = props => {
       { examples.params.id === 'emptyArea' &&  <LeftSideBar><MatterDemo/></LeftSideBar>}
       </>
       )
+  } else if(newModels && newModels.isExact){
+    return (
+      <>
+        { newModels.params.id === 'excavator' &&  <LeftSideBar><Excavator/></LeftSideBar>}
+      </>
+    )
   } else {
     return <Page404/>
   }

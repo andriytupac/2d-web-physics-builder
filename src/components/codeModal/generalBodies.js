@@ -104,6 +104,9 @@ const constraintCon = (obj, getBody) => {
   generalParams.pointA = obj.pointA;
   generalParams.pointB = obj.pointB;
   generalParams.length = obj.length;
+  generalParams.stiffness = obj.stiffness;
+  generalParams.damping = obj.damping;
+  generalParams.render = obj.render;
 
   let bodyA = {};
   let bodyB = {};

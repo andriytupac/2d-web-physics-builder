@@ -20,9 +20,10 @@ const initialVal = {
     x: 0,
     y: 0,
   },
-  options: {
-    stiffness: 0.1,
-    damping: 0.1
+  stiffness: 0.1,
+  damping: 0.1,
+  render: {
+    type: 'line'
   },
   composite: 0
 };
@@ -30,6 +31,11 @@ const generalFields = {
   stiffness: { name: 'stiffness', start: 0.1, min: 0, max: 1, step: 0.1 },
   damping: { name: 'damping', start: 0.1, min: 0, max: 0.1, step: 0.01 },
 };
+const renderTypeOptions = [
+  { key: 'line', value: 'line', text: 'line'},
+  { key: 'pin', value: 'pin', text: 'pin'},
+  { key: 'spring', value: 'spring', text: 'spring'},
+];
 
 const validate = values => {
   const errors = {};
@@ -60,7 +66,7 @@ let AddConstraints = (props) => {
 
   const allFields = useStoreState(state => {
     const allFields = selector(
-      state, 'bodyA', 'bodyB', 'pointA', 'pointB', 'label', 'length', 'options', 'body'
+      state, 'bodyA', 'bodyB', 'pointA', 'pointB', 'label', 'length', 'body', 'render', 'stiffness', 'damping'
     );
     return {
       ...allFields
@@ -100,7 +106,6 @@ let AddConstraints = (props) => {
       activateBodyConstraint(getBody(value),1)
     }
   };
-  //console.log(allBodiesSelect);
   //console.log('inspectorOptions',inspectorOptions);
   const sendFormAddConstraintToBody = value => {
     addConstraint({ ...value, bodyA: getBody(value.bodyA), bodyB: getBody(value.bodyB)})
@@ -124,6 +129,14 @@ let AddConstraints = (props) => {
         // onChange={onchange}
         options={compositeOptions}
         label="composite"
+        size="mini"
+      />
+      <Field
+        name="render.type"
+        type="text"
+        component={renderDropdown}
+        options={renderTypeOptions}
+        label="render.type"
         size="mini"
       />
       <Field
@@ -207,14 +220,14 @@ let AddConstraints = (props) => {
       />
       <Field
         settings={{...generalFields.stiffness}}
-        name="options.stiffness"
+        name="stiffness"
         component={renderRange}
         type="text"
         label="stiffness"
       />
       <Field
         settings={{...generalFields.damping}}
-        name="options.damping"
+        name="damping"
         component={renderRange}
         type="text"
         label="damping"
