@@ -33,6 +33,8 @@ function MatterDemo(props){
         Mouse = Matter.Mouse,
         Common = Matter.Common,
         Runner = Matter.Runner,
+      Body = Matter.Body,
+      Composites = Matter.Composites,
         MouseConstraint = Matter.MouseConstraint;
 
   useEffect(() => {
@@ -90,11 +92,18 @@ function MatterDemo(props){
 
     // keep the mouse in sync with rendering
     render.mouse = mouse;
+    const Car = Composites.car(400, 300, 200, 30, 30);
+    Body.setStatic(Car.bodies[0],true)
+    Body.setStatic(Car.bodies[1],true)
+    Body.setStatic(Car.bodies[2],true)
+    Car.constraints[0].pointA.y = 50
+    console.log(Car)
 
 
     const { width, height } = render.options;
 
     World.add(world, [
+      Car,
       // walls
       Bodies.rectangle(width / 2, 0, width , 50, { isStatic: true, label: 'Top wall' }),
       Bodies.rectangle(width / 2, height, width , 50, { isStatic: true, label: 'Bottom wall'  }),
