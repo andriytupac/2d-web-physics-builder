@@ -2,14 +2,15 @@ import React, { useEffect, useRef } from 'react';
 import Matter from 'matter-js';
 import { useStoreState } from 'easy-peasy';
 
-import wheel from './images/excavator/wheel.png';
-import imgTrackFrame from './images/excavator/trackFrame.png';
-import imgCab from './images/excavator/cab.png';
-import imgBoom from './images/excavator/boom.png';
-import imgArm from './images/excavator/arm.png';
-import imgBucket from './images/excavator/bucket.png';
-import imgArmConnector from './images/excavator/armConnector.png';
-import imgBucketConnector from './images/excavator/bucketConnector.png';
+import wheel from './images/bulldozer/wheel.png';
+import gear from './images/bulldozer/gear.png';
+import wheelSmall from './images/bulldozer/wheel_small.png';
+import imgCab from './images/bulldozer/cab.png';
+import imgTrack from './images/bulldozer/track.png';
+import imgTire from './images/bulldozer/tire.png';
+import imgRipper from './images/bulldozer/ripper.png';
+import imgPushFrame from './images/bulldozer/pushFrame.png';
+import imgBlade from './images/bulldozer/blade.png';
 import bulldozerJson from './json/bulldozer'
 
 import IndexPosition from '../mattetPlugins/IndexPosition';
@@ -70,7 +71,7 @@ function Bulldozer(props){
             options: {
                 width: 1400,
                 height: 600,
-                wireframes: true,
+                wireframes: false,
                 showBounds: false
             }
         });
@@ -146,7 +147,7 @@ function Bulldozer(props){
                 label: 'topTrackWheel',
                 render: {
                     sprite: {
-                        texture: wheel,
+                        texture: gear,
                         xScale: scaleX,
                         yScale: scaleY,
 
@@ -155,7 +156,7 @@ function Bulldozer(props){
             });
             allWheels.push(topTrackWheel);
 
-            let moveX = -118
+            let moveX = -118;
             for(let i = 0; i<8;i++){
                 if(i === 2 || i ===4 || i === 6){
                     moveX += 27
@@ -167,34 +168,15 @@ function Bulldozer(props){
                     label: 'smallWheel',
                     render: {
                         sprite: {
-                            // xScale: 0.8,
-                            // yScale: 0.8,
-                            // texture: './images/buldozer/wheel small.png'
+                            xScale: scaleX,
+                            yScale: scaleY,
+                            texture: wheelSmall
                         }
                     }
                 });
                 allWheels.push(smallWheel)
             }
 
-            const bucket = Bodies.fromVertices(210, 410,
-                [{"x":145.401,"y":113.73},{"x":141.901,"y":109.73},{"x":86.4014,"y":109.73},{"x":57.337867736816406,"y":112.21636962890625},{"x":28.15367317199707,"y":106.80421447753906},{"x":10.4014,"y":87.7296},{"x":9.440763473510742,"y":84.31266021728516},{"x":8.805326461791992,"y":54.72804260253906},{"x":10.4014,"y":49.2296},{"x":42.4014,"y":15.7296},{"x":59.9014,"y":26.7296},{"x":59.9014,"y":13.2296},{"x":59.11518096923828,"y":9.537083625793457},{"x":47.4014,"y":1.22961},{"x":33.4014,"y":13.2296},{"x":3.90137,"y":45.7296},{"x":1.7057740688323975,"y":56.718650817871094},{"x":2.808957815170288,"y":86.5831069946289},{"x":3.90137,"y":93.2296},{"x":19.8577938079834,"y":109.93138122558594},{"x":48.29899978637695,"y":118.3912582397461},{"x":78.26766967773438,"y":117.91423797607422},{"x":86.4014,"y":117.23}],
-                {
-                    collisionFilter: { group: group },
-                    label: 'bucket',
-                    render: {
-                        visible: false,
-                        sprite: {
-                            texture: imgBucket,
-                            xScale: scaleX,
-                            yScale: scaleY,
-                            xOffset: 0,
-                            yOffset: 0
-
-                        }
-                    }
-                }
-            );
-            bucket.render.visible = true;
             const blade = Bodies.fromVertices(globalPos.x+320, globalPos.y+70, bulldozerJson.blade,
                 {
                     collisionFilter: { group: group },
@@ -202,11 +184,11 @@ function Bulldozer(props){
                     render: {
                         visible: false,
                         sprite: {
-                            // texture: imgArm,
                             xScale: scaleX,
                             yScale: scaleY,
-                            xOffset: 0,
-                            yOffset: -0.12
+                            texture: imgBlade,
+                            // xOffset: 0,
+                            // yOffset: -0.12
 
                         }
                     }
@@ -219,76 +201,78 @@ function Bulldozer(props){
                     collisionFilter: { group: group, mask: 0x0001 },
                     label: 'pushFrame',
                     render: {
-                        zIndex:1,
+                        zIndex: 10,
                         visible: false,
                         sprite: {
-                            //texture: imgBoom,
+                            texture: imgPushFrame,
                             xScale: scaleX,
                             yScale: scaleY,
-                            xOffset: 0,
-                            yOffset: -0.1
+                            // xOffset: 0,
+                            // yOffset: -0.1
 
                         }
                     }
                 }
             );
             pushFrame.render.visible = true;
-            const cabP1 = Bodies.fromVertices(0, 0, bulldozerJson.cabP1);
-            const cabP2 = Bodies.fromVertices(-220, +60, bulldozerJson.cabP2);
-            const cabP3 = Bodies.fromVertices(-202, +2, bulldozerJson.cabP3);
-            const cabP4 = Bodies.fromVertices(+195, -80, bulldozerJson.cabP4);
+            const cabP1 = Bodies.fromVertices(0, 0, bulldozerJson.cabP1,{render: {visible:false}});
+            const cabP2 = Bodies.fromVertices(-220, +60, bulldozerJson.cabP2,{render: {visible:false}});
+            const cabP3 = Bodies.fromVertices(-202, +2, bulldozerJson.cabP3,{render: {visible:false}});
+            const cabP4 = Bodies.fromVertices(+195, -80, bulldozerJson.cabP4,{render: {visible:false}});
             cabP1.parts.shift();
             cabP4.parts.shift();
             const cab = Body.create({
                 label: 'cab',
+                mass: 40,
                 parts: [...cabP1.parts,...cabP2.parts,...cabP3.parts,...cabP4.parts],
-                collisionFilter: { group: group, mask: 0x0001 }
+                collisionFilter: { group: group, mask: 0x0001 },
+                render: {
+                    sprite: {
+                        xScale: scaleX,
+                        yScale: scaleY,
+                        texture: imgCab
+                    }
+                }
             });
-            Body.setPosition(cab, { x: globalPos.x-8, y: globalPos.y })
-            cab.render.visible = true;
+            Body.setPosition(cab, { x: globalPos.x-8, y: globalPos.y });
+            //cab.render.visible = true;
 
-            const ripperTopP1 = Bodies.fromVertices(0, 0, bulldozerJson.ripperTop);
-            const ripperTopP2 = Bodies.fromVertices(10, +90, bulldozerJson.ripperBottom);
+            const ripperTopP1 = Bodies.fromVertices(0, 0, bulldozerJson.ripperTop,{render: {visible:false}});
+            const ripperTopP2 = Bodies.fromVertices(10, +90, bulldozerJson.ripperBottom,{render: {visible:false}});
             ripperTopP1.parts.shift();
             ripperTopP2.parts.shift();
 
             const ripperTop = Body.create({
                 label: 'ripperTop',
                 parts: [...ripperTopP1.parts, ...ripperTopP2.parts],
-                collisionFilter: { group: group }
+                collisionFilter: { group: group },
+                render: {
+                    sprite: {
+                        xScale: scaleX,
+                        yScale: scaleY,
+                        texture: imgRipper
+                    }
+                }
             });
             //console.log('group',group)
 
-            Body.setPosition(ripperTop,{x:globalPos.x-310,y:globalPos.y+44})
+            Body.setPosition(ripperTop,{x:globalPos.x-310,y:globalPos.y+44});
             //trackFrame.render.visible = true;
 
-            const armConnector = Bodies.rectangle(200, 320, 72, 18, {
-                label: "armConnector",
+            const track = Bodies.rectangle(globalPos.x, globalPos.y+100, 20, 20, {
+                label: "track",
                 collisionFilter: { group: group },
                 render: {
                     sprite: {
-                        texture: imgArmConnector,
+                        texture: imgTrack,
                         xScale: scaleX,
                         yScale: scaleY,
                         xOffset: 0,
-                        yOffset: 0
+                        yOffset: 0.2
                     }
                 }
             });
 
-            const bucketConnector = Bodies.rectangle(170, 350, 18, 72, {
-                label: "bucketConnector",
-                collisionFilter: { group: group },
-                render: {
-                    sprite: {
-                        texture: imgBucketConnector,
-                        xScale: scaleX,
-                        yScale: scaleY,
-                        xOffset: 0,
-                        yOffset: 0
-                    }
-                }
-            });
             // stack
             let paramY = 0;
             let groupSecond = Body.nextGroup();
@@ -312,9 +296,9 @@ function Bulldozer(props){
                     //density:0.005,
                     render: {
                         sprite: {
-                            // xScale: 0.8,
-                            // yScale: 0.8,
-                            // texture: './images/buldozer/wheel.png'
+                            xScale: scaleX,
+                            yScale: scaleY,
+                            texture: imgTire
                         }
                     }
                 });
@@ -583,7 +567,52 @@ function Bulldozer(props){
                 }
             });
 
-
+            const frontTrackWithCab = Constraint.create({
+                "bodyA": cab,
+                "bodyB": track,
+                "pointA": {
+                    "x": 18,
+                    "y": 100
+                },
+                "pointB": {
+                    "x": +10,
+                    "y": 0
+                },
+                "length": 0,
+                "label": "frontTrackWithCab",
+                "stiffness": 1,
+                "damping": 0,
+                "render": {
+                    "lineWidth": 2,
+                    "strokeStyle": "#ffffff",
+                    "type": "line",
+                    "visible": true,
+                    "anchors": true
+                }
+            });
+            const backTrackWithCab = Constraint.create({
+                "bodyA": cab,
+                "bodyB": track,
+                "pointA": {
+                    "x": -2,
+                    "y": 100
+                },
+                "pointB": {
+                    "x": -10,
+                    "y": 0
+                },
+                "length": 0,
+                "label": "backTrackWithCab",
+                "stiffness": 1,
+                "damping": 0,
+                "render": {
+                    "lineWidth": 2,
+                    "strokeStyle": "#ffffff",
+                    "type": "line",
+                    "visible": true,
+                    "anchors": true
+                }
+            });
 
             const ExcavatorComposite = Composite.create({ label: 'ExcavatorComposite' });
 
@@ -592,6 +621,7 @@ function Bulldozer(props){
                 ...allWheels,
                 caterpillars,
                 ripperTop,
+                track,
                 pushFrame,
                 blade
             ]);
@@ -599,12 +629,12 @@ function Bulldozer(props){
             Body.setStatic(cab, staticParam);
             Body.setStatic(pushFrame, staticParam);
             Body.setStatic(blade, staticParam);
-            Body.setStatic(bucketConnector, staticParam);
             allWheels.forEach(obj=> {
                 Body.setStatic(obj,staticParam)
             });
             Body.setStatic(backTrackWheel, staticParam);
             Body.setStatic(frontTrackWheel, staticParam);
+            Body.setStatic(track, staticParam);
 
             Composite.add(ExcavatorComposite, [
                 CabWithTopTrackWheel,
@@ -618,6 +648,8 @@ function Bulldozer(props){
                 mobileCabWithPushFrame,
                 fixedBladeWithPushFrame,
                 mobileBladeWithPushFrame,
+                frontTrackWithCab,
+                backTrackWithCab,
             ]);
 
             const position =  Composite.bounds(ExcavatorComposite);
@@ -651,7 +683,7 @@ function Bulldozer(props){
 
             return ExcavatorComposite;
         };
-        World.add(world, carExcavator(0,0, 1, 1, false))
+        World.add(world, carExcavator(0,0, 1, 1, false));
 
         // add mouse control
         const mouse = Mouse.create(render.canvas),

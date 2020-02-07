@@ -8,7 +8,7 @@ const RenderBodies = {
     for: 'matter-js@0.14.2',
 
     install: function install(base) {
-        base.before('Render.bodies', function(render, bodies, context) {
+        base.after('Render.bodies', function(render, bodies, context) {
             RenderBodies.Render.bodies(render, bodies, context);
         });
     },
@@ -16,10 +16,11 @@ const RenderBodies = {
         bodies: function(render, bodies, context) {
             let body;
             const c = context;
+            //console.log(bodies)
             for (let i = 0; i < bodies.length; i++) {
                 body = bodies[i];
 
-                if (body.render.visible && body.parts.length > 1 && body.render.sprite && body.render.sprite.texture) {
+                if ( body.render.sprite && body.render.sprite.texture) {
                     var sprite = body.render.sprite,
                         texture = RenderBodies.Render._getTexture(render, sprite.texture);
 

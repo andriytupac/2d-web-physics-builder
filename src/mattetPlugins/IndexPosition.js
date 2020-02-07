@@ -12,11 +12,13 @@ const IndexPosition = {
   },
   Composite: {
     allBodies: function(options) {
+      //console.log(options)
       options.bodies.sort((a, b) => {
         const zIndexA = a.render && typeof a.render.zIndex !== 'undefined' ? a.render.zIndex : 0;
         const zIndexB = b.render && typeof b.render.zIndex !== 'undefined' ? b.render.zIndex : 0;
         return zIndexA - zIndexB;
       });
+      //console.log(options)
       return options;
     },
   }
