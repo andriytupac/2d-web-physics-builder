@@ -1,7 +1,6 @@
 import Matter from 'matter-js';
 
 const  Composite = Matter.Composite;
-const  Body = Matter.Body;
 
 const ConstraintScale = {
     name: 'matter-scale-plugin',

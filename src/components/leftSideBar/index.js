@@ -599,7 +599,7 @@ const LeftSideBar = (props) => {
   });
 
   return (
-    <Sidebar.Pushable as={Segment} >
+    <Sidebar.Pushable as={Segment} className="main-container" >
       <Sidebar
         as={Menu}
         animation='overlay'

@@ -19,6 +19,7 @@ import Sprites from '../../matterDemo/sprites';
 import WreckingBall from '../../matterDemo/wreckingBall';
 
 import Excavator from '../../newModels/excavator';
+import Bulldozer from '../../newModels/bulldozer';
 
 
 const RootRouter = props => {
@@ -46,6 +47,7 @@ const RootRouter = props => {
     return (
       <>
         { newModels.params.id === 'excavator' &&  <LeftSideBar><Excavator/></LeftSideBar>}
+        { newModels.params.id === 'bulldozer' &&  <LeftSideBar><Bulldozer/></LeftSideBar>}
       </>
     )
   } else {

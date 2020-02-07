@@ -19,6 +19,7 @@ const exampleOptions = [
 ];
 const newModels = [
   { key: 'excavator', text: 'Excavator', value: 'excavator' },
+  { key: 'bulldozer', text: 'Bulldozer', value: 'bulldozer' },
 ];
 
 function MenuBar() {
