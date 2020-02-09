@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react'
-import { Accordion, Menu, Segment, Sidebar, Icon, Button, Popup } from 'semantic-ui-react'
+import { Accordion, Menu, Segment, Sidebar, Icon, Button, Popup, Input } from 'semantic-ui-react'
 import { useStoreState, useStoreActions } from 'easy-peasy';
+import _ from "lodash";
 import GeneralSettings from '../generalSettings';
 import AddBodies from '../addBodies';
 import AddComposites from '../addComposites';
@@ -38,41 +39,53 @@ for(let i = 0; i<=28; i++){
 const MenageElements = props => {
   const { obj } = props;
   const world = useStoreState(state => state.general.render);
-  const [edit, setEdit] = useState(false);
+  const { editBodyId } = useStoreState(state => state.leftMenu);
+  const { addEditBody } = useStoreActions(actions => actions.leftMenu);
   const [code, setCode] = useState(false);
+  const [body, setBody] = useState({});
 
   const addRender = useStoreActions(
     actions => actions.general.addRender
   );
-
   // Delete obj
   const deleteObj = () => {
-    Composite.remove(inspector.world, obj, true);
+    const bodyObj = Composite.get(inspector.world, obj.id, obj.type);
+    Composite.remove(inspector.world, bodyObj, true);
     inspector.selected.pop();
   };
+  const editObj = () => {
+    const bodyObj = Composite.get(inspector.world, obj.id, obj.type);
+    setBody(bodyObj);
+    addEditBody(obj.id !== editBodyId ? obj.id : 0);
+  };
+  const codeObj = () => {
+    const bodyObj = Composite.get(inspector.world, obj.id, obj.type);
+    setBody(bodyObj);
+    setCode(!code);
+  };
   const modifyBody = (data,key) => {
-    //console.log(Composite.get(world,obj.id, 'body'))
+    //console.log(Composite.get(world,body.id, 'body'))
     if(key === 'rotate'){
-      Body.rotate(obj, +data.angle,{ x: obj.position.x + +data.x, y: obj.position.y+ +data.y })
+      Body.rotate(body, +data.angle,{ x: body.position.x + +data.x, y: body.position.y+ +data.y })
     }else if(key === 'scale'){
-      Body.scale(obj,data.scaleX,data.scaleY,{x: obj.position.x + +data.x,y: obj.position.y+ +data.y})
+      Body.scale(body,data.scaleX,data.scaleY,{x: body.position.x + +data.x,y: body.position.y+ +data.y})
     }else if(key === 'render'){
       console.log('key',key,data);
       let newData = data;
       if(newData.sprite && newData.sprite.texture === 'none'){
         delete newData.sprite.texture
       }
-      const render = { ...obj.render, ...data}
-      Body.set(obj,key,render)
+      const render = { ...body.render, ...data}
+      Body.set(body,key,render)
     }else if(key === 'collisionFilter'){
       console.log('key',key,data);
-      const render = { ...obj.collisionFilter, ...data}
-      Body.set(obj,key,render)
+      const render = { ...body.collisionFilter, ...data}
+      Body.set(body,key,render)
     }else if(key === 'applyForce'){
-      Body.applyForce(obj,{ x: obj.position.x, y: obj.position.y },data)
+      Body.applyForce(body,{ x: body.position.x, y: body.position.y },data)
     }else{
       console.log('key',key,data)
-      Body.set(obj,key,data)
+      Body.set(body,key,data)
     }
     if(key === 'label'){
       addRender(world)
@@ -94,7 +107,7 @@ const MenageElements = props => {
       />
       <Popup
         trigger={
-          <Button type="button" icon primary onClick={ () => {setEdit(!edit)}}>
+          <Button type="button" icon primary onClick={editObj}>
             <Icon name='pencil' />
           </Button>
         }
@@ -105,7 +118,7 @@ const MenageElements = props => {
       />
       <Popup
         trigger={
-          <Button type="button" icon color={"green"} onClick={ () => {setCode(!code)}}>
+          <Button type="button" icon color={"green"} onClick={codeObj}>
             <Icon name='code' />
           </Button>
         }
@@ -114,11 +127,12 @@ const MenageElements = props => {
         size='tiny'
         inverted
       />
-      {code && <CodeModal element="body" objectData={obj} handlerClose={() => {setCode(!code)}}/>}
+      {code && <CodeModal element="body" objectData={body} handlerClose={() => {setCode(!code)}}/>}
       <div className="edit-form">
-        {edit && (
+        {editBodyId === obj.id && (
           <EditBody
-            objectData={obj}
+            formName={`editBodyForm${obj.id}`}
+            objectData={body}
             modifyBody={modifyBody}
             allCategories={allCategories}
           />
@@ -131,13 +145,15 @@ const MenageElements = props => {
 const MenageElementsComposite = props => {
   const { obj } = props;
   const world = useStoreState(state => state.general.render);
+  const { editCompositeId } = useStoreState(state => state.leftMenu);
+  const { addEditComposite } = useStoreActions(actions => actions.leftMenu);
 
   const addRender = useStoreActions(
     actions => actions.general.addRender
   );
 
-  const [edit, setEdit] = useState(false);
   const [code, setCode] = useState(false);
+  const [composite, setComposite] = useState({});
 
   const clearObj = () => {
     const findComposite = Composite.get(inspector.world, obj.id, obj.type);
@@ -147,15 +163,27 @@ const MenageElementsComposite = props => {
   };
 
   const deleteObj = () => {
-
     // Composite.clear(obj, false, true);
-    Composite.remove(inspector.world, obj, true );
+    const findComposite = Composite.get(inspector.world, obj.id, obj.type);
+    Composite.remove(inspector.world, findComposite, true );
     // Composite.setModified(obj, true, true, true);
     // World.remove(world, obj, true);
   };
 
+  const codeObj = () => {
+    const compositeObj = Composite.get(inspector.world, obj.id, obj.type);
+    setComposite(compositeObj);
+    setCode(!code);
+  };
+
+  const editObj = () => {
+    const compositeObj = Composite.get(inspector.world, obj.id, obj.type);
+    setComposite(compositeObj);
+    addEditComposite(obj.id !== editCompositeId ? obj.id : 0);
+  };
+
   const modifyComposite = (data,key) => {
-    const position =  Composite.bounds(obj);
+    const position =  Composite.bounds(composite);
 
     const positionX = (position.max.x+position.min.x)/2
     const positionY = (position.max.y+position.min.y)/2
@@ -163,11 +191,11 @@ const MenageElementsComposite = props => {
     if(key === 'rotate'){
       // const width = position.max.x-position.min.x;
       // const height = position.max.y-position.min.y;
-      Composite.rotate(obj, +data.angle,{ x: positionX + +data.x, y: positionY+ +data.y })
+      Composite.rotate(composite, +data.angle,{ x: positionX + +data.x, y: positionY+ +data.y })
     }else if(key === 'scale'){
-      Composite.scale(obj,data.scaleX,data.scaleY,{x: positionX + +data.x,y: positionY+ +data.y})
+      Composite.scale(composite,data.scaleX,data.scaleY,{x: positionX + +data.x,y: positionY+ +data.y})
     }else if(key === 'label'){
-      obj.label = data;
+      composite.label = data;
       addRender(world)
     }
 
@@ -199,7 +227,7 @@ const MenageElementsComposite = props => {
       />
       <Popup
         trigger={
-          <Button icon primary onClick={ () => {setEdit(!edit)}}>
+          <Button icon primary onClick={ editObj }>
             <Icon name='pencil' />
           </Button>
         }
@@ -210,7 +238,7 @@ const MenageElementsComposite = props => {
       />
       <Popup
         trigger={
-          <Button icon color={"green"} onClick={ () => {setCode(!code)}}>
+          <Button icon color={"green"} onClick={ codeObj }>
             <Icon name='code' />
           </Button>
         }
@@ -219,11 +247,12 @@ const MenageElementsComposite = props => {
         size='tiny'
         inverted
       />
-      {code && <CodeModal element="composite" objectData={obj} handlerClose={() => {setCode(!code)}}/>}
+      {code && <CodeModal element="composite" objectData={composite} handlerClose={() => {setCode(!code)}}/>}
       <div className="edit-form">
-        {edit && (
+        {editCompositeId === obj.id && (
           <EditComposite
-            objectData={obj}
+            formName={`editCompositeForm${obj.id}`}
+            objectData={composite}
             modifyComposite={modifyComposite}
           />
         )}
@@ -233,25 +262,39 @@ const MenageElementsComposite = props => {
 };
 
 const MenageElementsConstraint = props => {
-  const { obj, general } = props;
+  const { obj } = props;
   const world = useStoreState(state => state.general.render);
+  const { editConstraintId } = useStoreState(state => state.leftMenu);
+  const { addEditConstraint } = useStoreActions(actions => actions.leftMenu);
 
-  const [edit, setEdit] = useState(false);
   const [code, setCode] = useState(false);
+  const [constraint, setConstraint] = useState({});
+
 
   const addRender = useStoreActions(
     actions => actions.general.addRender
   );
 
   const deleteObj = () => {
-    World.remove(inspector.world, obj, true);
+    const constraintObj = Composite.get(inspector.world, obj.id, obj.type);
+    World.remove(inspector.world, constraintObj, true);
+  };
+  const editObj = () => {
+    const constraintObj = Composite.get(inspector.world, obj.id, obj.type);
+    setConstraint(constraintObj);
+    addEditConstraint(obj.id !== editConstraintId ? obj.id : 0);
+  };
+  const codeObj = () => {
+    const constraintObj = Composite.get(inspector.world, obj.id, obj.type);
+    setConstraint(constraintObj);
+    setCode(!code);
   };
 
   const modifyConstraint = (data,key) => {
-      obj[key] = data;
-      if(key==='label'){
-        addRender({...world})
-      }
+    constraint[key] = data;
+    if(key==='label'){
+      addRender({...world})
+    }
   };
 
   return (
@@ -269,7 +312,7 @@ const MenageElementsConstraint = props => {
       />
       <Popup
         trigger={
-          <Button icon primary onClick={ () => {setEdit(!edit)}}>
+          <Button icon primary onClick={ editObj }>
             <Icon name='pencil' />
           </Button>
         }
@@ -280,7 +323,7 @@ const MenageElementsConstraint = props => {
       />
       <Popup
         trigger={
-          <Button icon color={"green"} onClick={ () => {setCode(!code)}}>
+          <Button icon color={"green"} onClick={ codeObj }>
             <Icon name='code' />
           </Button>
         }
@@ -289,13 +332,14 @@ const MenageElementsConstraint = props => {
         size='tiny'
         inverted
       />
-      {code && <CodeModal element="constraint" objectData={obj} handlerClose={() => {setCode(!code)}}/>}
+      {code && <CodeModal element="constraint" objectData={constraint} handlerClose={() => {setCode(!code)}}/>}
       <div className="edit-form">
-        {edit && (
+        {editConstraintId  === obj.id && (
           <EditConstraint
-            objectData={obj}
+            formName={`editConstraintForm${obj.id}`}
+            objectData={constraint}
             modifyConstraint={modifyConstraint}
-            inspectorOptions={general}
+            inspectorOptions={inspector.world}
           />
         )}
       </div>
@@ -303,16 +347,110 @@ const MenageElementsConstraint = props => {
   )
 };
 
+const getHighlightText = (text, keyword) => {
+  const parts = text.split(new RegExp(`(${keyword})`, 'gi'));
+  return <span> { parts.map((part, i) =>
+      <span key={i} style={part.toLowerCase() === keyword.toLowerCase() ? { color: '#2cb664' } : {} }>
+            { part }
+        </span>)
+  } </span>;
+};
+
+const keywordFilter = (nodes, keyword) => {
+  let newNodes = [];
+  for (let n of nodes) {
+    if (n.children) {
+      const nextNodes = keywordFilter(n.children, keyword);
+      if (nextNodes.length > 0) {
+        n.children = nextNodes;
+      } else if (n.label.toLowerCase().includes(keyword.toLowerCase())) {
+        n.children = nextNodes.length > 0 ? nextNodes : [];
+      }
+      if (
+          nextNodes.length > 0 ||
+          n.label.toLowerCase().includes(keyword.toLowerCase())
+      ) {
+        n.label = getHighlightText(n.label, keyword);
+        newNodes.push(n);
+      }
+    } else {
+      if (n.label.toLowerCase().includes(keyword.toLowerCase())) {
+        n.label = getHighlightText(n.label, keyword);
+        newNodes.push(n);
+      }
+    }
+  }
+  return newNodes;
+};
+
+const createTreeMap = data => {
+  const tree = [];
+  tree.push(data.bodies.length ? {
+    label: `bodies`,
+    children: [],
+    type: 'body',
+  }:{label: `bodies`,type: 'body'});
+  tree.push(data.constraints.length ? {
+    label: `constraints`,
+    children: [],
+    type: 'constraint',
+  }:{label: `constraints`,type: 'constraint'});
+  tree.push(data.composites.length ? {
+    label: `composites`,
+    children: [],
+    type: 'composite',
+  }: { label: `composites`,type: 'composite' });
+
+  data.bodies.forEach(obj => {
+    tree[0].children.push({
+      label: `${obj.id} ${obj.label}`,
+      type: 'body',
+      id: obj.id,
+    })
+  });
+  data.constraints.forEach(obj => {
+    tree[1].children.push({
+      label: `${obj.id} ${obj.label}`,
+      type: 'constraint',
+      id: obj.id
+    })
+  });
+  if(data.composites.length) {
+    data.composites.forEach(obj => {
+      tree[2].children.push({
+        label: `${obj.id} ${obj.label}`,
+        type: 'composite',
+        id: obj.id,
+        children: createTreeMap(obj),
+      })
+    });
+  }
+  return tree
+
+};
+
 const LeftSideBar = (props) => {
   //Store
   const { menuLeft, staticBlocks, width, height, activeOpacity } = useStoreState(state => state.general);
+  const { updateAllForSearch } = useStoreActions(action => action.leftMenu);
   const general = useStoreState(state => state.general.render);
+  const [search, setSearch] = useState('');
   let getAllComposites = [];
+  let treeMap = [];
 
   if(general.type){
+    treeMap = createTreeMap(general);
+    treeMap  = search.trim()
+        ? keywordFilter(_.cloneDeep(treeMap), search)
+        : treeMap;
+    //console.log(keywordFilter(treeMap, '3 Rectangle'))
     getAllComposites = Composite.allComposites(general);
     //console.log(getAllComposites)
   }
+  const searchChange = (e, input) => {
+    updateAllForSearch()
+    setSearch(input.value)
+  };
 
   const addOptions = useStoreActions(
     actions => actions.matterOptions.addOptions
@@ -446,11 +584,9 @@ const LeftSideBar = (props) => {
     });
   };
   //Get active body
-  const activateBody = (data, composite) => {
-    //inspector.render.options.wireframes = false;
+  const activateBody = (data, type) => {
     if(data.active){ return inspector.selected.pop(); }
-    const key = data.content.split(' ');
-    const findObject = Composite.allBodies(composite).find(val => +val.id === +key[0]);
+    const findObject = Composite.get(inspector.world, data.id, type);
     inspector.selected[0]={ data: findObject}
   };
   //Get active Constraint
@@ -469,18 +605,17 @@ const LeftSideBar = (props) => {
     inspector.selected[0].data.mouse.y = y === false  ? position.data.mouse.y : y;
   };
   //Get active constraint
-  const activateConstraint = (data, composite) => {
+  const activateConstraint = (data, type) => {
     if(data.active){ return inspector.selected.pop(); }
-    const key = data.content.split(' ');
-    const findObject = Composite.allConstraints(composite).find( val => +val.id === +key[0]);
-    inspector.selected[0]={ data: findObject}
+    const findObject = Composite.get(inspector.world, data.id, type);
+    inspector.selected[0]={ data: findObject };
   };
   //List of bodies
-  const LevelBodies = (bodies, composite) => {
+  const LevelBodies = (bodies, type) => {
     bodies = bodies.map(val => {
       return {
         key: `body-${val.id}`,
-        title: `${val.id} ${val.label}`,
+        title: { content: val.label, id: val.id },
         content: {
           content: <MenageElements key={val.id} obj={val}/>
         }
@@ -488,24 +623,24 @@ const LeftSideBar = (props) => {
     });
     return (
       <div>
-        <Accordion.Accordion  onTitleClick={(event,data) => { activateBody(data, composite)}} panels={bodies}/>
+        <Accordion.Accordion  onTitleClick={(event,data) => { activateBody(data, type)}} panels={bodies}/>
       </div>
     );
   };
   //List of constraints
-  const LevelConstraints = (constraints, composite) => {
+  const LevelConstraints = (constraints, type) => {
     constraints = constraints.map(val => {
       return {
-        key: `constaraint-${val.id}`,
-        title: `${val.id} ${val.label}`,
+        key: `constraint-${val.id}`,
+        title: { content: val.label, id: val.id },
         content: {
-          content: <MenageElementsConstraint key={val.id} obj={val} general={general}/>
+          content: <MenageElementsConstraint key={val.id} obj={val}/>
         }
       }
     });
     return (
       <div>
-        <Accordion.Accordion onTitleClick={(event,data) => { activateConstraint(data, composite)}} panels={constraints}/>
+        <Accordion.Accordion onTitleClick={(event,data) => { activateConstraint(data, type)}} panels={constraints}/>
       </div>
     );
   };
@@ -514,33 +649,70 @@ const LeftSideBar = (props) => {
     composites = composites.map(val => {
       return {
         key: `composites-${val.id}`,
-        title: `${val.id} ${val.label}`,
+        title: { content: val.label, id: val.id  },
         content: {
-          content: (<div><MenageElementsComposite key={val.id} obj={val}/>  {AccordionExampleNested(val)}</div>)
+          content: (<div><MenageElementsComposite key={val.id} obj={val}/>  {AccordionExampleNested(val.children)}</div>)
         }
       }
     });
     return (
       <div>
-        <Accordion.Accordion panels={composites}/>
+        <Accordion.Accordion key={search.trim()+'accord_key_composite'} exclusive={false} defaultActiveIndex={search.trim() ? _.times(composites.length) : []} panels={composites}/>
       </div>
     );
   };
 
+  const getAllValuesFromNodes = (nodes, firstLevel) => {
+    if (firstLevel) {
+      const values = [];
+      for (let n of nodes) {
+        values.push(n.label);
+        if (n.composites) {
+          values.push(...getAllValuesFromNodes(n.children, false));
+        }
+      }
+      return values;
+    } else {
+      const values = [];
+      for (let n of nodes) {
+        values.push(n.label);
+        if (n.composites) {
+          values.push(...getAllValuesFromNodes(n.children, false));
+        }
+      }
+      return values;
+    }
+  };
 
+  const combineTextWithLength = (label, length) => (
+      <>
+        {label} {length ? `(${length})` : '' }
+      </>
+  )
   // Main Accordion
   const AccordionExampleNested = (general) => {
+    //console.log(_.times(5),Number)
 
-    const bodiesState = general.bodies || [];
+   /* const bodiesState = general.bodies || [];
     const constraintState = general.constraints || [];
     const compositesState  = general.composites || [];
     const rootPanels = [
       { key: 'bodies', title: `Bodies (${bodiesState.length})`, content: {content: LevelBodies(bodiesState, general) } },
       { key: 'composites', title: `Composites (${compositesState.length})`, content: { content: LevelComposites(compositesState) } },
       { key: 'constraints', title: `Constraints (${constraintState.length})`, content: { content: LevelConstraints(constraintState, general) } },
-    ];
-
-    return (<Accordion panels={rootPanels} styled />)
+    ];*/
+    const rootPanels = [];
+    general.forEach(obj => {
+      if(obj.type === 'body' && obj.children){
+        rootPanels.push({ key: 'bodies', title: {content: combineTextWithLength(obj.label, obj.children.length)}, content: {content: LevelBodies(obj.children,'body') } })
+      }else if(obj.type === 'constraint' && obj.children){
+        rootPanels.push({ key: 'constraint', title: {content: combineTextWithLength(obj.label, obj.children.length)}, content: {content: LevelConstraints(obj.children,'constraint') } })
+      }else if(obj.type === 'composite' && obj.children){
+        rootPanels.push({ key: 'composite', title:{content: combineTextWithLength(obj.label, obj.children.length)} , content: {content: LevelComposites(obj.children,'composite') } })
+      }
+    });
+    // activeIndex={search.trim() ? _.times(general.length) : []}
+    return ( <Accordion key={search.trim()+'accord_key'} panels={rootPanels} styled exclusive={false} defaultActiveIndex={search.trim() ? _.times(general.length) : []}  />)
   };
 
   // Get info fromChild component
@@ -597,6 +769,7 @@ const LeftSideBar = (props) => {
   useEffect( () => {
     addOptions(inspector.options || {})
   });
+  //console.log('general',getAllValuesFromNodes(general.composites, true))
 
   return (
     <Sidebar.Pushable as={Segment} className="main-container" >
@@ -611,8 +784,9 @@ const LeftSideBar = (props) => {
         width='wide'
         className={activeOpacity ? 'show-opacity-menu' : ''}
       >
+        <Input icon='search' value={search} placeholder='Search...' size="mini" onChange={searchChange} />
         <Button
-            className="opacity-button"
+            // className="opacity-button"
             type="button"
             color="teal"
             icon
@@ -621,8 +795,7 @@ const LeftSideBar = (props) => {
         >
           <Icon  name={!activeOpacity ? 'eye' : 'eye slash'} />
         </Button>
-
-        {AccordionExampleNested(general)}
+        {AccordionExampleNested(treeMap)}
         <Accordion styled>
             <Accordion.Title
               active={open === 1}

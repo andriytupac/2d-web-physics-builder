@@ -6,8 +6,6 @@ import { Form, Icon, Label, Segment } from "semantic-ui-react";
 import reduxInput from '../../common/reduxInputs';
 import { useStoreState } from "easy-peasy";
 
-const selector = formValueSelector('editCompositeForm');
-
 const initialVal = {
   rotate: {
     angle: 0.3,
@@ -31,7 +29,10 @@ const validate = values => {
 };
 
 let EditComposite = props => {
-  const  { objectData, modifyComposite } = props;
+  const  { objectData, modifyComposite, formName } = props;
+
+  const selector = formValueSelector(formName);
+
 
   const { renderTextInput } = reduxInput;
 
@@ -45,7 +46,7 @@ let EditComposite = props => {
   });
 
   const syncErrors = useStoreState(state => {
-    return getFormSyncErrors('editCompositeForm')(state)
+    return getFormSyncErrors(formName)(state)
   });
 
   const runBodyEvent = (event, props) => {
@@ -199,7 +200,7 @@ EditComposite = reduxForm({
     //body: 'choose',
   },
   validate,
-  form: 'editCompositeForm',
+  //form: 'editCompositeForm',
   enableReinitialize : true,
   keepDirtyOnReinitialize:true,
 })(EditComposite);
@@ -214,7 +215,8 @@ EditComposite = connect(
     };
     //console.log(getFormSyncErrors('editCompositeForm')(state))
     return {
-      initialValues: bodyThings
+      initialValues: bodyThings,
+      form: props.formName,
     }
   },
 )(EditComposite);

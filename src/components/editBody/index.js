@@ -13,8 +13,6 @@ import box from '../../img/box.png'
 import rock from '../../img/rock.png'
 const { numberField, selectField, colorField, rangeField  } = InputFields;
 
-const selector = formValueSelector('editBodyForm');
-
 const initialVal = {
   rotate: {
     angle: 0.3,
@@ -125,6 +123,7 @@ let EditBody = (props) => {
     modifyBody,
     objectData,
     allCategories,
+    formName
   } =  props;
 
   const additionalSelect = [];
@@ -135,8 +134,7 @@ let EditBody = (props) => {
       }
     })
   }
-
-  console.log('objectData',additionalSelect)
+  const selector = formValueSelector(formName);
 
 
   const { renderTextInput, renderCheckbox } = reduxInput;
@@ -164,7 +162,7 @@ let EditBody = (props) => {
   };
 
   const syncErrors = useStoreState(state => {
-    return getFormSyncErrors('editBodyForm')(state)
+    return getFormSyncErrors(formName)(state)
   });
 
   const allFields = useStoreState(state => {
@@ -475,9 +473,9 @@ EditBody = reduxForm({
     //body: 'choose',
   },
   validate,
-  form: 'editBodyForm',
+  //form: 'editBodyForm',
   enableReinitialize : true,
-  //keepDirtyOnReinitialize:true,
+  keepDirtyOnReinitialize:true,
 })(EditBody);
 
 EditBody = connect(
@@ -512,7 +510,8 @@ EditBody = connect(
       }
     };
     return {
-      initialValues: bodyThings
+      initialValues: bodyThings,
+      form: props.formName,
     }
   },
 )(EditBody);

@@ -9,8 +9,6 @@ import InputFields from '../../common/reduxInputs/InputFields';
 const { numberField, selectField, colorField, coordinateField, rangeField, checkboxField } = InputFields;
 
 
-const selector = formValueSelector('editConstraintForm');
-
 const initialVal = {
   rotate: {
     angle: 0.3,
@@ -50,9 +48,11 @@ const generalFields = [
 ];
 
 let EditConstraint = props => {
-  const  { objectData, modifyConstraint, inspectorOptions } = props;
+  const  { objectData, modifyConstraint, inspectorOptions, formName } = props;
 
   const selectOptions = {};
+
+  const selector = formValueSelector(formName);
 
   console.log(objectData)
   let allBodies = [];
@@ -71,7 +71,7 @@ let EditConstraint = props => {
   };
 
   const syncErrors = useStoreState(state => {
-    return getFormSyncErrors('editConstraintForm')(state)
+    return getFormSyncErrors(formName)(state)
   });
 
   getAllBodies(inspectorOptions);
@@ -138,7 +138,7 @@ EditConstraint = reduxForm({
     //body: 'choose',
   },
   validate,
-  form: 'editConstraintForm',
+  //form: 'editConstraintForm',
   enableReinitialize : true,
   keepDirtyOnReinitialize:true,
 })(EditConstraint);
@@ -166,7 +166,8 @@ EditConstraint = connect(
       },
     }
     return {
-      initialValues: bodyThings
+      initialValues: bodyThings,
+      form: props.formName,
     }
   },
 )(EditConstraint);

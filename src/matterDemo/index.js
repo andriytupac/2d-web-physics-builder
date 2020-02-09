@@ -98,12 +98,13 @@ function MatterDemo(props){
     Body.setStatic(Car.bodies[2],true)
     Car.constraints[0].pointA.y = 50
     console.log(Car)
-
+    const car1 = Composites.car(400, 300, 200, 30, 30);
 
     const { width, height } = render.options;
 
     World.add(world, [
       Car,
+      car1,
       // walls
       Bodies.rectangle(width / 2, 0, width , 50, { isStatic: true, label: 'Top wall' }),
       Bodies.rectangle(width / 2, height, width , 50, { isStatic: true, label: 'Bottom wall'  }),
