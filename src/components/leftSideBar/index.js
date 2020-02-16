@@ -10,6 +10,10 @@ import EditBody from '../editBody';
 import CodeModal from '../codeModal';
 import EditComposite from "../editComposite";
 import EditConstraint from "../editConstraint";
+import Toast from '../../common/toast';
+import InfoModal from '../../common/infoModal';
+import Search from '../../components/search';
+
 import Matter from 'matter-js';
 
 import './style.scss'
@@ -88,7 +92,7 @@ const MenageElements = props => {
       Body.set(body,key,data)
     }
     if(key === 'label'){
-      addRender(world)
+      addRender({...inspector.world})
     }
 
   };
@@ -158,7 +162,7 @@ const MenageElementsComposite = props => {
   const clearObj = () => {
     const findComposite = Composite.get(inspector.world, obj.id, obj.type);
     Composite.clear(findComposite, false, true);
-    addRender({...world})
+    addRender({...inspector.world})
 
   };
 
@@ -196,7 +200,7 @@ const MenageElementsComposite = props => {
       Composite.scale(composite,data.scaleX,data.scaleY,{x: positionX + +data.x,y: positionY+ +data.y})
     }else if(key === 'label'){
       composite.label = data;
-      addRender(world)
+      addRender({...inspector.world})
     }
 
   };
@@ -293,7 +297,7 @@ const MenageElementsConstraint = props => {
   const modifyConstraint = (data,key) => {
     constraint[key] = data;
     if(key==='label'){
-      addRender({...world})
+      addRender({...inspector.world})
     }
   };
 
@@ -383,72 +387,24 @@ const keywordFilter = (nodes, keyword) => {
   return newNodes;
 };
 
-const createTreeMap = data => {
-  const tree = [];
-  tree.push(data.bodies.length ? {
-    label: `bodies`,
-    children: [],
-    type: 'body',
-  }:{label: `bodies`,type: 'body'});
-  tree.push(data.constraints.length ? {
-    label: `constraints`,
-    children: [],
-    type: 'constraint',
-  }:{label: `constraints`,type: 'constraint'});
-  tree.push(data.composites.length ? {
-    label: `composites`,
-    children: [],
-    type: 'composite',
-  }: { label: `composites`,type: 'composite' });
-
-  data.bodies.forEach(obj => {
-    tree[0].children.push({
-      label: `${obj.id} ${obj.label}`,
-      type: 'body',
-      id: obj.id,
-    })
-  });
-  data.constraints.forEach(obj => {
-    tree[1].children.push({
-      label: `${obj.id} ${obj.label}`,
-      type: 'constraint',
-      id: obj.id
-    })
-  });
-  if(data.composites.length) {
-    data.composites.forEach(obj => {
-      tree[2].children.push({
-        label: `${obj.id} ${obj.label}`,
-        type: 'composite',
-        id: obj.id,
-        children: createTreeMap(obj),
-      })
-    });
-  }
-  return tree
-
-};
-
 const LeftSideBar = (props) => {
   //Store
-  const { menuLeft, staticBlocks, width, height, activeOpacity } = useStoreState(state => state.general);
+  const {
+    menuLeft, staticBlocks, width, height, activeOpacity,
+    treeElements, toastInfo
+  } = useStoreState(state => state.general);
   const { updateAllForSearch } = useStoreActions(action => action.leftMenu);
-  const general = useStoreState(state => state.general.render);
   const [search, setSearch] = useState('');
   let getAllComposites = [];
   let treeMap = [];
-
-  if(general.type){
-    treeMap = createTreeMap(general);
+  if(treeElements.length){
     treeMap  = search.trim()
-        ? keywordFilter(_.cloneDeep(treeMap), search)
-        : treeMap;
-    //console.log(keywordFilter(treeMap, '3 Rectangle'))
-    getAllComposites = Composite.allComposites(general);
-    //console.log(getAllComposites)
+        ? keywordFilter(_.cloneDeep(treeElements), search)
+        : treeElements;
+    getAllComposites = Composite.allComposites(inspector.world);
   }
   const searchChange = (e, input) => {
-    updateAllForSearch()
+    updateAllForSearch();
     setSearch(input.value)
   };
 
@@ -456,7 +412,7 @@ const LeftSideBar = (props) => {
     actions => actions.matterOptions.addOptions
   );
 
-  const { addRender, runRestart, updateStaticBlocks, changeActiveOpacity } = useStoreActions(
+  const { addRender, runRestart, updateStaticBlocks, updateToast } = useStoreActions(
     actions => actions.general
   );
 
@@ -523,22 +479,22 @@ const LeftSideBar = (props) => {
       console.log(dataObj)
     }
     if(obj.composite === 0){
-      World.add(general, [dataObj]);
+      World.add(inspector.world, [dataObj]);
     }else{
-      const compositeObj = Composite.get(general, obj.composite, 'composite');
+      const compositeObj = Composite.get(inspector.world, obj.composite, 'composite');
       World.add(compositeObj, [dataObj]);
-      addRender({...general})
+      addRender({...inspector.world})
     }
   };
   //Add Constraint
   const addConstraint = obj =>{
     const constraint = Constraint.create(obj);
     if(obj.composite === 0){
-      World.add(general, [constraint])
+      World.add(inspector.world, [constraint])
     }else{
-      const compositeObj = Composite.get(general, obj.composite, 'composite');
-      World.add(compositeObj, [constraint])
-      addRender({...general})
+      const compositeObj = Composite.get(inspector.world, obj.composite, 'composite');
+      World.add(compositeObj, [constraint]);
+      addRender({...inspector.world})
     }
   };
   // Add static blocks
@@ -568,7 +524,11 @@ const LeftSideBar = (props) => {
   //Elements inspector
   const runInspector = value => {
 
+    const keyboardKey = []
     inspector = value;
+    console.log('inspector',inspector);
+    //const { constraints } = inspector.world;
+
     const { engine } = inspector.render;
 
     if(staticBlocks){
@@ -582,6 +542,50 @@ const LeftSideBar = (props) => {
     Events.on(engine.world, "afterRemove", () => {
       addRender({...engine.world})
     });
+
+    document.body.addEventListener("keydown", function(e) {
+      console.log(e.code,e)
+      keyboardKey[e.code] = true;
+      //e.preventDefault();
+      //console.log(e)
+
+    });
+    document.body.addEventListener("keyup", function(e) {
+      e.preventDefault();
+      keyboardKey[e.code] = false;
+    });
+
+    const mouse = Mouse.create(inspector.render.canvas),
+        mouseConstraint = MouseConstraint.create(engine, {
+          mouse: mouse,
+          constraint: {
+            stiffness: 0.2,
+            render: {
+              visible: false
+            }
+          }
+        });
+
+    World.add(inspector.world, [mouseConstraint])
+    Events.on(mouseConstraint, "startdrag", event => {
+      // console.log(event)
+      if(keyboardKey['ControlLeft']){
+        updateAllForSearch();
+        setSearch(`${event.body.id} ${event.body.label}`)
+      }
+    })
+    Events.on(mouseConstraint, "mousedown", event => {
+      //console.log(keyboardKey)
+      if(keyboardKey['ShiftLeft']){
+        const {x,y} = event.mouse.mousedownPosition
+        updateToast({show: true,title:'Mouse position',message:`x: ${x} y: ${y}`})
+        console.log(event.mouse)
+        ///setSearch(`${event.body.id} ${event.body.label}`)
+      }
+    })
+
+
+    //const mouseConstraint = _.find(inspector.world.constraints, o => o.pointB === null && o.bodyB === null );
   };
   //Get active body
   const activateBody = (data, type) => {
@@ -784,17 +788,11 @@ const LeftSideBar = (props) => {
         width='wide'
         className={activeOpacity ? 'show-opacity-menu' : ''}
       >
-        <Input icon='search' value={search} placeholder='Search...' size="mini" onChange={searchChange} />
-        <Button
-            // className="opacity-button"
-            type="button"
-            color="teal"
-            icon
-            size="mini"
-            onClick={() => {changeActiveOpacity(!activeOpacity)}}
-        >
-          <Icon  name={!activeOpacity ? 'eye' : 'eye slash'} />
-        </Button>
+        <Search
+          search={search}
+          searchChange={searchChange}
+          keyboard={inspector.keyboard}
+        />
         {AccordionExampleNested(treeMap)}
         <Accordion styled>
             <Accordion.Title
@@ -845,7 +843,7 @@ const LeftSideBar = (props) => {
                 inspector.options && open === 3 &&
                 <AddConstraints
                   getAllComposites={getAllComposites}
-                  inspectorOptions={general}
+                  inspectorOptions={inspector.world}
                   activateBodyConstraint={activateBodyConstraint}
                   addConstraint={addConstraint}
                 />
@@ -871,7 +869,8 @@ const LeftSideBar = (props) => {
           />
         </Accordion>
       </Sidebar>
-
+      <InfoModal/>
+      <Toast/>
       <Sidebar.Pusher>
         <Segment basic >
           {childrenWithProps}

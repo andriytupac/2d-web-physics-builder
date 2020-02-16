@@ -177,24 +177,6 @@ const Constraints = props => {
 
     World.add(world, [bodyA, bodyB, constraint]);
 
-    // add mouse control
-    const mouse = Mouse.create(render.canvas),
-      mouseConstraint = MouseConstraint.create(engine, {
-        mouse: mouse,
-        constraint: {
-          // allow bodies on mouse to rotate
-          angularStiffness: 0,
-          render: {
-            visible: false
-          }
-        }
-      });
-
-    World.add(world, mouseConstraint);
-
-    // keep the mouse in sync with rendering
-    render.mouse = mouse;
-
 
     const { width, height } = render.options;
 

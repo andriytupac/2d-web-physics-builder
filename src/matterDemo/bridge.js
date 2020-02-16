@@ -132,23 +132,6 @@ const Bridge = props => {
       })
     ]);
 
-    // add mouse control
-    const mouse = Mouse.create(render.canvas),
-      mouseConstraint = MouseConstraint.create(engine, {
-        mouse: mouse,
-        constraint: {
-          stiffness: 0.1,
-          render: {
-            visible: false
-          }
-        }
-      });
-
-    World.add(world, mouseConstraint);
-
-    // keep the mouse in sync with rendering
-    render.mouse = mouse;
-
     /******* Body ******/
 
     // eslint-disable-next-line

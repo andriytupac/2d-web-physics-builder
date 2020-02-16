@@ -123,8 +123,11 @@ let EditBody = (props) => {
     modifyBody,
     objectData,
     allCategories,
-    formName
+    formName,
+    change
   } =  props;
+
+  console.log('EditBody', props)
 
   const additionalSelect = [];
   if(objectData.parts.length > 1) {
@@ -145,6 +148,11 @@ let EditBody = (props) => {
 
   const handlerGetLastPosition = () => {
     setObjPosition({...objectData.position})
+  };
+
+  const handlerAddGetLast = () => {
+    change('position',{...objectData.position})
+    console.log(objectData.position)
   };
 
   const WandH = {
@@ -342,6 +350,9 @@ let EditBody = (props) => {
           <Message.Header>
             <Button type="button" onClick={handlerGetLastPosition} size="mini" icon primary width={2}>
               <Icon name='redo' />
+            </Button>
+            <Button type="button" onClick={handlerAddGetLast} size="mini" icon primary width={2}>
+              <Icon name='long arrow alternate up' />
             </Button>
             Position:
           </Message.Header>

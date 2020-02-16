@@ -36,6 +36,17 @@ Matter.use(
 
 let render;
 
+const keyboard = [
+    { name:"Right", description: "Wheels move right" },
+    { name:"Left", description: "Wheels move Left" },
+    { name:"Up", description: "Push frame move up" },
+    { name:"Down", description: "Push frame move down" },
+    { name:"D", description: "Blade move up" },
+    { name:"A", description: "Blade move down" },
+    { name:"W", description: "Ripper move up" },
+    { name:"S", description: "Ripper move Down" },
+];
+
 function Bulldozer(props){
 
     const { runInspector } = props;
@@ -91,6 +102,7 @@ function Bulldozer(props){
             selectStart: null,
             selectBounds: render.bounds,
             selected: [],
+            keyboard
         };
         runInspector(inspector);
         /******* connect inspector ******/
@@ -98,14 +110,14 @@ function Bulldozer(props){
         /********** key events **********/
         const keys = [];
         document.body.addEventListener("keydown", function(e) {
-            keys[e.keyCode] = true;
+            keys[e.code] = true;
             //e.preventDefault();
             //console.log(e)
 
         });
         document.body.addEventListener("keyup", function(e) {
-            e.preventDefault();
-            keys[e.keyCode] = false;
+            //e.preventDefault();
+            keys[e.code] = false;
         });
         /********** key events **********/
 
@@ -187,8 +199,8 @@ function Bulldozer(props){
                             xScale: scaleX,
                             yScale: scaleY,
                             texture: imgBlade,
-                            // xOffset: 0,
-                            // yOffset: -0.12
+                            xOffset: 0,
+                            yOffset: 0.025
 
                         }
                     }
@@ -207,8 +219,8 @@ function Bulldozer(props){
                             texture: imgPushFrame,
                             xScale: scaleX,
                             yScale: scaleY,
-                            // xOffset: 0,
-                            // yOffset: -0.1
+                            xOffset: 0.01,
+                            yOffset: -0.09
 
                         }
                     }
@@ -230,7 +242,9 @@ function Bulldozer(props){
                     sprite: {
                         xScale: scaleX,
                         yScale: scaleY,
-                        texture: imgCab
+                        texture: imgCab,
+                        xOffset: 0.005,
+                        yOffset: 0.023
                     }
                 }
             });
@@ -658,49 +672,37 @@ function Bulldozer(props){
 
             Composite.scale(ExcavatorComposite, scaleX, scaleY, { x: positionX + x,y: positionY + y });
 
-            /*Events.on(engine, 'beforeUpdate', function(event) {
-                if(keys[39]){
-                    Body.setAngularVelocity(frontTrackWheel, 0.1);
-                    Body.setAngularVelocity(backTrackWheel, 0.1);
-                } else if(keys[37]){
-                    Body.setAngularVelocity(frontTrackWheel, -0.1);
-                    Body.setAngularVelocity(backTrackWheel, -0.1);
-                }else if(keys[38]){
-                    mobileCabWithBoom.length +=0.2
-                }else if(keys[40]){
-                    mobileCabWithBoom.length -=0.2
-                }else if(keys[65]){
-                    mobileBoomWithArm.length +=0.2
-                }else if(keys[68]){
-                    mobileBoomWithArm.length -=0.2
-                }else if(keys[87]){
-                    mobileArmWithArmConnector.length -=0.2
-                }else if(keys[83]){
-                    mobileArmWithArmConnector.length +=0.2
+            Events.on(engine, 'beforeUpdate', function(event) {
+                if(keys['ArrowRight']){
+                    allWheels.forEach(obj=> {
+                        Body.setAngularVelocity(obj, 0.1);
+                    });
+                } else if(keys['ArrowLeft']){
+                    allWheels.forEach(obj=> {
+                        Body.setAngularVelocity(obj, -0.1);
+                    });
+                }else if(keys['ArrowUp']){
+                    mobileCabWithPushFrame.length -=0.2
+                }else if(keys['ArrowDown']){
+                    mobileCabWithPushFrame.length +=0.2
+                }else if(keys['KeyA']){
+                    mobileBladeWithPushFrame.length -=0.2
+                }else if(keys['KeyD']){
+                    mobileBladeWithPushFrame.length +=0.2
+                }else if(keys['KeyW']){
+                    mobileCabWithRipperTop.length -=0.2
+                }else if(keys['KeyS']){
+                    mobileCabWithRipperTop.length +=0.2
                 }
-            });*/
+
+                //allWheel
+            });
 
 
             return ExcavatorComposite;
         };
         World.add(world, carExcavator(0,0, 1, 1, false));
 
-        // add mouse control
-        const mouse = Mouse.create(render.canvas),
-            mouseConstraint = MouseConstraint.create(engine, {
-                mouse: mouse,
-                constraint: {
-                    stiffness: 0.2,
-                    render: {
-                        visible: false
-                    }
-                }
-            });
-
-        World.add(world, mouseConstraint);
-
-        // keep the mouse in sync with rendering
-        render.mouse = mouse;
         const { width, height } = render.options;
 
         World.add(world, [

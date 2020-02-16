@@ -129,23 +129,6 @@ const Chains = props => {
       Bodies.rectangle(400, 600, 1200, 50.5, { isStatic: true })
     ]);
 
-    // add mouse control
-    const mouse = Mouse.create(render.canvas),
-      mouseConstraint = MouseConstraint.create(engine, {
-        mouse: mouse,
-        constraint: {
-          stiffness: 0.2,
-          render: {
-            visible: false
-          }
-        }
-      });
-
-    World.add(world, mouseConstraint);
-
-    // keep the mouse in sync with rendering
-    render.mouse = mouse;
-
     const { width, height } = render.options;
 
     World.add(world, [

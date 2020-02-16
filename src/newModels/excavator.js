@@ -36,6 +36,17 @@ Matter.use(
 
 let render;
 
+const keyboard = [
+    { name:"Right", description: "Wheels move right" },
+    { name:"Left", description: "Wheels move Left" },
+    { name:"Up", description: "Boom move up" },
+    { name:"Down", description: "Boom move down" },
+    { name:"D", description: "Arm move up" },
+    { name:"A", description: "Arm move down" },
+    { name:"W", description: "Bucket move up" },
+    { name:"S", description: "Bucket move Down" },
+];
+
 function Excavator(props){
 
   const { runInspector } = props;
@@ -90,6 +101,7 @@ function Excavator(props){
       selectStart: null,
       selectBounds: render.bounds,
       selected: [],
+      keyboard
     };
     runInspector(inspector);
     /******* connect inspector ******/
@@ -97,14 +109,14 @@ function Excavator(props){
     /********** key events **********/
     const keys = [];
       document.body.addEventListener("keydown", function(e) {
-          keys[e.keyCode] = true;
+          keys[e.code] = true;
           //e.preventDefault();
           //console.log(e)
 
       });
       document.body.addEventListener("keyup", function(e) {
           e.preventDefault();
-          keys[e.keyCode] = false;
+          keys[e.code] = false;
       });
     /********** key events **********/
 
@@ -607,23 +619,23 @@ function Excavator(props){
         Composite.scale(ExcavatorComposite, scaleX, scaleY, { x: positionX + x,y: positionY + y });
 
         Events.on(engine, 'beforeUpdate', function(event) {
-            if(keys[39]){
+            if(keys['ArrowRight']){
                 Body.setAngularVelocity(frontTrackWheel, 0.1);
                 Body.setAngularVelocity(backTrackWheel, 0.1);
-            } else if(keys[37]){
+            } else if(keys['ArrowLeft']){
                 Body.setAngularVelocity(frontTrackWheel, -0.1);
                 Body.setAngularVelocity(backTrackWheel, -0.1);
-            }else if(keys[38]){
+            }else if(keys['ArrowUp']){
                 mobileCabWithBoom.length +=0.2
-            }else if(keys[40]){
+            }else if(keys['ArrowDown']){
                 mobileCabWithBoom.length -=0.2
-            }else if(keys[65]){
+            }else if(keys['KeyA']){
                 mobileBoomWithArm.length +=0.2
-            }else if(keys[68]){
+            }else if(keys['KeyD']){
                 mobileBoomWithArm.length -=0.2
-            }else if(keys[87]){
+            }else if(keys['KeyW']){
                 mobileArmWithArmConnector.length -=0.2
-            }else if(keys[83]){
+            }else if(keys['KeyS']){
                 mobileArmWithArmConnector.length +=0.2
             }
 
@@ -635,22 +647,6 @@ function Excavator(props){
     };
     World.add(world, carExcavator(400,200, 0.8, 0.8, false))
 
-      // add mouse control
-    const mouse = Mouse.create(render.canvas),
-      mouseConstraint = MouseConstraint.create(engine, {
-        mouse: mouse,
-        constraint: {
-          stiffness: 0.2,
-          render: {
-            visible: false
-          }
-        }
-      });
-
-    World.add(world, mouseConstraint);
-
-    // keep the mouse in sync with rendering
-    render.mouse = mouse;
     const { width, height } = render.options;
 
     World.add(world, [

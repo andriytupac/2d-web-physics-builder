@@ -33,6 +33,7 @@ function MatterDemo(props){
         Mouse = Matter.Mouse,
         Common = Matter.Common,
         Runner = Matter.Runner,
+        Events = Matter.Events,
       Body = Matter.Body,
       Composites = Matter.Composites,
         MouseConstraint = Matter.MouseConstraint;
@@ -75,29 +76,12 @@ function MatterDemo(props){
 
     /******* Body ******/
     // add bodies
-
-    // add mouse control
-    const mouse = Mouse.create(render.canvas),
-      mouseConstraint = MouseConstraint.create(engine, {
-        mouse: mouse,
-        constraint: {
-          stiffness: 0.2,
-          render: {
-            visible: false
-          }
-        }
-      });
-
-    World.add(world, mouseConstraint);
-
-    // keep the mouse in sync with rendering
-    render.mouse = mouse;
     const Car = Composites.car(400, 300, 200, 30, 30);
     Body.setStatic(Car.bodies[0],true)
     Body.setStatic(Car.bodies[1],true)
     Body.setStatic(Car.bodies[2],true)
     Car.constraints[0].pointA.y = 50
-    console.log(Car)
+    console.log(Car);
     const car1 = Composites.car(400, 300, 200, 30, 30);
 
     const { width, height } = render.options;
