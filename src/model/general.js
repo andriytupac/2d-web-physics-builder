@@ -63,6 +63,10 @@ const General = {
     title: '',
     elements: []
   },
+  drivingMode: localStorage.getItem('drivingMode') === 'true',
+  updateDrivingMode: action((state, payload) => {
+    state.drivingMode = payload
+  }),
   updateInfoModal: action((state, info) => {
     Object.assign(state,{ infoModal: {...info}} )
   }),

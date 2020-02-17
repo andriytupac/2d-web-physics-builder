@@ -111,13 +111,17 @@ function Bulldozer(props){
         const keys = [];
         document.body.addEventListener("keydown", function(e) {
             keys[e.code] = true;
-            //e.preventDefault();
-            //console.log(e)
-
+            const drivingMode = localStorage.getItem('drivingMode') === 'true';
+            if(drivingMode){
+                e.preventDefault();
+            }
         });
         document.body.addEventListener("keyup", function(e) {
-            //e.preventDefault();
+            const drivingMode = localStorage.getItem('drivingMode') === 'true';
             keys[e.code] = false;
+            if(drivingMode){
+                e.preventDefault();
+            }
         });
         /********** key events **********/
 
@@ -131,11 +135,12 @@ function Bulldozer(props){
             const frontTrackWheel = Bodies.circle(globalPos.x+150, globalPos.y+110 , 32 , {
                 collisionFilter: { group: group },
                 label: 'frontTrackWheel',
+                friction:1,
                 render: {
                     sprite: {
                         texture: wheel,
-                        xScale: scaleX,
-                        yScale: scaleY,
+                        xScale: 1,
+                        yScale: 1,
 
                     }
                 }
@@ -144,11 +149,12 @@ function Bulldozer(props){
             const backTrackWheel = Bodies.circle(globalPos.x-160, globalPos.y+110  , 32, {
                 collisionFilter: { group: group },
                 label: 'backTrackWheel',
+                friction:1,
                 render: {
                     sprite: {
                         texture: wheel,
-                        xScale: scaleX,
-                        yScale: scaleY,
+                        xScale: 1,
+                        yScale: 1,
 
                     }
                 }
@@ -157,11 +163,12 @@ function Bulldozer(props){
             const topTrackWheel = Bodies.circle(globalPos.x-100, globalPos.y+35  , 39, {
                 collisionFilter: { group: group },
                 label: 'topTrackWheel',
+                friction:1,
                 render: {
                     sprite: {
                         texture: gear,
-                        xScale: scaleX,
-                        yScale: scaleY,
+                        xScale: 1,
+                        yScale: 1,
 
                     }
                 }
@@ -178,10 +185,11 @@ function Bulldozer(props){
                 let smallWheel = Bodies.circle(globalPos.x + moveX, globalPos.y + 130, 12, {
                     collisionFilter: { group: group },
                     label: 'smallWheel',
+                    friction:1,
                     render: {
                         sprite: {
-                            xScale: scaleX,
-                            yScale: scaleY,
+                            xScale: 1,
+                            yScale: 1,
                             texture: wheelSmall
                         }
                     }
@@ -196,8 +204,8 @@ function Bulldozer(props){
                     render: {
                         visible: false,
                         sprite: {
-                            xScale: scaleX,
-                            yScale: scaleY,
+                            xScale: 1,
+                            yScale: 1,
                             texture: imgBlade,
                             xOffset: 0,
                             yOffset: 0.025
@@ -217,8 +225,8 @@ function Bulldozer(props){
                         visible: false,
                         sprite: {
                             texture: imgPushFrame,
-                            xScale: scaleX,
-                            yScale: scaleY,
+                            xScale: 1,
+                            yScale: 1,
                             xOffset: 0.01,
                             yOffset: -0.09
 
@@ -240,8 +248,8 @@ function Bulldozer(props){
                 collisionFilter: { group: group, mask: 0x0001 },
                 render: {
                     sprite: {
-                        xScale: scaleX,
-                        yScale: scaleY,
+                        xScale: 1,
+                        yScale: 1,
                         texture: imgCab,
                         xOffset: 0.005,
                         yOffset: 0.023
@@ -262,8 +270,8 @@ function Bulldozer(props){
                 collisionFilter: { group: group },
                 render: {
                     sprite: {
-                        xScale: scaleX,
-                        yScale: scaleY,
+                        xScale: 1,
+                        yScale: 1,
                         texture: imgRipper
                     }
                 }
@@ -279,8 +287,8 @@ function Bulldozer(props){
                 render: {
                     sprite: {
                         texture: imgTrack,
-                        xScale: scaleX,
-                        yScale: scaleY,
+                        xScale: 1,
+                        yScale: 1,
                         xOffset: 0,
                         yOffset: 0.2
                     }
@@ -308,10 +316,11 @@ function Bulldozer(props){
                     isStatic: staticParam,
                     angle:0,
                     //density:0.005,
+                    friction:1,
                     render: {
                         sprite: {
-                            xScale: scaleX,
-                            yScale: scaleY,
+                            xScale: 1,
+                            yScale: 1,
                             texture: imgTire
                         }
                     }
@@ -670,7 +679,7 @@ function Bulldozer(props){
             const positionX = (position.max.x+position.min.x)/2;
             const positionY = (position.max.y+position.min.y)/2;
 
-            Composite.scale(ExcavatorComposite, scaleX, scaleY, { x: positionX + x,y: positionY + y });
+            Composite.scale(ExcavatorComposite, scaleX, scaleY, { x: positionX + x,y: positionY + y }, true);
 
             Events.on(engine, 'beforeUpdate', function(event) {
                 if(keys['ArrowRight']){
@@ -681,18 +690,21 @@ function Bulldozer(props){
                     allWheels.forEach(obj=> {
                         Body.setAngularVelocity(obj, -0.1);
                     });
-                }else if(keys['ArrowUp']){
-                    mobileCabWithPushFrame.length -=0.2
+                }
+                if(keys['ArrowUp']){
+                    mobileCabWithPushFrame.length -= mobileCabWithPushFrame.length  > 10 * scaleX ? 0.2 : 0
                 }else if(keys['ArrowDown']){
-                    mobileCabWithPushFrame.length +=0.2
-                }else if(keys['KeyA']){
-                    mobileBladeWithPushFrame.length -=0.2
+                    mobileCabWithPushFrame.length += mobileCabWithPushFrame.length  < 60 * scaleX ? 0.2 : 0
+                }
+                if(keys['KeyA']){
+                    mobileBladeWithPushFrame.length -= mobileBladeWithPushFrame.length  > 20 * scaleX ? 0.2 : 0
                 }else if(keys['KeyD']){
-                    mobileBladeWithPushFrame.length +=0.2
-                }else if(keys['KeyW']){
-                    mobileCabWithRipperTop.length -=0.2
+                    mobileBladeWithPushFrame.length += mobileBladeWithPushFrame.length  < 50 * scaleX ? 0.2 : 0
+                }
+                if(keys['KeyW']){
+                    mobileCabWithRipperTop.length -= mobileCabWithRipperTop.length  > 20 * scaleX ? 0.2 : 0
                 }else if(keys['KeyS']){
-                    mobileCabWithRipperTop.length +=0.2
+                    mobileBladeWithPushFrame.length += mobileBladeWithPushFrame.length  < 90 * scaleX ? 0.2 : 0
                 }
 
                 //allWheel
@@ -701,7 +713,7 @@ function Bulldozer(props){
 
             return ExcavatorComposite;
         };
-        World.add(world, carExcavator(0,0, 1, 1, false));
+        World.add(world, carExcavator(0,50, 1, 1, false));
 
         const { width, height } = render.options;
 

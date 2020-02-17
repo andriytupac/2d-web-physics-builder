@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import { Accordion, Menu, Segment, Sidebar, Icon, Button, Popup, Input } from 'semantic-ui-react'
+import { Accordion, Menu, Segment, Sidebar, Icon, Button, Popup, Input, Label } from 'semantic-ui-react'
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import _ from "lodash";
 import GeneralSettings from '../generalSettings';
@@ -33,6 +33,7 @@ const Runner = Matter.Runner;
 const Common = Matter.Common;
 let inspector = {};
 let allCategories = [];
+let globalDrivingMode;
 
 for(let i = 0; i<=28; i++){
   let cat = Body.nextCategory();
@@ -79,7 +80,7 @@ const MenageElements = props => {
       if(newData.sprite && newData.sprite.texture === 'none'){
         delete newData.sprite.texture
       }
-      const render = { ...body.render, ...data}
+      const render = { ...body.render, ...data}.
       Body.set(body,key,render)
     }else if(key === 'collisionFilter'){
       console.log('key',key,data);
@@ -87,6 +88,10 @@ const MenageElements = props => {
       Body.set(body,key,render)
     }else if(key === 'applyForce'){
       Body.applyForce(body,{ x: body.position.x, y: body.position.y },data)
+    }else if(key === 'isStatic'){
+      if(data !== body.isStatic){
+        Body.set(body,key,data)
+      }
     }else{
       console.log('key',key,data)
       Body.set(body,key,data)
@@ -391,8 +396,9 @@ const LeftSideBar = (props) => {
   //Store
   const {
     menuLeft, staticBlocks, width, height, activeOpacity,
-    treeElements, toastInfo
+    treeElements, drivingMode,
   } = useStoreState(state => state.general);
+  globalDrivingMode = drivingMode;
   const { updateAllForSearch } = useStoreActions(action => action.leftMenu);
   const [search, setSearch] = useState('');
   let getAllComposites = [];
@@ -412,7 +418,7 @@ const LeftSideBar = (props) => {
     actions => actions.matterOptions.addOptions
   );
 
-  const { addRender, runRestart, updateStaticBlocks, updateToast } = useStoreActions(
+  const { addRender, runRestart, updateStaticBlocks, updateToast, updateDrivingMode } = useStoreActions(
     actions => actions.general
   );
 
@@ -544,10 +550,13 @@ const LeftSideBar = (props) => {
     });
 
     document.body.addEventListener("keydown", function(e) {
-      console.log(e.code,e)
+      console.log(e.code,e);
       keyboardKey[e.code] = true;
-      //e.preventDefault();
-      //console.log(e)
+      if(e.code === 'KeyQ'){
+        globalDrivingMode=!globalDrivingMode
+        localStorage.setItem('drivingMode', globalDrivingMode);
+        updateDrivingMode(globalDrivingMode)
+      }
 
     });
     document.body.addEventListener("keyup", function(e) {
@@ -579,7 +588,7 @@ const LeftSideBar = (props) => {
       if(keyboardKey['ShiftLeft']){
         const {x,y} = event.mouse.mousedownPosition
         updateToast({show: true,title:'Mouse position',message:`x: ${x} y: ${y}`})
-        console.log(event.mouse)
+        //console.log(event.mouse)
         ///setSearch(`${event.body.id} ${event.body.label}`)
       }
     })
@@ -788,6 +797,13 @@ const LeftSideBar = (props) => {
         width='wide'
         className={activeOpacity ? 'show-opacity-menu' : ''}
       >
+        {drivingMode && (
+          <div className="driving-mode">
+            <Label as='a' color='green' tag>
+              Driving mode
+            </Label>
+          </div>
+        )}
         <Search
           search={search}
           searchChange={searchChange}

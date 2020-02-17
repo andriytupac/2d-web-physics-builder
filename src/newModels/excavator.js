@@ -110,13 +110,20 @@ function Excavator(props){
     const keys = [];
       document.body.addEventListener("keydown", function(e) {
           keys[e.code] = true;
+          const drivingMode = localStorage.getItem('drivingMode') === 'true';
+          if(drivingMode){
+              e.preventDefault();
+          }
           //e.preventDefault();
           //console.log(e)
 
       });
       document.body.addEventListener("keyup", function(e) {
-          e.preventDefault();
           keys[e.code] = false;
+          const drivingMode = localStorage.getItem('drivingMode') === 'true';
+          if(drivingMode){
+              e.preventDefault();
+          }
       });
     /********** key events **********/
 
@@ -126,26 +133,28 @@ function Excavator(props){
         const group = Body.nextGroup(true);
         // add bodies
         const frontTrackWheel = Bodies.circle(830 , 495 , 55 , {
-              collisionFilter: { group: group },
-              label: 'frontTrackWheel',
-                render: {
-                    sprite: {
-                        texture: wheel,
-                        xScale: scaleX,
-                        yScale: scaleY,
+            collisionFilter: { group: group },
+            label: 'frontTrackWheel',
+            friction:1,
+            render: {
+                sprite: {
+                    texture: wheel,
+                    xScale: 1,
+                    yScale: 1,
 
-                    }
                 }
+            }
           });
 
         const backTrackWheel = Bodies.circle(1170 , 495 , 55, {
             collisionFilter: { group: group },
             label: 'backTrackWheel',
+            friction:1,
             render: {
                 sprite: {
                     texture: wheel,
-                    xScale: scaleX,
-                    yScale: scaleY,
+                    xScale: 1,
+                    yScale: 1,
 
                 }
             }
@@ -159,8 +168,8 @@ function Excavator(props){
                     visible: false,
                     sprite: {
                         texture: imgBucket,
-                        xScale: scaleX,
-                        yScale: scaleY,
+                        xScale: 1,
+                        yScale: 1,
                         xOffset: 0,
                         yOffset: 0
 
@@ -177,8 +186,8 @@ function Excavator(props){
                     visible: false,
                     sprite: {
                         texture: imgArm,
-                        xScale: scaleX,
-                        yScale: scaleY,
+                        xScale: 1,
+                        yScale: 1,
                         xOffset: 0,
                         yOffset: -0.12
 
@@ -197,8 +206,8 @@ function Excavator(props){
                     visible: false,
                     sprite: {
                         texture: imgBoom,
-                        xScale: scaleX,
-                        yScale: scaleY,
+                        xScale: 1,
+                        yScale: 1,
                         xOffset: 0,
                         yOffset: -0.1
 
@@ -215,8 +224,8 @@ function Excavator(props){
                     zIndex: 2,
                     sprite: {
                         texture: imgCab,
-                        xScale: scaleX,
-                        yScale: scaleY,
+                        xScale: 1,
+                        yScale: 1,
                         xOffset: 0,
                         yOffset: 0
 
@@ -232,8 +241,8 @@ function Excavator(props){
                     visible: false,
                     sprite: {
                         texture: imgTrackFrame,
-                        xScale: scaleX,
-                        yScale: scaleY,
+                        xScale: 1,
+                        yScale: 1,
                         xOffset: -0.06,
                         yOffset: -0.05
                     }
@@ -248,8 +257,8 @@ function Excavator(props){
             render: {
                 sprite: {
                     texture: imgArmConnector,
-                    xScale: scaleX,
-                    yScale: scaleY,
+                    xScale: 1,
+                    yScale: 1,
                     xOffset: 0,
                     yOffset: 0
                 }
@@ -262,8 +271,8 @@ function Excavator(props){
             render: {
                 sprite: {
                     texture: imgBucketConnector,
-                    xScale: scaleX,
-                    yScale: scaleY,
+                    xScale: 1,
+                    yScale: 1,
                     xOffset: 0,
                     yOffset: 0
                 }
@@ -625,18 +634,21 @@ function Excavator(props){
             } else if(keys['ArrowLeft']){
                 Body.setAngularVelocity(frontTrackWheel, -0.1);
                 Body.setAngularVelocity(backTrackWheel, -0.1);
-            }else if(keys['ArrowUp']){
-                mobileCabWithBoom.length +=0.2
+            }
+            if(keys['ArrowUp']){
+                mobileCabWithBoom.length += mobileCabWithBoom.length  < 250 * scaleX ? 0.2 : 0
             }else if(keys['ArrowDown']){
-                mobileCabWithBoom.length -=0.2
-            }else if(keys['KeyA']){
-                mobileBoomWithArm.length +=0.2
+                mobileCabWithBoom.length -= mobileCabWithBoom.length  > 140 * scaleX ? 0.2 : 0
+            }
+            if(keys['KeyA']){
+                mobileBoomWithArm.length +=mobileCabWithBoom.length < 370 * scaleX ? 0.2 : 0
             }else if(keys['KeyD']){
-                mobileBoomWithArm.length -=0.2
-            }else if(keys['KeyW']){
-                mobileArmWithArmConnector.length -=0.2
+                mobileBoomWithArm.length -= mobileBoomWithArm.length > 200 * scaleX ? 0.2 : 0
+            }
+            if(keys['KeyW']){
+                mobileArmWithArmConnector.length -= mobileArmWithArmConnector.length > 170 * scaleX ? 0.2 : 0
             }else if(keys['KeyS']){
-                mobileArmWithArmConnector.length +=0.2
+                mobileArmWithArmConnector.length +=mobileArmWithArmConnector.length < 265 * scaleX ? 0.2 : 0
             }
 
             //allWheel
@@ -645,7 +657,7 @@ function Excavator(props){
 
         return ExcavatorComposite;
     };
-    World.add(world, carExcavator(400,200, 0.8, 0.8, false))
+    World.add(world, carExcavator(400,200, 1, 1, false))
 
     const { width, height } = render.options;
 
