@@ -532,8 +532,8 @@ const LeftSideBar = (props) => {
 
     const keyboardKey = []
     inspector = value;
-    console.log('inspector',inspector);
-    //const { constraints } = inspector.world;
+    // console.log('inspector',inspector);
+    // const { constraints } = inspector.world;
 
     const { engine } = inspector.render;
 

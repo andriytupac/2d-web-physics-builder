@@ -80,7 +80,7 @@ function Excavator(props){
       engine: engine,
       options: {
         width: 1400,
-        height: 600,
+        height: 630,
         wireframes: false,
         showBounds: false
       }
@@ -657,7 +657,7 @@ function Excavator(props){
 
         return ExcavatorComposite;
     };
-    World.add(world, carExcavator(400,200, 1, 1, false))
+    World.add(world, carExcavator(400,200, 0.8, 0.8, false))
 
     const { width, height } = render.options;
 

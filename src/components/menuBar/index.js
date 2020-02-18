@@ -43,6 +43,8 @@ function MenuBar() {
   },[ menuLeft ]);
 
   const [activeItem, setActiveItem] = useState(false);
+  const [example, setExample] = useState(1);
+  const [model, setModel] = useState(2);
 
   const handleItemClick = (e, { name }) => {
     setActiveItem(name);
@@ -51,9 +53,14 @@ function MenuBar() {
 
   const handlerChooseExample = (event, data) => {
     history.push(`/examples/${data.value}`);
+      setExample(1);
+      setModel(0);
   };
   const handlerChooseModel = (event, data) => {
+      //console.log(data)
     history.push(`/new-models/${data.value}`);
+      setExample(0);
+      setModel(1);
   };
 
   return (
@@ -69,6 +76,7 @@ function MenuBar() {
        name='examples'
      >
        <Dropdown
+           key={example}
          button
          className='icon'
          floating
@@ -86,7 +94,8 @@ function MenuBar() {
        name='new-model'
      >
        <Dropdown
-         button
+           key={example}
+           button
          className='icon'
          floating
          labeled
@@ -104,8 +113,22 @@ function MenuBar() {
        active={activeItem === 'upcomingEvents'}
        onClick={handleItemClick}
      >
-       Upcoming Events
+       Matte.js
      </Menu.Item>
+        <Menu.Item
+           name='upcomingEvents'
+           active={activeItem === 'upcomingEvents'}
+           onClick={handleItemClick}
+         >
+          Website
+        </Menu.Item>
+       <Menu.Item
+           name='upcomingEvents'
+           active={activeItem === 'upcomingEvents'}
+           onClick={handleItemClick}
+         >
+          github
+       </Menu.Item>
    </Menu>
   )
 
