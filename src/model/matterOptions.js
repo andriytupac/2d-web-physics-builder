@@ -1,17 +1,16 @@
-import {action} from "easy-peasy";
+import { action } from 'easy-peasy';
 
 const matterOptions = {
-  options: {},
+	options: {},
 
-  addOptions: action((state, payload) => {
-    return {
-      ...state,
-      options: {
-        ...payload
-      }
-    }
-  }),
-
+	addOptions: action((state, payload) => {
+		return {
+			...state,
+			options: {
+				...payload,
+			},
+		};
+	}),
 };
 
 export default matterOptions;
