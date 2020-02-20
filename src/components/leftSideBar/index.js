@@ -420,7 +420,6 @@ const LeftSideBar = props => {
 			if (window.innerWidth < canvas.width) {
 				canvas.style.width = '100%';
 			}
-			console.log('tupac1', window.innerWidth, canvas.width);
 		}
 	});
 	globalDrivingMode = drivingMode;
