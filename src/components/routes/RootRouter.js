@@ -20,9 +20,10 @@ import WreckingBall from '../../matterDemo/wreckingBall';
 
 import Excavator from '../../newModels/excavator';
 import Bulldozer from '../../newModels/bulldozer';
+import Home from '../../pages/home';
 
 const RootRouter = () => {
-	// let match = useRouteMatch("/");
+	const home = useRouteMatch('/');
 	const examples = useRouteMatch('/examples/:id');
 	const newModels = useRouteMatch('/new-models/:id');
 	if (examples && examples.isExact) {
@@ -106,6 +107,9 @@ const RootRouter = () => {
 				)}
 			</>
 		);
+	}
+	if (home && home.isExact) {
+		return <Home />;
 	}
 	return <Page404 />;
 

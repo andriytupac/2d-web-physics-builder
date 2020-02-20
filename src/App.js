@@ -6,8 +6,9 @@ import RootRoute from './components/routes/RootRouter';
 function App() {
 	return (
 		<div className="App">
-			<MenuBar />
-			<RootRoute />
+			<MenuBar>
+				<RootRoute />
+			</MenuBar>
 		</div>
 	);
 }

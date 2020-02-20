@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { Accordion, Menu, Segment, Sidebar, Icon, Button, Popup, Label } from 'semantic-ui-react';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import _ from 'lodash';
@@ -414,6 +414,15 @@ const LeftSideBar = props => {
 	const { menuLeft, staticBlocks, width, height, activeOpacity, treeElements, drivingMode } = useStoreState(
 		state => state.general,
 	);
+	useLayoutEffect(() => {
+		if (document.getElementsByTagName('canvas')[0]) {
+			const canvas = document.getElementsByTagName('canvas')[0];
+			if (window.innerWidth < canvas.width) {
+				canvas.style.width = '100%';
+			}
+			console.log('tupac1', window.innerWidth, canvas.width);
+		}
+	});
 	globalDrivingMode = drivingMode;
 	const { updateAllForSearch } = useStoreActions(action => action.leftMenu);
 	const [search, setSearch] = useState('');
