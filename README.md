@@ -1,68 +1,117 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# 2d web physics builder
 
-## Available Scripts
+2d web physics builder is a React wrapper which helps to create edit and manage [matter.js](https://github.com/liabru/matter-js) elements
+## Installation
 
-In the project directory, you can run:
+You can use `yarn` or `npm`
 
-### `yarn start`
+```bash
+yan install
+npm install
+```
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Usage
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+```javaScript
+const inspector = {
+			runner,
+			world: engine.world,
+			sceneElement: sceneEl.current,
+			render,
+			options: render.options,
+			selectStart: null,
+			selectBounds: render.bounds,
+			selected: [],
+		};
+runInspector(inspector);
+```
 
-### `yarn test`
+## Example
+Example of creating an empty area
+```javaScript
+import React, { useEffect, useRef } from 'react';
+import Matter from 'matter-js';
+import { useStoreState } from 'easy-peasy';
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+import decomp from 'poly-decomp';
+import IndexPosition from '../mattetPlugins/IndexPosition';
+import ConstraintInspector from '../mattetPlugins/ConstraintInspector';
 
-### `yarn build`
+window.decomp = decomp;
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Matter.Plugin.register(IndexPosition);
+Matter.Plugin.register(ConstraintInspector);
+Matter.use('matter-zIndex-plugin', 'constraint-inspector');
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+let render;
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+function MatterDemo(props) {
+	const { runInspector } = props;
 
-### `yarn eject`
+	const { restart } = useStoreState(state => state.general);
+	const sceneEl = useRef(null);
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+	const { Engine, Render, Runner, World, Bodies, Common } = Matter;
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+	useEffect(() => {
+		Common._nextId = 0;
+		Common._seed = 0;
+		const engine = Engine.create();
+		const { world } = engine;
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+		render = Render.create({
+			element: sceneEl.current,
+			engine,
+			options: {
+				width: 800,
+				height: 600,
+				wireframes: true,
+				showBounds: false,
+			},
+		});
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+		Render.run(render);
+		// create runner
+		const runner = Runner.create();
+		Runner.run(runner, engine);
 
-## Learn More
+		/** ***** connect inspector ***** */
+		const inspector = {
+			runner,
+			world: engine.world,
+			sceneElement: sceneEl.current,
+			render,
+			options: render.options,
+			selectStart: null,
+			selectBounds: render.bounds,
+			selected: [],
+		};
+		runInspector(inspector);
+		/** ***** connect inspector ***** */
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+		/** ***** Body ***** */
+		  // add bodies
+		/** ***** Body ***** */
+		const { width, height } = render.options;
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+		World.add(world, [
+			// walls
+			Bodies.rectangle(width / 2, 0, width, 50, { isStatic: true, label: 'Top wall' }),
+			Bodies.rectangle(width / 2, height, width, 50, { isStatic: true, label: 'Bottom wall' }),
+			Bodies.rectangle(width, height / 2, 50, height, { isStatic: true, label: 'Right wall' }),
+			Bodies.rectangle(0, height / 2, 50, height, { isStatic: true, label: 'Left wall' }),
+		]);
+		/** ***** Body ***** */
+  },[restart]);
+	return <div ref={sceneEl} />;
+}
+export default MatterDemo;
 
-### Code Splitting
+```
+## Examples
+Standard examples are in the folder: ```./src/matterDemo/```
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+Machines examples are in the folder: ```./src/newModels/```
 
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
