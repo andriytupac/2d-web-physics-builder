@@ -111,7 +111,7 @@ const MenuBar = props => {
 								options={newModels}
 								search
 								defaultValue={selectModel}
-								text="Select models"
+								text="Select model"
 								onChange={handlerChooseModel}
 							/>
 						</Menu.Item>
@@ -195,7 +195,7 @@ const MenuBar = props => {
 										options={newModels}
 										search
 										defaultValue={selectModel}
-										text="Select models"
+										text="Select model"
 										onChange={handlerChooseModel}
 										style={{ display: 'block' }}
 									/>

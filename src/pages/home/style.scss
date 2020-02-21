@@ -1,0 +1,24 @@
+.header-container{
+    background: #18171d;
+}
+.right-block-ex{
+    text-align: left;
+    img{
+        margin-right: 20px;
+    }
+    span{
+        font-size: 2rem;
+    }
+}
+.left-block-ex{
+    text-align: right;
+    img{
+        margin-left: 20px;
+    }
+    span{
+        font-size: 2rem;
+    }
+}
+.example-block{
+    cursor: pointer;
+}
