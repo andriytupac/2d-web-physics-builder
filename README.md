@@ -1,6 +1,6 @@
 # 2d web physics builder
 
-2d web physics builder is a React wrapper which helps to create edit and manage [matter.js](https://github.com/liabru/matter-js) elements
+2d web physics builder is a React wrapper which helps to create, edit and manage [matter.js](https://github.com/liabru/matter-js) elements
 ## Installation
 
 You can use `yarn` or `npm`
