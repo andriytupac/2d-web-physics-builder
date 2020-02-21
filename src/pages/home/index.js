@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Divider, Grid, Header, Image, List, Menu, Segment } from 'semantic-ui-react';
 import { useHistory } from 'react-router-dom';
 import animation from '../images/animation.mp4';
-// import animationPlaceholder from '../images/placeholder.png';
+import animationPlaceholder from '../images/placeholder.png';
 import './style.scss';
 
 const importAll = r => {
@@ -15,7 +15,7 @@ const HomepageHeading = () => (
 	<div className="header-container">
 		<Container text>
 			{/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-			<video autoPlay loop>
+			<video autoPlay loop muted poster={animationPlaceholder}>
 				<source src={animation} type="video/mp4" />
 			</video>
 		</Container>

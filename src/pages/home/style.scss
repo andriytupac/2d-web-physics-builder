@@ -22,3 +22,8 @@
 .example-block{
     cursor: pointer;
 }
+@media only screen and (max-width: 800px) {
+    video{
+        width: 100%;
+    }
+}
