@@ -117,8 +117,10 @@ Machines examples are in the folder: ```./src/newModels/```
 ```
 Matter.Plugin.register(IndexPosition);
 Matter.Plugin.register(ConstraintInspector);
+Matter.Plugin.register(ConstraintScale);
+Matter.Plugin.register(RenderBodies);
 
-Matter.use('matter-zIndex-plugin', 'constraint-inspector');
+Matter.use('matter-zIndex-plugin', 'constraint-inspector', 'matter-scale-plugin', 'matter-texture-from-vertices');
 ```
 
 ## License
