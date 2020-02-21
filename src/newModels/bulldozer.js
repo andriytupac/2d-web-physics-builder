@@ -678,7 +678,7 @@ function Bulldozer(props) {
 				if (keys.KeyW) {
 					mobileCabWithRipperTop.length -= mobileCabWithRipperTop.length > 20 * scaleX ? 0.2 : 0;
 				} else if (keys.KeyS) {
-					mobileBladeWithPushFrame.length += mobileBladeWithPushFrame.length < 90 * scaleX ? 0.2 : 0;
+					mobileCabWithRipperTop.length += mobileCabWithRipperTop.length < 90 * scaleX ? 0.2 : 0;
 				}
 
 				// allWheel
