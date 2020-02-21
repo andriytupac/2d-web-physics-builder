@@ -1,4 +1,4 @@
-# 2d web physics builder
+# 2d web physics builder - [Demo](https://www.physics-builder.fun/)
 
 2d web physics builder is a React wrapper which helps to create, edit and manage [matter.js](https://github.com/liabru/matter-js) elements
 
@@ -12,7 +12,11 @@ You can use `yarn` or `npm`
 yan install
 npm install
 ```
-## Demo - [here](https://www.physics-builder.fun/)
+## Run
+```bash
+yan start
+npm run
+```
 ## Usage
 
 ```javaScript
