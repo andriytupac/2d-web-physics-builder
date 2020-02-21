@@ -113,5 +113,13 @@ Standard examples are in the folder: ```./src/matterDemo/```
 
 Machines examples are in the folder: ```./src/newModels/```
 
+## Aditional Plugins 
+```
+Matter.Plugin.register(IndexPosition);
+Matter.Plugin.register(ConstraintInspector);
+
+Matter.use('matter-zIndex-plugin', 'constraint-inspector');
+```
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
