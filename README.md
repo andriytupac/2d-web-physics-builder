@@ -1,6 +1,6 @@
 # 2d web physics builder
 
-2d web physics builder is a React wrapper which helps to create edit and manage [matter.js](https://github.com/liabru/matter-js) elements
+2d web physics builder is a React wrapper which helps to create, edit and manage [matter.js](https://github.com/liabru/matter-js) elements
 ## Installation
 
 You can use `yarn` or `npm`
@@ -112,6 +112,16 @@ export default MatterDemo;
 Standard examples are in the folder: ```./src/matterDemo/```
 
 Machines examples are in the folder: ```./src/newModels/```
+
+## Aditional Plugins 
+```
+Matter.Plugin.register(IndexPosition);
+Matter.Plugin.register(ConstraintInspector);
+Matter.Plugin.register(ConstraintScale);
+Matter.Plugin.register(RenderBodies);
+
+Matter.use('matter-zIndex-plugin', 'constraint-inspector', 'matter-scale-plugin', 'matter-texture-from-vertices');
+```
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
