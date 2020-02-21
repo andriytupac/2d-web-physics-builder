@@ -1,7 +1,8 @@
 import React from 'react';
 import { Container, Divider, Grid, Header, Image, List, Menu, Segment } from 'semantic-ui-react';
 import { useHistory } from 'react-router-dom';
-import animation from '../images/animation.gif';
+import animation from '../images/animation.mp4';
+// import animationPlaceholder from '../images/placeholder.png';
 import './style.scss';
 
 const importAll = r => {
@@ -13,7 +14,10 @@ const images = importAll(require.context('../images/', false, /\.(png|jpe?g|svg)
 const HomepageHeading = () => (
 	<div className="header-container">
 		<Container text>
-			<Image src={animation} />
+			{/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+			<video autoPlay loop>
+				<source src={animation} type="video/mp4" />
+			</video>
 		</Container>
 	</div>
 );
