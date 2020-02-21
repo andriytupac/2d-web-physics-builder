@@ -9,7 +9,7 @@ You can use `yarn` or `npm`
 yan install
 npm install
 ```
-
+## Demo - [here](https://www.physics-builder.fun/)
 ## Usage
 
 ```javaScript
