@@ -1,7 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Checkbox, Dropdown, Container, Label, Responsive, Sidebar, Segment, Icon } from 'semantic-ui-react';
+import {
+	Menu,
+	Checkbox,
+	Dropdown,
+	Container,
+	Label,
+	Responsive,
+	Sidebar,
+	Segment,
+	Icon,
+	Image,
+} from 'semantic-ui-react';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+
+import logo from '../../img/phbm192.png';
 
 const exampleOptions = [
 	{ key: 'emptyArea', text: 'Empty Area', value: 'emptyArea' },
@@ -76,10 +89,10 @@ const MenuBar = props => {
 			<Responsive getWidth={getWidth} minWidth={Responsive.onlyTablet.minWidth}>
 				<Menu size="large">
 					<Container>
-						<Menu.Item name="/" onClick={handleItemClick}>
-							Home
+						<Menu.Item style={{ padding: '5px' }} name="/" onClick={handleItemClick}>
+							<Image style={{ width: '40px' }} src={logo} size="tiny" />
 						</Menu.Item>
-						<Menu.Item as="a" target="_blank" href="https://github.com/andriytupac/matter-features">
+						<Menu.Item as="a" target="_blank" href="https://github.com/andriytupac/2d-web-physics-builder">
 							Github
 						</Menu.Item>
 						<Menu.Item as="a" target="_blank" href="https://brm.io/matter-js/">
@@ -143,7 +156,7 @@ const MenuBar = props => {
 					<Menu.Item name="/" onClick={handleItemClick}>
 						Home
 					</Menu.Item>
-					<Menu.Item as="a" target="_blank" href="https://github.com/andriytupac/matter-features">
+					<Menu.Item as="a" target="_blank" href="https://github.com/andriytupac/2d-web-physics-builder">
 						Github
 					</Menu.Item>
 					<Menu.Item as="a" target="_blank" href="https://brm.io/matter-js/">
