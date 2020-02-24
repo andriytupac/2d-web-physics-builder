@@ -48,7 +48,20 @@ function MobileCrane(props) {
 	const { restart } = useStoreState(state => state.general);
 	const sceneEl = useRef(null);
 
-	const { Engine, Render, Runner, World, Bodies, Constraint, Composite, Common, Body, Events, Bounds, Vertices } = Matter;
+	const {
+		Engine,
+		Render,
+		Runner,
+		World,
+		Bodies,
+		Constraint,
+		Composite,
+		Common,
+		Body,
+		Events,
+		Bounds,
+		Vertices,
+	} = Matter;
 
 	useEffect(() => {
 		// eslint-disable-next-line no-underscore-dangle
@@ -223,8 +236,8 @@ function MobileCrane(props) {
 
 			const cabP1 = Bodies.fromVertices(0, 0, mobileСrane.cab, { render: { visible: false } });
 			const cabP2 = Bodies.fromVertices(264, -82, mobileСrane.operatorCab, { render: { visible: false } });
-			const cabP3 = Bodies.rectangle(-126, 70-50, 25, 80, { render: { visible: false } });
-			const cabP4 = Bodies.rectangle(400, 70-50, 25, 80, { render: { visible: false } });
+			const cabP3 = Bodies.rectangle(-126, 70 - 50, 25, 80, { render: { visible: false } });
+			const cabP4 = Bodies.rectangle(400, 70 - 50, 25, 80, { render: { visible: false } });
 			cabP1.parts.shift();
 			cabP2.parts.shift();
 			const cab = Body.create({
@@ -244,8 +257,8 @@ function MobileCrane(props) {
 			});
 
 			Body.setPosition(cab, { x: globalPos.x + 30, y: globalPos.y - 130 });
-			//Body.setPosition(cabP3, { x: cabP3.position.x, y: cabP3.position.y - 50 });
-			//Body.setPosition(cabP4, { x: cabP4.position.x, y: cabP4.position.y - 50 });
+			// Body.setPosition(cabP3, { x: cabP3.position.x, y: cabP3.position.y - 50 });
+			// Body.setPosition(cabP4, { x: cabP4.position.x, y: cabP4.position.y - 50 });
 
 			/* const cab = Bodies.fromVertices(770, 270, mobileСrane.cab, {
 				collisionFilter: { group },
@@ -531,7 +544,6 @@ function MobileCrane(props) {
 					Body.setPosition(cabP3, { x: cabP3.position.x, y: cabP3.position.y + 0.5 });
 					Body.setPosition(cabP4, { x: cabP4.position.x, y: cabP4.position.y + 0.5 });
 					Object.assign(cab.vertices, Vertices.create([cabP4.bounds.max], cab));
-
 				}
 
 				if (keys.KeyW) {
@@ -545,13 +557,13 @@ function MobileCrane(props) {
 						x: boomP2.position.x - Math.cos(boom.angle),
 						y: boomP2.position.y - Math.sin(boom.angle),
 					});
-					Object.assign(boom.vertices, Vertices.create([boomP2.bounds.min,boomP2.bounds.max], boom));
+					Object.assign(boom.vertices, Vertices.create([boomP2.bounds.min, boomP2.bounds.max], boom));
 				} else if (keys.KeyD) {
 					Body.setPosition(boomP2, {
 						x: boomP2.position.x + Math.cos(boom.angle),
 						y: boomP2.position.y + Math.sin(boom.angle),
 					});
-					Object.assign(boom.vertices, Vertices.create([boomP2.bounds.min,boomP2.bounds.max], boom));
+					Object.assign(boom.vertices, Vertices.create([boomP2.bounds.min, boomP2.bounds.max], boom));
 				}
 			});
 
