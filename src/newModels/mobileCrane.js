@@ -48,20 +48,7 @@ function MobileCrane(props) {
 	const { restart } = useStoreState(state => state.general);
 	const sceneEl = useRef(null);
 
-	const {
-		Engine,
-		Render,
-		Runner,
-		World,
-		Bodies,
-		Constraint,
-		Composite,
-		Common,
-		Body,
-		Events,
-		Bounds,
-		Vertices,
-	} = Matter;
+	const { Engine, Render, Runner, World, Bodies, Constraint, Composite, Common, Body, Events, Vertices } = Matter;
 
 	useEffect(() => {
 		// eslint-disable-next-line no-underscore-dangle
@@ -110,8 +97,6 @@ function MobileCrane(props) {
 			if (drivingMode) {
 				e.preventDefault();
 			}
-			// e.preventDefault();
-			// console.log(e)
 		});
 		document.body.addEventListener('keyup', function(e) {
 			keys[e.code] = false;
@@ -124,9 +109,9 @@ function MobileCrane(props) {
 
 		/** ***** Body ***** */
 
-		const carMobileCrane = (x = 0, y = 0, scaleX = 1, scaleY = 1, staticParam = false) => {
+		const carMobileCrane = (x = 0, y = 0, scale = 1, staticParam = false, speed = 1, side = 'left') => {
 			const group = Body.nextGroup(true);
-			const globalPos = { x: 750 + x, y: 400 + y };
+			const globalPos = { x, y };
 			// add bodies
 
 			const positionWheelY = globalPos.y - 65;
@@ -137,7 +122,6 @@ function MobileCrane(props) {
 				friction: 1,
 				render: {
 					sprite: {
-						// texture: wheel,
 						xScale: 1,
 						yScale: 1,
 					},
@@ -149,7 +133,6 @@ function MobileCrane(props) {
 				friction: 1,
 				render: {
 					sprite: {
-						// texture: wheel,
 						xScale: 1,
 						yScale: 1,
 					},
@@ -161,7 +144,6 @@ function MobileCrane(props) {
 				friction: 1,
 				render: {
 					sprite: {
-						// texture: wheel,
 						xScale: 1,
 						yScale: 1,
 					},
@@ -173,7 +155,6 @@ function MobileCrane(props) {
 				friction: 1,
 				render: {
 					sprite: {
-						// texture: wheel,
 						xScale: 1,
 						yScale: 1,
 					},
@@ -185,7 +166,6 @@ function MobileCrane(props) {
 				friction: 1,
 				render: {
 					sprite: {
-						// texture: wheel,
 						xScale: 1,
 						yScale: 1,
 					},
@@ -197,7 +177,6 @@ function MobileCrane(props) {
 				friction: 1,
 				render: {
 					sprite: {
-						// texture: wheel,
 						xScale: 1,
 						yScale: 1,
 					},
@@ -209,7 +188,6 @@ function MobileCrane(props) {
 				friction: 1,
 				render: {
 					sprite: {
-						// texture: wheel,
 						xScale: 1,
 						yScale: 1,
 					},
@@ -219,25 +197,33 @@ function MobileCrane(props) {
 			const boom = Body.create({
 				label: 'boomMain',
 				mass: 40,
-				parts: [...boomP1.parts, ...boomP2.parts],
+				parts: [...boomP2.parts, ...boomP1.parts],
 				collisionFilter: { group, mask: 0x0001 },
 				render: {
 					sprite: {
 						xScale: 1,
 						yScale: 1,
-						/* texture: imgCab,
-						xOffset: 0.005,
-						yOffset: 0.023, */
 					},
 				},
 			});
 			Body.setPosition(boom, { x: globalPos.x - 70, y: globalPos.y - 250 });
-			// Body.setPosition(boomP2, { x: boomP2.position.x + 550, y: boomP2.position.y });
 
-			const cabP1 = Bodies.fromVertices(0, 0, mobileСrane.cab, { render: { visible: false } });
-			const cabP2 = Bodies.fromVertices(264, -82, mobileСrane.operatorCab, { render: { visible: false } });
-			const cabP3 = Bodies.rectangle(-126, 70 - 50, 25, 80, { render: { visible: false } });
-			const cabP4 = Bodies.rectangle(400, 70 - 50, 25, 80, { render: { visible: false } });
+			const cabP1 = Bodies.fromVertices(
+				0,
+				0,
+				mobileСrane.cab,
+				{ render: { fillStyle: '#16CA27', visible: true } },
+				true,
+			);
+			const cabP2 = Bodies.fromVertices(
+				264,
+				-82,
+				mobileСrane.operatorCab,
+				{ render: { fillStyle: '#F79C07', visible: true } },
+				true,
+			);
+			const cabP3 = Bodies.rectangle(-126, 70 - 50, 25, 80, { render: { visible: true } });
+			const cabP4 = Bodies.rectangle(400, 70 - 50, 25, 80, { render: { visible: true } });
 			cabP1.parts.shift();
 			cabP2.parts.shift();
 			const cab = Body.create({
@@ -249,50 +235,23 @@ function MobileCrane(props) {
 					sprite: {
 						xScale: 1,
 						yScale: 1,
-						/* texture: imgCab,
-						xOffset: 0.005,
-						yOffset: 0.023, */
 					},
 				},
 			});
 
 			Body.setPosition(cab, { x: globalPos.x + 30, y: globalPos.y - 130 });
-			// Body.setPosition(cabP3, { x: cabP3.position.x, y: cabP3.position.y - 50 });
-			// Body.setPosition(cabP4, { x: cabP4.position.x, y: cabP4.position.y - 50 });
-
-			/* const cab = Bodies.fromVertices(770, 270, mobileСrane.cab, {
+			const hookBlock = Bodies.circle(globalPos.x - 450, globalPos.y - 100, 20, {
 				collisionFilter: { group },
-				label: 'cab',
+				label: 'hookBlock',
 				render: {
 					zIndex: 1,
-					visible: false,
+					visible: true,
 					sprite: {
-						/!* texture: imgBoom,
 						xScale: 1,
 						yScale: 1,
-						xOffset: 0,
-						yOffset: -0.1, *!/
-					},
-				},
-			}); */
-			cab.render.visible = true;
-			/* const dumpBody = Bodies.fromVertices(840, 215, mobileСrane.operatorCab, {
-				collisionFilter: { group },
-				label: 'dumpBody',
-				render: {
-					zIndex: 1,
-					visible: false,
-					sprite: {
-						/!* texture: imgBoom,
-						xScale: 1,
-						yScale: 1,
-						xOffset: 0,
-						yOffset: -0.1, *!/
 					},
 				},
 			});
-			dumpBody.render.visible = true;
-			*/
 			// constraints
 
 			const CabWithFrontTrackWheel = Constraint.create({
@@ -436,20 +395,14 @@ function MobileCrane(props) {
 					anchors: true,
 				},
 			});
-			/*
-			const fixDumpBodyWithBack = Constraint.create({
-				bodyA: dumpBody,
-				bodyB: backDumpBody,
+			const BoomWithHookBlock = Constraint.create({
+				bodyA: boom,
+				bodyB: hookBlock,
 				pointA: {
-					x: 300,
-					y: -95,
+					x: -390,
+					y: 0,
 				},
-				pointB: {
-					x: 0,
-					y: -60,
-				},
-				length: 0,
-				label: 'fixDumpBodyWithBack',
+				label: 'BoomWithHookBlock',
 				stiffness: 0.2,
 				damping: 0,
 				render: {
@@ -460,51 +413,28 @@ function MobileCrane(props) {
 					anchors: true,
 				},
 			});
-			const mobileDumpBodyWithBack = Constraint.create({
-				bodyA: dumpBody,
-				bodyB: backDumpBody,
-				pointA: {
-					x: 290,
-					y: 42,
-				},
-				pointB: {
-					x: 0,
-					y: 65,
-				},
-				length: 20,
-				label: 'mobileDumpBodyWithBack',
-				stiffness: 0.2,
-				damping: 0,
-				render: {
-					visible: true,
-					lineWidth: 2,
-					strokeStyle: '#ffffff',
-					type: 'line',
-					anchors: true,
-				},
-			}); */
 
 			const MobileCraneComposite = Composite.create({ label: 'MobileCraneComposite' });
 
 			Composite.add(MobileCraneComposite, [
+				boom,
 				cab,
 				frontTrackWheel,
 				backTrackWheel,
 				backTrackWheelSecond,
-				// dumpBody,
-				boom,
 				middleTrackWheel,
 				middleTrackWheelSecond,
+				hookBlock,
 			]);
 
 			Body.setStatic(cab, staticParam);
-			// Body.setStatic(dumpBody, staticParam);
 			Body.setStatic(frontTrackWheel, staticParam);
 			Body.setStatic(backTrackWheel, staticParam);
 			Body.setStatic(backTrackWheelSecond, staticParam);
 			Body.setStatic(boom, staticParam);
 			Body.setStatic(middleTrackWheel, staticParam);
 			Body.setStatic(middleTrackWheelSecond, staticParam);
+			Body.setStatic(hookBlock, staticParam);
 
 			Composite.add(MobileCraneComposite, [
 				CabWithFrontTrackWheel,
@@ -512,8 +442,7 @@ function MobileCrane(props) {
 				CabWithBackTrackWheelSec,
 				fixCabWithBoom,
 				mobileCabWithBoom,
-				// fixDumpBodyWithBack,
-				// mobileDumpBodyWithBack,
+				BoomWithHookBlock,
 				CabWithMiddleTrackWheel,
 				CabWithMiddleTrackWheelSecond,
 			]);
@@ -522,54 +451,97 @@ function MobileCrane(props) {
 			const positionX = (position.max.x + position.min.x) / 2;
 			const positionY = (position.max.y + position.min.y) / 2;
 
-			Composite.scale(MobileCraneComposite, scaleX, scaleY, { x: positionX + x, y: positionY + y });
-			// Composite.scale(MobileCraneComposite, -1, 1, { x: positionX + x, y: positionY + y },true);
+			Composite.scale(MobileCraneComposite, scale, scale, { x: positionX + x, y: positionY + y });
 
+			const wheelSpeed = 0.1 * speed;
 			Events.on(engine, 'beforeUpdate', function() {
 				if (keys.ArrowRight) {
-					Body.setAngularVelocity(frontTrackWheel, 0.1);
-					Body.setAngularVelocity(backTrackWheel, 0.1);
-					Body.setAngularVelocity(backTrackWheelSecond, 0.1);
+					Body.setAngularVelocity(frontTrackWheel, wheelSpeed);
+					Body.setAngularVelocity(middleTrackWheel, wheelSpeed);
+					Body.setAngularVelocity(middleTrackWheelSecond, wheelSpeed);
+					Body.setAngularVelocity(backTrackWheel, wheelSpeed);
+					Body.setAngularVelocity(backTrackWheelSecond, wheelSpeed);
 				} else if (keys.ArrowLeft) {
-					Body.setAngularVelocity(frontTrackWheel, -0.1);
-					Body.setAngularVelocity(backTrackWheel, -0.1);
-					Body.setAngularVelocity(backTrackWheelSecond, -0.1);
+					Body.setAngularVelocity(frontTrackWheel, -wheelSpeed);
+					Body.setAngularVelocity(backTrackWheel, -wheelSpeed);
+					Body.setAngularVelocity(middleTrackWheel, -wheelSpeed);
+					Body.setAngularVelocity(middleTrackWheelSecond, -wheelSpeed);
+					Body.setAngularVelocity(backTrackWheelSecond, -wheelSpeed);
 				}
 				if (keys.ArrowUp) {
-					// mobileCabWithDumpBody.length += mobileCabWithDumpBody.length < 220 * scaleX ? 0.4 : 0;
-					Body.setPosition(cabP3, { x: cabP3.position.x, y: cabP3.position.y - 0.5 });
-					Body.setPosition(cabP4, { x: cabP4.position.x, y: cabP4.position.y - 0.5 });
-					Object.assign(cab.vertices, Vertices.create([cabP4.bounds.max], cab));
+					const differenceLang = Math.sqrt(
+						(cabP1.position.x - cabP4.position.x) ** 2 + (cabP1.position.y - cabP4.position.y) ** 2,
+					);
+
+					if (differenceLang >= 2030 * scale) {
+						Body.setPosition(cabP3, { x: cabP3.position.x, y: cabP3.position.y - 0.5 });
+						Body.setPosition(cabP4, { x: cabP4.position.x, y: cabP4.position.y - 0.5 });
+						Object.assign(cab.vertices, Vertices.create([cabP4.bounds.max], cab));
+					}
 				} else if (keys.ArrowDown) {
-					Body.setPosition(cabP3, { x: cabP3.position.x, y: cabP3.position.y + 0.5 });
-					Body.setPosition(cabP4, { x: cabP4.position.x, y: cabP4.position.y + 0.5 });
-					Object.assign(cab.vertices, Vertices.create([cabP4.bounds.max], cab));
+					const differenceLang = Math.sqrt(
+						(cabP1.position.x - cabP4.position.x) ** 2 + (cabP1.position.y - cabP4.position.y) ** 2,
+					);
+					console.log(differenceLang)
+					if (differenceLang <= 2070 * scale) {
+						Body.setPosition(cabP3, { x: cabP3.position.x, y: cabP3.position.y + 0.5 });
+						Body.setPosition(cabP4, { x: cabP4.position.x, y: cabP4.position.y + 0.5 });
+						Object.assign(cab.vertices, Vertices.create([cabP4.bounds.max], cab));
+					}
 				}
 
 				if (keys.KeyW) {
-					mobileCabWithBoom.length += mobileCabWithBoom.length < 800 * scaleX ? 0.4 : 0;
+					mobileCabWithBoom.length += mobileCabWithBoom.length < 500 * scale ? 0.4 : 0;
 				} else if (keys.KeyS) {
-					mobileCabWithBoom.length -= mobileCabWithBoom.length > 20 * scaleX ? 0.4 : 0;
+					mobileCabWithBoom.length -= mobileCabWithBoom.length > 314 * scale ? 0.4 : 0;
 				}
 
 				if (keys.KeyA) {
-					Body.setPosition(boomP2, {
-						x: boomP2.position.x - Math.cos(boom.angle),
-						y: boomP2.position.y - Math.sin(boom.angle),
-					});
-					Object.assign(boom.vertices, Vertices.create([boomP2.bounds.min, boomP2.bounds.max], boom));
+					const differenceLang = Math.sqrt(
+						(boomP2.position.x - boomP1.position.x) ** 2 + (boomP2.position.y - boomP1.position.y) ** 2,
+					);
+					if (differenceLang <= 720 * scale) {
+						Body.setPosition(boomP2, {
+							x: boomP2.position.x - Math.cos(boom.angle),
+							y: boomP2.position.y - Math.sin(boom.angle),
+						});
+						Object.assign(boom.vertices, Vertices.create([boomP2.bounds.min, boomP2.bounds.max], boom));
+						const { pointA } = BoomWithHookBlock;
+						BoomWithHookBlock.pointA = {
+							x: pointA.x - Math.cos(boom.angle),
+							y: pointA.y - Math.sin(boom.angle),
+						};
+					}
 				} else if (keys.KeyD) {
-					Body.setPosition(boomP2, {
-						x: boomP2.position.x + Math.cos(boom.angle),
-						y: boomP2.position.y + Math.sin(boom.angle),
-					});
-					Object.assign(boom.vertices, Vertices.create([boomP2.bounds.min, boomP2.bounds.max], boom));
+					const differenceLang = Math.sqrt(
+						(boomP2.position.x - boomP1.position.x) ** 2 + (boomP2.position.y - boomP1.position.y) ** 2,
+					);
+					if (differenceLang >= 40 * scale) {
+						Body.setPosition(boomP2, {
+							x: boomP2.position.x + Math.cos(boom.angle),
+							y: boomP2.position.y + Math.sin(boom.angle),
+						});
+						Object.assign(boom.vertices, Vertices.create([boomP2.bounds.min, boomP2.bounds.max], boom));
+						const { pointA } = BoomWithHookBlock;
+						BoomWithHookBlock.pointA = {
+							x: pointA.x + Math.cos(boom.angle),
+							y: pointA.y + Math.sin(boom.angle),
+						};
+					}
+				}
+
+				if (keys.KeyZ) {
+					BoomWithHookBlock.length += 0.5;
+				} else if (keys.KeyX) {
+					BoomWithHookBlock.length -= 0.5;
 				}
 			});
-
+			if (side === 'right') {
+				Composite.scale(MobileCraneComposite, -1, 1, { x: positionX + x, y: positionY + y }, false);
+			}
 			return MobileCraneComposite;
 		};
-		World.add(world, carMobileCrane(0, 200, 1, 1, false));
+		World.add(world, carMobileCrane(450, 400, 0.5, false, 1, 'left'));
 
 		const { width, height } = render.options;
 
