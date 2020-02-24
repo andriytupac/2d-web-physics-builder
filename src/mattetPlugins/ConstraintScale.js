@@ -38,7 +38,7 @@ const ConstraintScale = {
 				constraint.pointA.y = pointAy; // - pointAy;
 				constraint.pointB.x = pointBx; // - pointAx;
 				constraint.pointB.y = pointBy; // - pointAy;
-				constraint.length *= scaleX;
+				constraint.length *= Math.abs(scaleX);
 			}
 		},
 	},

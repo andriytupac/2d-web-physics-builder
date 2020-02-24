@@ -33,6 +33,9 @@ const exampleOptions = [
 const newModels = [
 	{ key: 'excavator', text: 'Excavator', value: 'excavator' },
 	{ key: 'bulldozer', text: 'Bulldozer', value: 'bulldozer' },
+	{ key: 'tractor', text: 'Tractor', value: 'tractor' },
+	{ key: 'dumpTruck', text: 'Dump truck', value: 'dumpTruck' },
+	{ key: 'mobileCrane', text: 'Mobile crane', value: 'mobileCrane' },
 ];
 
 const getWidth = () => {

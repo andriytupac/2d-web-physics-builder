@@ -432,12 +432,12 @@ function Excavator(props) {
 				},
 				length: 0,
 				label: 'frontTrackWheel',
-				stiffness: 1,
+				stiffness: 0.2,
 				damping: 0,
 				render: {
 					lineWidth: 2,
 					strokeStyle: '#ffffff',
-					type: 'line',
+					type: 'spring',
 					visible: true,
 					anchors: true,
 				},
@@ -452,12 +452,12 @@ function Excavator(props) {
 				},
 				length: 0,
 				label: 'trackFrameWithBackTrackWheel',
-				stiffness: 1,
+				stiffness: 0.2,
 				damping: 0,
 				render: {
 					lineWidth: 2,
 					strokeStyle: '#ffffff',
-					type: 'line',
+					type: 'spring',
 					visible: true,
 					anchors: true,
 				},
@@ -626,8 +626,6 @@ function Excavator(props) {
 				} else if (keys.KeyS) {
 					mobileArmWithArmConnector.length += mobileArmWithArmConnector.length < 265 * scaleX ? 0.2 : 0;
 				}
-
-				// allWheel
 			});
 
 			return ExcavatorComposite;

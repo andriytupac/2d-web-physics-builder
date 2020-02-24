@@ -352,7 +352,7 @@ function Bulldozer(props) {
 					visible: true,
 					lineWidth: 2,
 					strokeStyle: '#ffffff',
-					type: 'line',
+					type: 'spring',
 					anchors: true,
 				},
 			});
@@ -372,7 +372,7 @@ function Bulldozer(props) {
 					visible: true,
 					lineWidth: 2,
 					strokeStyle: '#ffffff',
-					type: 'line',
+					type: 'spring',
 					anchors: true,
 				},
 			});
@@ -392,7 +392,7 @@ function Bulldozer(props) {
 					visible: true,
 					lineWidth: 2,
 					strokeStyle: '#ffffff',
-					type: 'line',
+					type: 'spring',
 					anchors: true,
 				},
 			});
@@ -421,7 +421,7 @@ function Bulldozer(props) {
 						visible: true,
 						lineWidth: 2,
 						strokeStyle: '#ffffff',
-						type: 'line',
+						type: 'spring',
 						anchors: true,
 					},
 				});

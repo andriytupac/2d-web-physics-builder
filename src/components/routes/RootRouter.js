@@ -20,6 +20,9 @@ import WreckingBall from '../../matterDemo/wreckingBall';
 
 import Excavator from '../../newModels/excavator';
 import Bulldozer from '../../newModels/bulldozer';
+import Tractor from '../../newModels/tractor';
+import DumpTruck from '../../newModels/dumpTruck';
+import MobileCrane from '../../newModels/mobileCrane';
 import Home from '../../pages/home';
 
 const RootRouter = () => {
@@ -103,6 +106,21 @@ const RootRouter = () => {
 				{newModels.params.id === 'bulldozer' && (
 					<LeftSideBar>
 						<Bulldozer />
+					</LeftSideBar>
+				)}
+				{newModels.params.id === 'tractor' && (
+					<LeftSideBar>
+						<Tractor />
+					</LeftSideBar>
+				)}
+				{newModels.params.id === 'dumpTruck' && (
+					<LeftSideBar>
+						<DumpTruck />
+					</LeftSideBar>
+				)}
+				{newModels.params.id === 'mobileCrane' && (
+					<LeftSideBar>
+						<MobileCrane />
 					</LeftSideBar>
 				)}
 			</>
