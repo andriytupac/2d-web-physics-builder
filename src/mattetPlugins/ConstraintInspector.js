@@ -38,12 +38,8 @@ const ConstraintInspector = {
 				if (item.type === 'constraint' && item.bodyA) {
 					context.beginPath();
 					context.arc(
-						item.bodyA.bounds.min.x +
-							(item.bodyA.bounds.max.x - item.bodyA.bounds.min.x) / 2 +
-							item.pointA.x,
-						item.bodyA.bounds.min.y +
-							(item.bodyA.bounds.max.y - item.bodyA.bounds.min.y) / 2 +
-							item.pointA.y,
+						item.bodyA.position.x + item.pointA.x,
+						item.bodyA.position.y + item.pointA.y,
 						10,
 						0,
 						2 * Math.PI,
@@ -53,12 +49,8 @@ const ConstraintInspector = {
 
 					context.beginPath();
 					context.arc(
-						item.bodyB.bounds.min.x +
-							(item.bodyB.bounds.max.x - item.bodyB.bounds.min.x) / 2 +
-							item.pointB.x,
-						item.bodyB.bounds.min.y +
-							(item.bodyB.bounds.max.y - item.bodyB.bounds.min.y) / 2 +
-							item.pointB.y,
+						item.bodyB.position.x + item.pointB.x,
+						item.bodyB.position.y + item.pointB.y,
 						10,
 						0,
 						2 * Math.PI,
