@@ -1,16 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import Matter from 'matter-js';
 import { useStoreState } from 'easy-peasy';
-
 import decomp from 'poly-decomp';
-import wheel from './images/excavator/wheel.png';
-import imgTrackFrame from './images/excavator/trackFrame.png';
-import imgCab from './images/excavator/cab.png';
-import imgBoom from './images/excavator/boom.png';
-import imgArm from './images/excavator/arm.png';
-import imgBucket from './images/excavator/bucket.png';
-import imgArmConnector from './images/excavator/armConnector.png';
-import imgBucketConnector from './images/excavator/bucketConnector.png';
 
 import IndexPosition from '../mattetPlugins/IndexPosition';
 import ConstraintInspector from '../mattetPlugins/ConstraintInspector';
@@ -20,9 +11,6 @@ import RenderBodies from '../mattetPlugins/RenderBodies';
 import tractorJson from './json/dumpTruck.json';
 
 window.decomp = decomp;
-
-// import Ball from "../img/ball.png";
-
 Matter.Plugin.register(IndexPosition);
 Matter.Plugin.register(ConstraintInspector);
 Matter.Plugin.register(ConstraintScale);
@@ -97,8 +85,6 @@ function DumpTruck(props) {
 			if (drivingMode) {
 				e.preventDefault();
 			}
-			// e.preventDefault();
-			// console.log(e)
 		});
 		document.body.addEventListener('keyup', function(e) {
 			keys[e.code] = false;
@@ -111,95 +97,99 @@ function DumpTruck(props) {
 
 		/** ***** Body ***** */
 
-		const carDumpTruck = (x = 0, y = 0, scaleX = 1, scaleY = 1, staticParam = false) => {
+		const carDumpTruck = (x = 0, y = 0, scale = 1, staticParam = false, speed = 1, side = 'left') => {
 			const group = Body.nextGroup(true);
+			const globalPos = { x, y };
 			// add bodies
 
-			const positionWheelY = 320;
+			const positionWheelY = globalPos.y + 70;
 
-			const frontTrackWheel = Bodies.circle(645, positionWheelY, 45, {
+			const frontTrackWheel = Bodies.circle(globalPos.x - 105, positionWheelY, 45, {
 				collisionFilter: { group },
 				label: 'frontTrackWheel',
 				friction: 1,
 				render: {
 					sprite: {
-						// texture: wheel,
 						xScale: 1,
 						yScale: 1,
 					},
 				},
 			});
 
-			const backTrackWheel = Bodies.circle(930, positionWheelY, 45, {
+			const backTrackWheel = Bodies.circle(globalPos.x + 180, positionWheelY, 45, {
 				collisionFilter: { group },
 				label: 'backTrackWheel',
 				friction: 1,
 				render: {
 					sprite: {
-						// texture: wheel,
 						xScale: 1,
 						yScale: 1,
 					},
 				},
 			});
-			const backTrackWheelSecond = Bodies.circle(1050, positionWheelY, 45, {
+			const backTrackWheelSecond = Bodies.circle(globalPos.x + 300, positionWheelY, 45, {
 				collisionFilter: { group },
 				label: 'backTrackWheelSecond',
 				friction: 1,
 				render: {
 					sprite: {
-						// texture: wheel,
 						xScale: 1,
 						yScale: 1,
 					},
 				},
 			});
-			const backDumpBody = Bodies.rectangle(1140, 180, 10, 140, {
+			const backDumpBody = Bodies.rectangle(globalPos.x + 390, globalPos.y - 70, 10, 140, {
 				collisionFilter: { group },
 				label: 'backTrackWheelSecond',
 				friction: 1,
 				render: {
 					sprite: {
-						// texture: wheel,
 						xScale: 1,
 						yScale: 1,
 					},
 				},
 			});
 
-			const cab = Bodies.fromVertices(770, 270, tractorJson.cab, {
-				collisionFilter: { group },
-				label: 'cab',
-				render: {
-					zIndex: 1,
-					visible: false,
-					sprite: {
-						/* texture: imgBoom,
-						xScale: 1,
-						yScale: 1,
-						xOffset: 0,
-						yOffset: -0.1, */
+			const cab = Bodies.fromVertices(
+				globalPos.x + 20,
+				globalPos.y + 20,
+				tractorJson.cab,
+				{
+					collisionFilter: { group },
+					label: 'cab',
+					render: {
+						// zIndex: 1,
+						visible: true,
+						sprite: {
+							xScale: 1,
+							yScale: 1,
+						},
 					},
 				},
-			});
-			cab.render.visible = true;
-			const dumpBody = Bodies.fromVertices(840, 215, tractorJson.dumpBody, {
-				collisionFilter: { group },
-				label: 'dumpBody',
-				render: {
-					zIndex: 1,
-					visible: false,
-					sprite: {
-						/* texture: imgBoom,
-						xScale: 1,
-						yScale: 1,
-						xOffset: 0,
-						yOffset: -0.1, */
+				true,
+			);
+			// cab.render.visible = true;
+			const dumpBody = Bodies.fromVertices(
+				globalPos.x + 90,
+				globalPos.y - 35,
+				tractorJson.dumpBody,
+				{
+					collisionFilter: { group },
+					label: 'dumpBody',
+					render: {
+						// zIndex: 1,
+						visible: true,
+						sprite: {
+							xScale: 1,
+							yScale: 1,
+						},
 					},
 				},
-			});
+				true,
+			);
 			dumpBody.render.visible = true;
 
+			// add constraint
 			const CabWithFrontTrackWheel = Constraint.create({
 				bodyA: cab,
 				bodyB: frontTrackWheel,
@@ -350,7 +340,6 @@ function DumpTruck(props) {
 				},
 			});
 
-
 			const DumpTruckComposite = Composite.create({ label: 'DumpTruckComposite' });
 
 			Composite.add(DumpTruckComposite, [
@@ -383,36 +372,39 @@ function DumpTruck(props) {
 			const positionX = (position.max.x + position.min.x) / 2;
 			const positionY = (position.max.y + position.min.y) / 2;
 
-			Composite.scale(DumpTruckComposite, scaleX, scaleY, { x: positionX + x, y: positionY + y });
+			Composite.scale(DumpTruckComposite, scale, scale, { x: positionX + x, y: positionY + y });
 			// Composite.scale(DumpTruckComposite, -1, 1, { x: positionX + x, y: positionY + y },true);
-
+			const wheelSpeed = 0.1 * speed;
 			Events.on(engine, 'beforeUpdate', function() {
 				if (keys.ArrowRight) {
-					Body.setAngularVelocity(frontTrackWheel, 0.1);
-					Body.setAngularVelocity(backTrackWheel, 0.1);
-					Body.setAngularVelocity(backTrackWheelSecond, 0.1);
+					Body.setAngularVelocity(frontTrackWheel, wheelSpeed);
+					Body.setAngularVelocity(backTrackWheel, wheelSpeed);
+					Body.setAngularVelocity(backTrackWheelSecond, wheelSpeed);
 				} else if (keys.ArrowLeft) {
-					Body.setAngularVelocity(frontTrackWheel, -0.1);
-					Body.setAngularVelocity(backTrackWheel, -0.1);
-					Body.setAngularVelocity(backTrackWheelSecond, -0.1);
+					Body.setAngularVelocity(frontTrackWheel, -wheelSpeed);
+					Body.setAngularVelocity(backTrackWheel, -wheelSpeed);
+					Body.setAngularVelocity(backTrackWheelSecond, -wheelSpeed);
 				}
 				if (keys.ArrowUp) {
-					mobileCabWithDumpBody.length += mobileCabWithDumpBody.length < 220 * scaleX ? 0.4 : 0;
+					mobileCabWithDumpBody.length += mobileCabWithDumpBody.length < 220 * scale ? 0.4 : 0;
 				} else if (keys.ArrowDown) {
-					mobileCabWithDumpBody.length -= mobileCabWithDumpBody.length > 10 * scaleX ? 0.4 : 0;
+					mobileCabWithDumpBody.length -= mobileCabWithDumpBody.length > 10 * scale ? 0.4 : 0;
 				}
 
 				if (keys.KeyW) {
-					mobileDumpBodyWithBack.length += mobileDumpBodyWithBack.length < 150 * scaleX ? 0.4 : 0;
+					mobileDumpBodyWithBack.length += mobileDumpBodyWithBack.length < 150 * scale ? 0.4 : 0;
 				} else if (keys.KeyS) {
-					mobileDumpBodyWithBack.length -= mobileDumpBodyWithBack.length > 20 * scaleX ? 0.4 : 0;
+					mobileDumpBodyWithBack.length -= mobileDumpBodyWithBack.length > 20 * scale ? 0.4 : 0;
 				}
-
 			});
+
+			if (side === 'right') {
+				Composite.scale(DumpTruckComposite, -1, 1, { x: positionX + x, y: positionY + y }, false);
+			}
 
 			return DumpTruckComposite;
 		};
-		World.add(world, carDumpTruck(100, 200, 1, 1, false));
+		World.add(world, carDumpTruck(750, 250, 1, false, 1, 'left'));
 
 		const { width, height } = render.options;
 
