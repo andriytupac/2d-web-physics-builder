@@ -1,16 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import Matter from 'matter-js';
 import { useStoreState } from 'easy-peasy';
-
 import decomp from 'poly-decomp';
-import wheel from './images/excavator/wheel.png';
-import imgTrackFrame from './images/excavator/trackFrame.png';
-import imgCab from './images/excavator/cab.png';
-import imgBoom from './images/excavator/boom.png';
-import imgArm from './images/excavator/arm.png';
-import imgBucket from './images/excavator/bucket.png';
-import imgArmConnector from './images/excavator/armConnector.png';
-import imgBucketConnector from './images/excavator/bucketConnector.png';
 
 import IndexPosition from '../mattetPlugins/IndexPosition';
 import ConstraintInspector from '../mattetPlugins/ConstraintInspector';
@@ -20,8 +11,6 @@ import RenderBodies from '../mattetPlugins/RenderBodies';
 import tractorJson from './json/tractor.json';
 
 window.decomp = decomp;
-
-// import Ball from "../img/ball.png";
 
 Matter.Plugin.register(IndexPosition);
 Matter.Plugin.register(ConstraintInspector);
@@ -34,12 +23,10 @@ let render;
 const keyboard = [
 	{ name: 'Right', description: 'Wheels move right' },
 	{ name: 'Left', description: 'Wheels move Left' },
-	{ name: 'Up', description: 'Boom move up' },
-	{ name: 'Down', description: 'Boom move down' },
-	{ name: 'D', description: 'Arm move up' },
-	{ name: 'A', description: 'Arm move down' },
-	{ name: 'W', description: 'Bucket move up' },
-	{ name: 'S', description: 'Bucket move Down' },
+	{ name: 'Up', description: 'Push frame move up' },
+	{ name: 'Down', description: 'Push frame  move down' },
+	{ name: 'D', description: 'Bucket move down' },
+	{ name: 'A', description: 'Bucket move up' },
 ];
 
 function Tractor(props) {
@@ -111,53 +98,83 @@ function Tractor(props) {
 
 		/** ***** Body ***** */
 
-		const carTractor = (x = 0, y = 0, scaleX = 1, scaleY = 1, staticParam = false) => {
+		const carTractor = (x = 0, y = 0, scale = 1, staticParam = false, speed = 1, side = 'left') => {
 			const group = Body.nextGroup(true);
+			const globalPos = { x, y };
 			// add bodies
 
-			const frontTrackWheel = Bodies.circle(600, 375, 60, {
+			const frontTrackWheel = Bodies.circle(globalPos.x - 150, globalPos.y + 125, 60, {
 				collisionFilter: { group },
 				label: 'frontTrackWheel',
 				friction: 1,
 				render: {
 					sprite: {
-						// texture: wheel,
 						xScale: 1,
 						yScale: 1,
 					},
 				},
 			});
 
-			const backTrackWheel = Bodies.circle(850, 345, 90, {
+			const backTrackWheel = Bodies.circle(globalPos.x + 100, globalPos.y + 95, 90, {
 				collisionFilter: { group },
 				label: 'backTrackWheel',
 				friction: 1,
 				render: {
 					sprite: {
-						// texture: wheel,
 						xScale: 1,
 						yScale: 1,
 					},
 				},
 			});
 
-			const cab = Bodies.fromVertices(770, 270, tractorJson.cab, {
-				collisionFilter: { group },
-				label: 'cab',
-				render: {
-					zIndex: 1,
-					visible: false,
-					sprite: {
-						/* texture: imgBoom,
-						xScale: 1,
-						yScale: 1,
-						xOffset: 0,
-						yOffset: -0.1, */
+			const cab = Bodies.fromVertices(
+				globalPos.x + 20,
+				globalPos.y + 20,
+				tractorJson.cab,
+				{
+					collisionFilter: { group },
+					label: 'cab',
+					render: {
+						visible: true,
+						sprite: {
+							xScale: 1,
+							yScale: 1,
+						},
 					},
 				},
-			});
+				true,
+			);
 			cab.render.visible = true;
 
+			const pushFrame = Bodies.fromVertices(globalPos.x - 160, globalPos.y + 40, tractorJson.pushFrame, {
+				collisionFilter: { group },
+				label: 'pushFrame',
+				render: {
+					visible: true,
+					sprite: {
+						xScale: 1,
+						yScale: 1,
+					},
+				},
+			});
+			const bucket = Bodies.fromVertices(
+				globalPos.x - 250,
+				globalPos.y + 150,
+				tractorJson.bucket,
+				{
+					collisionFilter: { group },
+					label: 'bucket',
+					render: {
+						visible: true,
+						sprite: {
+							xScale: 1,
+							yScale: 1,
+						},
+					},
+				},
+				true,
+			);
+			// add constraint
 			const CabWithFrontTrackWheel = Constraint.create({
 				bodyA: cab,
 				bodyB: frontTrackWheel,
@@ -196,43 +213,146 @@ function Tractor(props) {
 					anchors: true,
 				},
 			});
+			const CabWithPushFrame = Constraint.create({
+				bodyA: cab,
+				bodyB: pushFrame,
+				pointA: {
+					x: -60,
+					y: -35,
+				},
+				pointB: {
+					x: 120,
+					y: -55,
+				},
+				length: 0,
+				label: 'CabWithPushFrame',
+				stiffness: 0.3,
+				damping: 0,
+				render: {
+					visible: true,
+					lineWidth: 2,
+					type: 'line',
+					anchors: true,
+				},
+			});
+			const mobileCabWithPushFrame = Constraint.create({
+				bodyA: cab,
+				bodyB: pushFrame,
+				pointA: {
+					x: -60,
+					y: 50,
+				},
+				pointB: {
+					x: 20,
+					y: -50,
+				},
+				label: 'mobileCabWithPushFrame',
+				stiffness: 0.3,
+				damping: 0,
+				render: {
+					visible: true,
+					lineWidth: 2,
+					type: 'line',
+					anchors: true,
+				},
+			});
+			const pushFrameWithBucket = Constraint.create({
+				bodyA: pushFrame,
+				bodyB: bucket,
+				pointA: {
+					x: -60,
+					y: 120,
+				},
+				pointB: {
+					x: 30,
+					y: 10,
+				},
+				label: 'pushFrameWithBucket',
+				stiffness: 0.3,
+				damping: 0,
+				render: {
+					visible: true,
+					lineWidth: 2,
+					type: 'line',
+					anchors: true,
+				},
+			});
+			const mobilePushFrameWithBucket = Constraint.create({
+				bodyA: pushFrame,
+				bodyB: bucket,
+				pointA: {
+					x: -50,
+					y: 50,
+				},
+				pointB: {
+					x: -10,
+					y: -50,
+				},
+				label: 'mobilePushFrameWithBucket',
+				stiffness: 0.3,
+				damping: 0,
+				render: {
+					visible: true,
+					lineWidth: 2,
+					type: 'line',
+					anchors: true,
+				},
+			});
 
 			const TractorComposite = Composite.create({ label: 'TractorComposite' });
 
-			Composite.add(TractorComposite, [
-				cab,
-				frontTrackWheel,
-				backTrackWheel
-			]);
+			Composite.add(TractorComposite, [cab, pushFrame, frontTrackWheel, backTrackWheel, bucket]);
 
 			Body.setStatic(cab, staticParam);
+			Body.setStatic(pushFrame, staticParam);
+			Body.setStatic(bucket, staticParam);
 			Body.setStatic(frontTrackWheel, staticParam);
 			Body.setStatic(backTrackWheel, staticParam);
 
 			Composite.add(TractorComposite, [
 				CabWithFrontTrackWheel,
 				CabWithBackTrackWheel,
+				CabWithPushFrame,
+				mobileCabWithPushFrame,
+				pushFrameWithBucket,
+				mobilePushFrameWithBucket,
 			]);
 
 			const position = Composite.bounds(TractorComposite);
 			const positionX = (position.max.x + position.min.x) / 2;
 			const positionY = (position.max.y + position.min.y) / 2;
 
-			Composite.scale(TractorComposite, scaleX, scaleY, { x: positionX + x, y: positionY + y });
+			Composite.scale(TractorComposite, scale, scale, { x: positionX + x, y: positionY + y });
 
+			const wheelSpeed = 0.1 * speed;
 			Events.on(engine, 'beforeUpdate', function() {
 				if (keys.ArrowRight) {
-					Body.setAngularVelocity(frontTrackWheel, 0.1);
-					Body.setAngularVelocity(backTrackWheel, 0.1);
+					Body.setAngularVelocity(frontTrackWheel, wheelSpeed);
+					Body.setAngularVelocity(backTrackWheel, wheelSpeed);
 				} else if (keys.ArrowLeft) {
-					Body.setAngularVelocity(frontTrackWheel, -0.1);
-					Body.setAngularVelocity(backTrackWheel, -0.1);
+					Body.setAngularVelocity(frontTrackWheel, -wheelSpeed);
+					Body.setAngularVelocity(backTrackWheel, -wheelSpeed);
+				}
+
+				if (keys.ArrowUp) {
+					mobileCabWithPushFrame.length += mobileCabWithPushFrame.length < 175 * scale ? 0.4 : 0;
+				} else if (keys.ArrowDown) {
+					mobileCabWithPushFrame.length -= mobileCabWithPushFrame.length > 128 * scale ? 0.4 : 0;
+				}
+
+				if (keys.KeyA) {
+					mobilePushFrameWithBucket.length += mobilePushFrameWithBucket.length < 100 * scale ? 0.4 : 0;
+				} else if (keys.KeyD) {
+					mobilePushFrameWithBucket.length -= mobilePushFrameWithBucket.length > 10 * scale ? 0.4 : 0;
 				}
 			});
+			if (side === 'right') {
+				Composite.scale(TractorComposite, -1, 1, { x: positionX + x, y: positionY + y }, false);
+			}
 
 			return TractorComposite;
 		};
-		World.add(world, carTractor(400, 200, 1, 1, false));
+		World.add(world, carTractor(350, 250, 1, false, 1, 'right'));
 
 		const { width, height } = render.options;
 
