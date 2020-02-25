@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Divider, Grid, Header, Image, List, Menu, Segment } from 'semantic-ui-react';
-import { useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import animation from '../images/animation.mp4';
 import animationPlaceholder from '../images/placeholder.png';
 import './style.scss';
@@ -39,6 +39,9 @@ const exampleOptions = [
 const newModels = [
 	{ key: 'excavator', text: 'Excavator', value: 'excavator' },
 	{ key: 'bulldozer', text: 'Bulldozer', value: 'bulldozer' },
+	{ key: 'tractor', text: 'Tractor', value: 'tractor' },
+	{ key: 'dumpTruck', text: 'Dump Truck', value: 'dumpTruck' },
+	{ key: 'mobileCrane', text: 'Mobile Crane', value: 'mobileCrane' },
 ];
 
 const getImageUrl = name => {
@@ -48,14 +51,6 @@ const getImageUrl = name => {
 };
 
 const HomepageLayout = () => {
-	const history = useHistory();
-
-	const handleNewModel = value => {
-		history.push(`/new-models/${value}`);
-	};
-	const handleOldModel = value => {
-		history.push(`/examples/${value}`);
-	};
 	return (
 		<>
 			<HomepageHeading />
@@ -72,14 +67,14 @@ const HomepageLayout = () => {
 									return (
 										<div className="example-block" key={obj.key}>
 											<span>{obj.text}</span>
-											<Image
-												onClick={() => {
-													handleOldModel(obj.value);
-												}}
-												src={getImageUrl(obj.value)}
-												size="small"
-												verticalAlign="middle"
-											/>
+											<Link to={`/examples/${obj.value}`}>
+												<Image
+													src={getImageUrl(obj.value)}
+													size="small"
+													verticalAlign="middle"
+													alt={obj.text}
+												/>
+											</Link>
 											<Divider />
 										</div>
 									);
@@ -94,14 +89,14 @@ const HomepageLayout = () => {
 								{newModels.map(obj => {
 									return (
 										<div className="example-block" key={obj.key}>
-											<Image
-												onClick={() => {
-													handleNewModel(obj.value);
-												}}
-												src={getImageUrl(obj.value)}
-												size="small"
-												verticalAlign="middle"
-											/>
+											<Link to={`/new-models/${obj.value}`}>
+												<Image
+													src={getImageUrl(obj.value)}
+													size="small"
+													verticalAlign="middle"
+													alt={obj.text}
+												/>
+											</Link>
 											<span>{obj.text}</span>
 											<Divider />
 										</div>

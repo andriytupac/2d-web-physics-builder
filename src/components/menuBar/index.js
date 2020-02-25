@@ -12,7 +12,7 @@ import {
 	Image,
 } from 'semantic-ui-react';
 import { useStoreActions, useStoreState } from 'easy-peasy';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useHistory, useRouteMatch, Link } from 'react-router-dom';
 
 import logo from '../../img/phbm192.png';
 
@@ -92,8 +92,10 @@ const MenuBar = props => {
 			<Responsive getWidth={getWidth} minWidth={Responsive.onlyTablet.minWidth}>
 				<Menu size="large">
 					<Container>
-						<Menu.Item style={{ padding: '5px' }} name="/" onClick={handleItemClick}>
-							<Image style={{ width: '40px' }} src={logo} size="tiny" />
+						<Menu.Item style={{ padding: '5px' }}>
+							<Link to="/">
+								<Image style={{ width: '40px' }} src={logo} size="tiny" />
+							</Link>
 						</Menu.Item>
 						<Menu.Item as="a" target="_blank" href="https://github.com/andriytupac/2d-web-physics-builder">
 							Github

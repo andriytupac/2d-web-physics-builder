@@ -536,7 +536,7 @@ function MobileCrane(props) {
 			}
 			return MobileCraneComposite;
 		};
-		World.add(world, carMobileCrane(450, 400, 0.8, false, 1, 'left'));
+		World.add(world, carMobileCrane(550, 400, 0.8, false, 1, 'left'));
 
 		const { width, height } = render.options;
 
