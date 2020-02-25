@@ -4,7 +4,7 @@
 
 ![alt text](https://github.com/andriytupac/2d-web-physics-builder/blob/master/animation.gif)
 
-## Installation
+### Installation
 
 You can use `yarn` or `npm`
 
@@ -12,11 +12,20 @@ You can use `yarn` or `npm`
 yan install
 npm install
 ```
-## Run
+### Run
 ```bash
 yan start
 npm run
 ```
+###Demos
+
+| Car models  |
+| ------------- |
+| [Excavator](https://www.physics-builder.fun/new-models/excavator) | 
+| [Bulldozer](https://www.physics-builder.fun/new-models/bulldozer) | 
+| [Tractor](https://www.physics-builder.fun/new-models/tractor) |
+| [Dump Truck](https://www.physics-builder.fun/new-models/dumpTruck) |
+| [Mobile Crane](https://www.physics-builder.fun/new-models/mobileCrane) |
 ## Usage
 
 ```javaScript
@@ -33,7 +42,7 @@ const inspector = {
 runInspector(inspector);
 ```
 
-## Example
+### Code Example
 Example of creating an empty area
 ```javaScript
 import React, { useEffect, useRef } from 'react';
@@ -115,12 +124,12 @@ function MatterDemo(props) {
 export default MatterDemo;
 
 ```
-## Examples
+### Folder Examples
 Standard examples are in the folder: ```./src/matterDemo/```
 
 Machines examples are in the folder: ```./src/newModels/```
 
-## Aditional Plugins 
+### Aditional Plugins 
 ```
 Matter.Plugin.register(IndexPosition);
 Matter.Plugin.register(ConstraintInspector);
@@ -130,5 +139,5 @@ Matter.Plugin.register(RenderBodies);
 Matter.use('matter-zIndex-plugin', 'constraint-inspector', 'matter-scale-plugin', 'matter-texture-from-vertices');
 ```
 
-## License
+### License
 [MIT](https://choosealicense.com/licenses/mit/)
