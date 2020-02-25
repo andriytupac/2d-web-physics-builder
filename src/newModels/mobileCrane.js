@@ -3,14 +3,6 @@ import Matter from 'matter-js';
 import { useStoreState } from 'easy-peasy';
 
 import decomp from 'poly-decomp';
-import wheel from './images/excavator/wheel.png';
-import imgTrackFrame from './images/excavator/trackFrame.png';
-import imgCab from './images/excavator/cab.png';
-import imgBoom from './images/excavator/boom.png';
-import imgArm from './images/excavator/arm.png';
-import imgBucket from './images/excavator/bucket.png';
-import imgArmConnector from './images/excavator/armConnector.png';
-import imgBucketConnector from './images/excavator/bucketConnector.png';
 
 import IndexPosition from '../mattetPlugins/IndexPosition';
 import ConstraintInspector from '../mattetPlugins/ConstraintInspector';
@@ -36,10 +28,12 @@ const keyboard = [
 	{ name: 'Left', description: 'Wheels move Left' },
 	{ name: 'Up', description: 'Boom move up' },
 	{ name: 'Down', description: 'Boom move down' },
-	{ name: 'D', description: 'Arm move up' },
-	{ name: 'A', description: 'Arm move down' },
-	{ name: 'W', description: 'Bucket move up' },
-	{ name: 'S', description: 'Bucket move Down' },
+	{ name: 'D', description: 'Arm move right' },
+	{ name: 'A', description: 'Arm move left' },
+	{ name: 'W', description: 'Hook block move up' },
+	{ name: 'S', description: 'Hook block move down' },
+	{ name: 'Z', description: 'Fixators move up' },
+	{ name: 'X', description: 'Fixators move down' },
 ];
 
 function MobileCrane(props) {
@@ -224,12 +218,13 @@ function MobileCrane(props) {
 			);
 			const cabP3 = Bodies.rectangle(-126, 70 - 50, 25, 80, { render: { visible: true } });
 			const cabP4 = Bodies.rectangle(400, 70 - 50, 25, 80, { render: { visible: true } });
+			const cabP5 = Bodies.rectangle(400, 0, 1, 1, { render: { visible: false } });
 			cabP1.parts.shift();
 			cabP2.parts.shift();
 			const cab = Body.create({
 				label: 'cab',
 				mass: 40,
-				parts: [...cabP1.parts, ...cabP2.parts, ...cabP3.parts, ...cabP4.parts],
+				parts: [...cabP1.parts, ...cabP2.parts, ...cabP3.parts, ...cabP4.parts, ...cabP5.parts],
 				collisionFilter: { group, mask: 0x0001 },
 				render: {
 					sprite: {
@@ -454,6 +449,7 @@ function MobileCrane(props) {
 			Composite.scale(MobileCraneComposite, scale, scale, { x: positionX + x, y: positionY + y });
 
 			const wheelSpeed = 0.1 * speed;
+			const direction = side === 'left' ? 1 : -1;
 			Events.on(engine, 'beforeUpdate', function() {
 				if (keys.ArrowRight) {
 					Body.setAngularVelocity(frontTrackWheel, wheelSpeed);
@@ -468,31 +464,29 @@ function MobileCrane(props) {
 					Body.setAngularVelocity(middleTrackWheelSecond, -wheelSpeed);
 					Body.setAngularVelocity(backTrackWheelSecond, -wheelSpeed);
 				}
-				if (keys.ArrowUp) {
+				if (keys.KeyZ) {
 					const differenceLang = Math.sqrt(
-						(cabP1.position.x - cabP4.position.x) ** 2 + (cabP1.position.y - cabP4.position.y) ** 2,
+						(cabP5.position.x - cabP4.position.x) ** 2 + (cabP5.position.y - cabP4.position.y) ** 2,
 					);
-
-					if (differenceLang >= 2030 * scale) {
+					if (differenceLang >= 20 * scale) {
 						Body.setPosition(cabP3, { x: cabP3.position.x, y: cabP3.position.y - 0.5 });
 						Body.setPosition(cabP4, { x: cabP4.position.x, y: cabP4.position.y - 0.5 });
 						Object.assign(cab.vertices, Vertices.create([cabP4.bounds.max], cab));
 					}
-				} else if (keys.ArrowDown) {
+				} else if (keys.KeyX) {
 					const differenceLang = Math.sqrt(
-						(cabP1.position.x - cabP4.position.x) ** 2 + (cabP1.position.y - cabP4.position.y) ** 2,
+						(cabP5.position.x - cabP4.position.x) ** 2 + (cabP5.position.y - cabP4.position.y) ** 2,
 					);
-					console.log(differenceLang)
-					if (differenceLang <= 2070 * scale) {
+					if (differenceLang <= 80 * scale) {
 						Body.setPosition(cabP3, { x: cabP3.position.x, y: cabP3.position.y + 0.5 });
 						Body.setPosition(cabP4, { x: cabP4.position.x, y: cabP4.position.y + 0.5 });
 						Object.assign(cab.vertices, Vertices.create([cabP4.bounds.max], cab));
 					}
 				}
 
-				if (keys.KeyW) {
+				if (keys.ArrowUp) {
 					mobileCabWithBoom.length += mobileCabWithBoom.length < 500 * scale ? 0.4 : 0;
-				} else if (keys.KeyS) {
+				} else if (keys.ArrowDown) {
 					mobileCabWithBoom.length -= mobileCabWithBoom.length > 314 * scale ? 0.4 : 0;
 				}
 
@@ -500,16 +494,17 @@ function MobileCrane(props) {
 					const differenceLang = Math.sqrt(
 						(boomP2.position.x - boomP1.position.x) ** 2 + (boomP2.position.y - boomP1.position.y) ** 2,
 					);
+
 					if (differenceLang <= 720 * scale) {
 						Body.setPosition(boomP2, {
-							x: boomP2.position.x - Math.cos(boom.angle),
-							y: boomP2.position.y - Math.sin(boom.angle),
+							x: boomP2.position.x - Math.cos(boom.angle) * direction,
+							y: boomP2.position.y - Math.sin(boom.angle) * direction,
 						});
 						Object.assign(boom.vertices, Vertices.create([boomP2.bounds.min, boomP2.bounds.max], boom));
 						const { pointA } = BoomWithHookBlock;
 						BoomWithHookBlock.pointA = {
-							x: pointA.x - Math.cos(boom.angle),
-							y: pointA.y - Math.sin(boom.angle),
+							x: pointA.x - Math.cos(boom.angle) * direction,
+							y: pointA.y - Math.sin(boom.angle) * direction,
 						};
 					}
 				} else if (keys.KeyD) {
@@ -518,21 +513,21 @@ function MobileCrane(props) {
 					);
 					if (differenceLang >= 40 * scale) {
 						Body.setPosition(boomP2, {
-							x: boomP2.position.x + Math.cos(boom.angle),
-							y: boomP2.position.y + Math.sin(boom.angle),
+							x: boomP2.position.x + Math.cos(boom.angle) * direction,
+							y: boomP2.position.y + Math.sin(boom.angle) * direction,
 						});
 						Object.assign(boom.vertices, Vertices.create([boomP2.bounds.min, boomP2.bounds.max], boom));
 						const { pointA } = BoomWithHookBlock;
 						BoomWithHookBlock.pointA = {
-							x: pointA.x + Math.cos(boom.angle),
-							y: pointA.y + Math.sin(boom.angle),
+							x: pointA.x + Math.cos(boom.angle) * direction,
+							y: pointA.y + Math.sin(boom.angle) * direction,
 						};
 					}
 				}
 
-				if (keys.KeyZ) {
+				if (keys.KeyS) {
 					BoomWithHookBlock.length += 0.5;
-				} else if (keys.KeyX) {
+				} else if (keys.KeyW) {
 					BoomWithHookBlock.length -= 0.5;
 				}
 			});
@@ -541,7 +536,7 @@ function MobileCrane(props) {
 			}
 			return MobileCraneComposite;
 		};
-		World.add(world, carMobileCrane(450, 400, 0.5, false, 1, 'left'));
+		World.add(world, carMobileCrane(450, 400, 0.8, false, 1, 'left'));
 
 		const { width, height } = render.options;
 
