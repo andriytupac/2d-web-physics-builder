@@ -352,7 +352,7 @@ function Tractor(props) {
 
 			return TractorComposite;
 		};
-		World.add(world, carTractor(350, 250, 1, false, 1, 'right'));
+		World.add(world, carTractor(550, 250, 1, false, 1, 'left'));
 
 		const { width, height } = render.options;
 

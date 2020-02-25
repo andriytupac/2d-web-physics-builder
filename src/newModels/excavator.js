@@ -111,10 +111,11 @@ function Excavator(props) {
 
 		/** ***** Body ***** */
 
-		const carExcavator = (x = 0, y = 0, scaleX = 1, scaleY = 1, staticParam = false) => {
+		const carExcavator = (x = 0, y = 0, scale = 1, staticParam = false, speed = 1) => {
 			const group = Body.nextGroup(true);
+			const globalPos = { x, y };
 			// add bodies
-			const frontTrackWheel = Bodies.circle(830, 495, 55, {
+			const frontTrackWheel = Bodies.circle(globalPos.x - 170, globalPos.y + 195, 55, {
 				collisionFilter: { group },
 				label: 'frontTrackWheel',
 				friction: 1,
@@ -127,7 +128,7 @@ function Excavator(props) {
 				},
 			});
 
-			const backTrackWheel = Bodies.circle(1170, 495, 55, {
+			const backTrackWheel = Bodies.circle(globalPos.x + 170, globalPos.y + 195, 55, {
 				collisionFilter: { group },
 				label: 'backTrackWheel',
 				friction: 1,
@@ -140,73 +141,97 @@ function Excavator(props) {
 				},
 			});
 
-			const bucket = Bodies.fromVertices(210, 410, excavatorJson.bucket, {
-				collisionFilter: { group },
-				label: 'bucket',
-				render: {
-					visible: false,
-					sprite: {
-						texture: imgBucket,
-						xScale: 1,
-						yScale: 1,
-						xOffset: 0,
-						yOffset: 0,
+			const bucket = Bodies.fromVertices(
+				globalPos.x - 790,
+				globalPos.y + 110,
+				excavatorJson.bucket,
+				{
+					collisionFilter: { group },
+					label: 'bucket',
+					render: {
+						visible: false,
+						sprite: {
+							texture: imgBucket,
+							xScale: 1,
+							yScale: 1,
+							xOffset: 0,
+							yOffset: 0,
+						},
 					},
 				},
-			});
+				true,
+			);
 			bucket.render.visible = true;
-			const arm = Bodies.fromVertices(400, 340, excavatorJson.arm, {
-				collisionFilter: { group },
-				label: 'arm',
-				render: {
-					visible: false,
-					sprite: {
-						texture: imgArm,
-						xScale: 1,
-						yScale: 1,
-						xOffset: 0,
-						yOffset: -0.12,
+			const arm = Bodies.fromVertices(
+				globalPos.x - 600,
+				globalPos.y + 40,
+				excavatorJson.arm,
+				{
+					collisionFilter: { group },
+					label: 'arm',
+					render: {
+						visible: false,
+						sprite: {
+							texture: imgArm,
+							xScale: 1,
+							yScale: 1,
+							xOffset: 0,
+							yOffset: -0.12,
+						},
 					},
 				},
-			});
+				true,
+			);
 			arm.render.visible = true;
 
-			const boom = Bodies.fromVertices(770, 270, excavatorJson.boom, {
-				collisionFilter: { group },
-				label: 'boom',
-				render: {
-					zIndex: 1,
-					visible: false,
-					sprite: {
-						texture: imgBoom,
-						xScale: 1,
-						yScale: 1,
-						xOffset: 0,
-						yOffset: -0.1,
+			const boom = Bodies.fromVertices(
+				globalPos.x - 230,
+				globalPos.y - 30,
+				excavatorJson.boom,
+				{
+					collisionFilter: { group },
+					label: 'boom',
+					render: {
+						zIndex: 1,
+						visible: false,
+						sprite: {
+							texture: imgBoom,
+							xScale: 1,
+							yScale: 1,
+							xOffset: 0,
+							yOffset: -0.1,
+						},
 					},
 				},
-			});
+				true,
+			);
 			boom.render.visible = true;
-			const cab = Bodies.fromVertices(1050, 296, excavatorJson.cab, {
-				collisionFilter: { group },
-				label: 'cab',
-				mass: 150,
-				render: {
-					visible: false,
-					zIndex: 2,
-					sprite: {
-						texture: imgCab,
-						xScale: 1,
-						yScale: 1,
-						xOffset: 0,
-						yOffset: 0,
+			const cab = Bodies.fromVertices(
+				globalPos.x + 50,
+				globalPos.y - 4,
+				excavatorJson.cab,
+				{
+					collisionFilter: { group },
+					label: 'cab',
+					mass: 150,
+					render: {
+						visible: false,
+						zIndex: 2,
+						sprite: {
+							texture: imgCab,
+							xScale: 1,
+							yScale: 1,
+							xOffset: 0,
+							yOffset: 0,
+						},
 					},
 				},
-			});
+				true,
+			);
 			cab.render.visible = true;
 			const trackFrame = Bodies.fromVertices(
-				1000,
-				455,
+				globalPos.x,
+				globalPos.y + 155,
 				excavatorJson.trackFrame,
 				{
 					collisionFilter: { group },
@@ -222,12 +247,12 @@ function Excavator(props) {
 						},
 					},
 				},
-				false,
+				true,
 				true,
 			);
 			trackFrame.render.visible = true;
 
-			const armConnector = Bodies.rectangle(200, 320, 72, 18, {
+			const armConnector = Bodies.rectangle(globalPos.x - 800, globalPos.y + 20, 72, 18, {
 				label: 'armConnector',
 				collisionFilter: { group },
 				render: {
@@ -241,7 +266,7 @@ function Excavator(props) {
 				},
 			});
 
-			const bucketConnector = Bodies.rectangle(170, 350, 18, 72, {
+			const bucketConnector = Bodies.rectangle(globalPos.x - 830, globalPos.y + 50, 18, 72, {
 				label: 'bucketConnector',
 				collisionFilter: { group },
 				render: {
@@ -601,36 +626,40 @@ function Excavator(props) {
 			const positionX = (position.max.x + position.min.x) / 2;
 			const positionY = (position.max.y + position.min.y) / 2;
 
-			Composite.scale(ExcavatorComposite, scaleX, scaleY, { x: positionX + x, y: positionY + y });
+			Composite.scale(ExcavatorComposite, scale, scale, { x: positionX + x, y: positionY + y });
 
+			const wheelSpeed = 0.1 * speed;
+			const pistonSpeed = 0.4;
 			Events.on(engine, 'beforeUpdate', function() {
 				if (keys.ArrowRight) {
-					Body.setAngularVelocity(frontTrackWheel, 0.1);
-					Body.setAngularVelocity(backTrackWheel, 0.1);
+					Body.setAngularVelocity(frontTrackWheel, wheelSpeed);
+					Body.setAngularVelocity(backTrackWheel, wheelSpeed);
 				} else if (keys.ArrowLeft) {
-					Body.setAngularVelocity(frontTrackWheel, -0.1);
-					Body.setAngularVelocity(backTrackWheel, -0.1);
+					Body.setAngularVelocity(frontTrackWheel, -wheelSpeed);
+					Body.setAngularVelocity(backTrackWheel, -wheelSpeed);
 				}
 				if (keys.ArrowUp) {
-					mobileCabWithBoom.length += mobileCabWithBoom.length < 250 * scaleX ? 0.2 : 0;
+					mobileCabWithBoom.length += mobileCabWithBoom.length < 250 * scale ? pistonSpeed : 0;
 				} else if (keys.ArrowDown) {
-					mobileCabWithBoom.length -= mobileCabWithBoom.length > 140 * scaleX ? 0.2 : 0;
+					mobileCabWithBoom.length -= mobileCabWithBoom.length > 140 * scale ? pistonSpeed : 0;
 				}
 				if (keys.KeyA) {
-					mobileBoomWithArm.length += mobileCabWithBoom.length < 370 * scaleX ? 0.2 : 0;
+					mobileBoomWithArm.length += mobileCabWithBoom.length < 370 * scale ? pistonSpeed : 0;
 				} else if (keys.KeyD) {
-					mobileBoomWithArm.length -= mobileBoomWithArm.length > 200 * scaleX ? 0.2 : 0;
+					mobileBoomWithArm.length -= mobileBoomWithArm.length > 200 * scale ? pistonSpeed : 0;
 				}
 				if (keys.KeyW) {
-					mobileArmWithArmConnector.length -= mobileArmWithArmConnector.length > 170 * scaleX ? 0.2 : 0;
+					mobileArmWithArmConnector.length -=
+						mobileArmWithArmConnector.length > 170 * scale ? pistonSpeed : 0;
 				} else if (keys.KeyS) {
-					mobileArmWithArmConnector.length += mobileArmWithArmConnector.length < 265 * scaleX ? 0.2 : 0;
+					mobileArmWithArmConnector.length +=
+						mobileArmWithArmConnector.length < 265 * scale ? pistonSpeed : 0;
 				}
 			});
 
 			return ExcavatorComposite;
 		};
-		World.add(world, carExcavator(400, 200, 0.8, 0.8, false));
+		World.add(world, carExcavator(800, 300, 0.8, false, 1));
 
 		const { width, height } = render.options;
 

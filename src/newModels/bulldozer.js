@@ -107,9 +107,9 @@ function Bulldozer(props) {
 
 		/** ***** Body ***** */
 
-		const carExcavator = (x = 0, y = 0, scaleX = 1, scaleY = 1, staticParam = false) => {
+		const carExcavator = (x = 0, y = 0, scale = 1, staticParam = false, speed = 1) => {
 			const group = Body.nextGroup(-1);
-			const globalPos = { x: 750, y: 400 };
+			const globalPos = { x, y };
 			const allWheels = [];
 			// add bodies
 			const frontTrackWheel = Bodies.circle(globalPos.x + 150, globalPos.y + 110, 32, {
@@ -175,42 +175,54 @@ function Bulldozer(props) {
 				allWheels.push(smallWheel);
 			}
 
-			const blade = Bodies.fromVertices(globalPos.x + 320, globalPos.y + 70, bulldozerJson.blade, {
-				collisionFilter: { group },
-				label: 'blade',
-				render: {
-					visible: false,
-					sprite: {
-						xScale: 1,
-						yScale: 1,
-						texture: imgBlade,
-						xOffset: 0,
-						yOffset: 0.025,
+			const blade = Bodies.fromVertices(
+				globalPos.x + 320,
+				globalPos.y + 70,
+				bulldozerJson.blade,
+				{
+					collisionFilter: { group },
+					label: 'blade',
+					render: {
+						visible: false,
+						sprite: {
+							xScale: 1,
+							yScale: 1,
+							texture: imgBlade,
+							xOffset: 0,
+							yOffset: 0.025,
+						},
 					},
 				},
-			});
+				true,
+			);
 			blade.render.visible = true;
 
-			const pushFrame = Bodies.fromVertices(globalPos.x + 130, globalPos.y + 90, bulldozerJson.pushFrame, {
-				collisionFilter: { group, mask: 0x0001 },
-				label: 'pushFrame',
-				render: {
-					zIndex: 10,
-					visible: false,
-					sprite: {
-						texture: imgPushFrame,
-						xScale: 1,
-						yScale: 1,
-						xOffset: 0.01,
-						yOffset: -0.09,
+			const pushFrame = Bodies.fromVertices(
+				globalPos.x + 130,
+				globalPos.y + 90,
+				bulldozerJson.pushFrame,
+				{
+					collisionFilter: { group, mask: 0x0001 },
+					label: 'pushFrame',
+					render: {
+						zIndex: 10,
+						visible: false,
+						sprite: {
+							texture: imgPushFrame,
+							xScale: 1,
+							yScale: 1,
+							xOffset: 0.01,
+							yOffset: -0.09,
+						},
 					},
 				},
-			});
+				true,
+			);
 			pushFrame.render.visible = true;
-			const cabP1 = Bodies.fromVertices(0, 0, bulldozerJson.cabP1, { render: { visible: false } });
-			const cabP2 = Bodies.fromVertices(-220, +60, bulldozerJson.cabP2, { render: { visible: false } });
-			const cabP3 = Bodies.fromVertices(-202, +2, bulldozerJson.cabP3, { render: { visible: false } });
-			const cabP4 = Bodies.fromVertices(+195, -80, bulldozerJson.cabP4, { render: { visible: false } });
+			const cabP1 = Bodies.fromVertices(0, 0, bulldozerJson.cabP1, { render: { visible: false } }, true);
+			const cabP2 = Bodies.fromVertices(-220, +60, bulldozerJson.cabP2, { render: { visible: false } }, true);
+			const cabP3 = Bodies.fromVertices(-202, +2, bulldozerJson.cabP3, { render: { visible: false } }, true);
+			const cabP4 = Bodies.fromVertices(+195, -80, bulldozerJson.cabP4, { render: { visible: false } }, true);
 			cabP1.parts.shift();
 			cabP4.parts.shift();
 			const cab = Body.create({
@@ -231,10 +243,22 @@ function Bulldozer(props) {
 			Body.setPosition(cab, { x: globalPos.x - 8, y: globalPos.y });
 			// cab.render.visible = true;
 
-			const ripperTopP1 = Bodies.fromVertices(0, 0, bulldozerJson.ripperTop, { render: { visible: false } });
-			const ripperTopP2 = Bodies.fromVertices(10, +90, bulldozerJson.ripperBottom, {
-				render: { visible: false },
-			});
+			const ripperTopP1 = Bodies.fromVertices(
+				0,
+				0,
+				bulldozerJson.ripperTop,
+				{ render: { visible: false } },
+				true,
+			);
+			const ripperTopP2 = Bodies.fromVertices(
+				10,
+				+90,
+				bulldozerJson.ripperBottom,
+				{
+					render: { visible: false },
+				},
+				true,
+			);
 			ripperTopP1.parts.shift();
 			ripperTopP2.parts.shift();
 
@@ -653,32 +677,34 @@ function Bulldozer(props) {
 			const positionX = (position.max.x + position.min.x) / 2;
 			const positionY = (position.max.y + position.min.y) / 2;
 
-			Composite.scale(ExcavatorComposite, scaleX, scaleY, { x: positionX + x, y: positionY + y }, true);
+			Composite.scale(ExcavatorComposite, scale, scale, { x: positionX + x, y: positionY + y }, true);
 
+			const wheelSpeed = 0.1 * speed;
+			const pistonSpeed = 0.4;
 			Events.on(engine, 'beforeUpdate', function() {
 				if (keys.ArrowRight) {
 					allWheels.forEach(obj => {
-						Body.setAngularVelocity(obj, 0.1);
+						Body.setAngularVelocity(obj, wheelSpeed);
 					});
 				} else if (keys.ArrowLeft) {
 					allWheels.forEach(obj => {
-						Body.setAngularVelocity(obj, -0.1);
+						Body.setAngularVelocity(obj, -wheelSpeed);
 					});
 				}
 				if (keys.ArrowUp) {
-					mobileCabWithPushFrame.length -= mobileCabWithPushFrame.length > 10 * scaleX ? 0.2 : 0;
+					mobileCabWithPushFrame.length -= mobileCabWithPushFrame.length > 10 * scale ? pistonSpeed : 0;
 				} else if (keys.ArrowDown) {
-					mobileCabWithPushFrame.length += mobileCabWithPushFrame.length < 60 * scaleX ? 0.2 : 0;
+					mobileCabWithPushFrame.length += mobileCabWithPushFrame.length < 60 * scale ? pistonSpeed : 0;
 				}
 				if (keys.KeyA) {
-					mobileBladeWithPushFrame.length -= mobileBladeWithPushFrame.length > 20 * scaleX ? 0.2 : 0;
+					mobileBladeWithPushFrame.length -= mobileBladeWithPushFrame.length > 20 * scale ? pistonSpeed : 0;
 				} else if (keys.KeyD) {
-					mobileBladeWithPushFrame.length += mobileBladeWithPushFrame.length < 50 * scaleX ? 0.2 : 0;
+					mobileBladeWithPushFrame.length += mobileBladeWithPushFrame.length < 50 * scale ? pistonSpeed : 0;
 				}
 				if (keys.KeyW) {
-					mobileCabWithRipperTop.length -= mobileCabWithRipperTop.length > 20 * scaleX ? 0.2 : 0;
+					mobileCabWithRipperTop.length -= mobileCabWithRipperTop.length > 20 * scale ? pistonSpeed : 0;
 				} else if (keys.KeyS) {
-					mobileCabWithRipperTop.length += mobileCabWithRipperTop.length < 90 * scaleX ? 0.2 : 0;
+					mobileCabWithRipperTop.length += mobileCabWithRipperTop.length < 90 * scale ? pistonSpeed : 0;
 				}
 
 				// allWheel
@@ -686,7 +712,7 @@ function Bulldozer(props) {
 
 			return ExcavatorComposite;
 		};
-		World.add(world, carExcavator(0, 50, 1, 1, false));
+		World.add(world, carExcavator(700, 400, 1, false, 1));
 
 		const { width, height } = render.options;
 
