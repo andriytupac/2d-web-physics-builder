@@ -26,6 +26,8 @@ npm run
 | [Tractor](https://www.physics-builder.fun/new-models/tractor) |
 | [Dump Truck](https://www.physics-builder.fun/new-models/dumpTruck) |
 | [Mobile Crane](https://www.physics-builder.fun/new-models/mobileCrane) |
+| [Forklift](https://www.physics-builder.fun/new-models/forklift) |
+| [Excavator Tractor](https://www.physics-builder.fun/new-models/excavatorTractor) |
 ## Usage
 
 ```javaScript
