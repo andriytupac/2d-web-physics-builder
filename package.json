@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "connected-react-router": "^6.5.2",
+    "dotenv": "^8.2.0",
+    "dotenv-expand": "^5.1.0",
     "easy-peasy": "^3.2.1",
     "lodash": "^4.17.15",
     "matter-js": "^0.14.2",
