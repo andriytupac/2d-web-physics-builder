@@ -36,6 +36,8 @@ const newModels = [
 	{ key: 'tractor', text: 'Tractor', value: 'tractor' },
 	{ key: 'dumpTruck', text: 'Dump truck', value: 'dumpTruck' },
 	{ key: 'mobileCrane', text: 'Mobile crane', value: 'mobileCrane' },
+	{ key: 'forklift', text: 'Forklift', value: 'forklift' },
+	{ key: 'excavatorTractor', text: 'Excavator Tractor', value: 'excavatorTractor' },
 ];
 
 const getWidth = () => {

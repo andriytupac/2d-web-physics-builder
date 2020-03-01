@@ -142,8 +142,8 @@ function Excavator(props) {
 			});
 
 			const bucket = Bodies.fromVertices(
-				globalPos.x - 790,
-				globalPos.y + 110,
+				globalPos.x - 480,
+				globalPos.y + 140,
 				excavatorJson.bucket,
 				{
 					collisionFilter: { group },
@@ -163,8 +163,8 @@ function Excavator(props) {
 			);
 			bucket.render.visible = true;
 			const arm = Bodies.fromVertices(
-				globalPos.x - 600,
-				globalPos.y + 40,
+				globalPos.x - 470,
+				globalPos.y - 120,
 				excavatorJson.arm,
 				{
 					collisionFilter: { group },
@@ -183,6 +183,7 @@ function Excavator(props) {
 				true,
 			);
 			arm.render.visible = true;
+			Body.rotate(arm, -1.5, { x: arm.position.x, y: arm.position.y });
 
 			const boom = Bodies.fromVertices(
 				globalPos.x - 230,
@@ -205,6 +206,7 @@ function Excavator(props) {
 				},
 				true,
 			);
+			Body.rotate(boom, 0.5, { x: boom.position.x + 240, y: boom.position.y + 68 });
 			boom.render.visible = true;
 			const cab = Bodies.fromVertices(
 				globalPos.x + 50,
@@ -252,7 +254,7 @@ function Excavator(props) {
 			);
 			trackFrame.render.visible = true;
 
-			const armConnector = Bodies.rectangle(globalPos.x - 800, globalPos.y + 20, 72, 18, {
+			const armConnector = Bodies.rectangle(globalPos.x - 500, globalPos.y + 40, 72, 18, {
 				label: 'armConnector',
 				collisionFilter: { group },
 				render: {
@@ -265,8 +267,9 @@ function Excavator(props) {
 					},
 				},
 			});
+			Body.rotate(armConnector, -0.5, { x: armConnector.position.x, y: armConnector.position.y });
 
-			const bucketConnector = Bodies.rectangle(globalPos.x - 830, globalPos.y + 50, 18, 72, {
+			const bucketConnector = Bodies.rectangle(globalPos.x - 520, globalPos.y + 80, 18, 72, {
 				label: 'bucketConnector',
 				collisionFilter: { group },
 				render: {
@@ -336,8 +339,8 @@ function Excavator(props) {
 					y: 45,
 				},
 				pointB: {
-					x: 240,
-					y: 70,
+					x: 178,
+					y: 178,
 				},
 				length: 0,
 				label: 'fixedCabWithBoom',
@@ -360,10 +363,10 @@ function Excavator(props) {
 					y: 45,
 				},
 				pointB: {
-					x: 38,
-					y: -52,
+					x: 58,
+					y: -30,
 				},
-				length: 180,
+				// length: 180,
 				label: 'mobileCabWithBoom',
 				stiffness: 0.1,
 				damping: 0,
@@ -380,12 +383,12 @@ function Excavator(props) {
 				bodyA: boom,
 				bodyB: arm,
 				pointA: {
-					x: -290,
-					y: 80,
+					x: -285,
+					y: -65,
 				},
 				pointB: {
-					x: 80,
-					y: 10,
+					x: 17,
+					y: -80,
 				},
 				length: 0,
 				label: 'fixedBoomWithArm',
@@ -404,14 +407,13 @@ function Excavator(props) {
 				bodyA: boom,
 				bodyB: arm,
 				pointA: {
-					x: -40,
-					y: -65,
+					x: -4,
+					y: -78,
 				},
 				pointB: {
-					x: 160,
-					y: -8,
+					x: 6,
+					y: -160,
 				},
-				length: 210,
 				label: 'mobileBoomWithArm',
 				stiffness: 0.1,
 				damping: 0,
@@ -428,8 +430,8 @@ function Excavator(props) {
 				bodyA: arm,
 				bodyB: bucket,
 				pointA: {
-					x: -185,
-					y: 10,
+					x: -5,
+					y: 200,
 				},
 				pointB: {
 					x: 5,
@@ -516,8 +518,8 @@ function Excavator(props) {
 				bodyA: armConnector,
 				bodyB: bucketConnector,
 				pointA: {
-					x: -30,
-					y: 0,
+					x: -25,
+					y: 15,
 				},
 				pointB: {
 					x: 0,
@@ -535,6 +537,29 @@ function Excavator(props) {
 					anchors: true,
 				},
 			});
+			const armConnectorWithBucketConnector2 = Constraint.create({
+				bodyA: armConnector,
+				bodyB: bucketConnector,
+				pointA: {
+					x: 25,
+					y: -13,
+				},
+				pointB: {
+					x: 0,
+					y: 30,
+				},
+				length: 90,
+				label: 'armConnectorWithBucketConnector2',
+				stiffness: 0.1,
+				damping: 0,
+				render: {
+					lineWidth: 2,
+					strokeStyle: '#ffffff',
+					type: 'line',
+					visible: true,
+					anchors: true,
+				},
+			});
 
 			const armWithArmConnector = Constraint.create({
 				bodyA: arm,
@@ -543,12 +568,12 @@ function Excavator(props) {
 				damping: 0,
 				label: 'armWithArmConnector',
 				pointA: {
-					x: -150,
-					y: 10,
+					x: 0,
+					y: 160,
 				},
 				pointB: {
-					x: 30,
-					y: 0,
+					x: 25,
+					y: -13,
 				},
 				length: 0,
 				render: {
@@ -564,14 +589,14 @@ function Excavator(props) {
 				bodyA: arm,
 				bodyB: armConnector,
 				pointA: {
-					x: 50,
-					y: -46,
+					x: -42,
+					y: -55,
 				},
 				pointB: {
-					x: -30,
-					y: 0,
+					x: -25,
+					y: 15,
 				},
-				length: 240,
+				// length: 240,
 				label: 'mobileArmWithArmConnector',
 				stiffness: 0.1,
 				damping: 0,
@@ -618,6 +643,7 @@ function Excavator(props) {
 				trackFrameWithBackTrackWheel,
 				bucketWithBucketConnector,
 				armConnectorWithBucketConnector,
+				armConnectorWithBucketConnector2,
 				armWithArmConnector,
 				mobileArmWithArmConnector,
 			]);
@@ -644,7 +670,7 @@ function Excavator(props) {
 					mobileCabWithBoom.length -= mobileCabWithBoom.length > 140 * scale ? pistonSpeed : 0;
 				}
 				if (keys.KeyA) {
-					mobileBoomWithArm.length += mobileCabWithBoom.length < 370 * scale ? pistonSpeed : 0;
+					mobileBoomWithArm.length += mobileBoomWithArm.length < 360 * scale ? pistonSpeed : 0;
 				} else if (keys.KeyD) {
 					mobileBoomWithArm.length -= mobileBoomWithArm.length > 200 * scale ? pistonSpeed : 0;
 				}
@@ -653,13 +679,13 @@ function Excavator(props) {
 						mobileArmWithArmConnector.length > 170 * scale ? pistonSpeed : 0;
 				} else if (keys.KeyS) {
 					mobileArmWithArmConnector.length +=
-						mobileArmWithArmConnector.length < 265 * scale ? pistonSpeed : 0;
+						mobileArmWithArmConnector.length < 300 * scale ? pistonSpeed : 0;
 				}
 			});
 
 			return ExcavatorComposite;
 		};
-		World.add(world, carExcavator(800, 300, 0.8, false, 1));
+		World.add(world, carExcavator(1000, 350, 0.8, false, 1));
 
 		const { width, height } = render.options;
 

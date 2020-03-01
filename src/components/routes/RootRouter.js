@@ -23,6 +23,8 @@ import Bulldozer from '../../newModels/bulldozer';
 import Tractor from '../../newModels/tractor';
 import DumpTruck from '../../newModels/dumpTruck';
 import MobileCrane from '../../newModels/mobileCrane';
+import Forklift from '../../newModels/forklift';
+import ExcavatorTractor from '../../newModels/excavatorTractor';
 import Home from '../../pages/home';
 
 const RootRouter = () => {
@@ -121,6 +123,16 @@ const RootRouter = () => {
 				{newModels.params.id === 'mobileCrane' && (
 					<LeftSideBar>
 						<MobileCrane />
+					</LeftSideBar>
+				)}
+				{newModels.params.id === 'forklift' && (
+					<LeftSideBar>
+						<Forklift />
+					</LeftSideBar>
+				)}
+				{newModels.params.id === 'excavatorTractor' && (
+					<LeftSideBar>
+						<ExcavatorTractor />
 					</LeftSideBar>
 				)}
 			</>

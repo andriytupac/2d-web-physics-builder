@@ -450,6 +450,7 @@ function MobileCrane(props) {
 
 			const wheelSpeed = 0.1 * speed;
 			const direction = side === 'left' ? 1 : -1;
+			let CabFixatorsLength = 0;
 			Events.on(engine, 'beforeUpdate', function() {
 				if (keys.ArrowRight) {
 					Body.setAngularVelocity(frontTrackWheel, wheelSpeed);
@@ -465,19 +466,15 @@ function MobileCrane(props) {
 					Body.setAngularVelocity(backTrackWheelSecond, -wheelSpeed);
 				}
 				if (keys.KeyZ) {
-					const differenceLang = Math.sqrt(
-						(cabP5.position.x - cabP4.position.x) ** 2 + (cabP5.position.y - cabP4.position.y) ** 2,
-					);
-					if (differenceLang >= 20 * scale) {
+					if (CabFixatorsLength >= 0) {
+						CabFixatorsLength -= 0.1;
 						Body.setPosition(cabP3, { x: cabP3.position.x, y: cabP3.position.y - 0.5 });
 						Body.setPosition(cabP4, { x: cabP4.position.x, y: cabP4.position.y - 0.5 });
 						Object.assign(cab.vertices, Vertices.create([cabP4.bounds.max], cab));
 					}
 				} else if (keys.KeyX) {
-					const differenceLang = Math.sqrt(
-						(cabP5.position.x - cabP4.position.x) ** 2 + (cabP5.position.y - cabP4.position.y) ** 2,
-					);
-					if (differenceLang <= 80 * scale) {
+					if (CabFixatorsLength <= 10) {
+						CabFixatorsLength += 0.1;
 						Body.setPosition(cabP3, { x: cabP3.position.x, y: cabP3.position.y + 0.5 });
 						Body.setPosition(cabP4, { x: cabP4.position.x, y: cabP4.position.y + 0.5 });
 						Object.assign(cab.vertices, Vertices.create([cabP4.bounds.max], cab));
