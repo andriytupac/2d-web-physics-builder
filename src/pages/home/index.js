@@ -42,6 +42,9 @@ const newModels = [
 	{ key: 'tractor', text: 'Tractor', value: 'tractor' },
 	{ key: 'dumpTruck', text: 'Dump Truck', value: 'dumpTruck' },
 	{ key: 'mobileCrane', text: 'Mobile Crane', value: 'mobileCrane' },
+	{ key: 'mobileCrane', text: 'Mobile Crane', value: 'mobileCrane' },
+	{ key: 'forklift', text: 'Forklift', value: 'forklift' },
+	{ key: 'excavatorTractor', text: 'Excavator Tractor', value: 'excavatorTractor' },
 ];
 
 const getImageUrl = name => {
