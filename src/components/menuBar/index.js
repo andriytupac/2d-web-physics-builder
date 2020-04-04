@@ -38,6 +38,7 @@ const newModels = [
 	{ key: 'mobileCrane', text: 'Mobile crane', value: 'mobileCrane' },
 	{ key: 'forklift', text: 'Forklift', value: 'forklift' },
 	{ key: 'excavatorTractor', text: 'Excavator Tractor', value: 'excavatorTractor' },
+	{ key: 'jsLanguages', text: 'Js Languages', value: 'jsLanguages' },
 ];
 
 const getWidth = () => {

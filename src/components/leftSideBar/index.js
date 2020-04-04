@@ -601,7 +601,7 @@ const LeftSideBar = props => {
 		});
 
 		document.body.addEventListener('keydown', function(e) {
-			console.log(e.code, e);
+			// console.log(e.code, e);
 			keyboardKey[e.code] = true;
 			if (e.code === 'KeyQ') {
 				globalDrivingMode = !globalDrivingMode;
