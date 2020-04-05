@@ -128,7 +128,7 @@ Group[2] = ['mongo', 'mysql', 'postgre', 'redis', 'mariandb', 'oracle'];
 Group[3] = ['angularMaterial', 'angularPrimeng', 'angularBootstrap', 'ngxBootstrap', 'ngZorro', 'onsenUI'];
 Group[4] = ['ReactBootstrap', 'ReactVirtualized', 'ReactMaterial', 'semanticUi', 'reactstrap', 'blueprint'];
 Group[5] = ['vueBootstrap', 'VuePress', 'vuetify', 'buefy', 'qasar', 'vueMaterial'];
-Group[6] = ['js', 'Express', 'mongo', 'css3', 'es6', 'typescript', 'ReactMaterial', 'sass', 'html5'];
+Group[6] = ['js', 'Express', 'mongo', 'typescript', 'es6', 'sass', 'ReactMaterial', 'css3', 'html5'];
 
 // const mainBlocks = ['webpack', 'database', 'nodeJs', 'angular', 'react', 'vue'];
 function JsLanguages(props) {
@@ -252,7 +252,7 @@ function JsLanguages(props) {
 		let ky = 50;
 		const additionalRadius = 20;
 		_.forOwn(ListElements, (value, key) => {
-			if (k > 1000) {
+			if (k > 1050) {
 				k = 50;
 				ky += 100;
 			}
@@ -431,7 +431,7 @@ function JsLanguages(props) {
 							ListElements[key].list.collisionFilter.category = category;
 							indexValue += 1;
 						}
-					}, 3000);
+					}, 5000);
 					/* Group[groupIndex].forEach(val => {
 					ListElements[val].list.collisionFilter.category = category;
 				}); */
