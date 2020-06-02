@@ -25,7 +25,7 @@ const ConstraintInspector = {
       } */
 
 			// eslint-disable-next-line no-plusplus
-			for (let i = 0; i < selected.length; i++) {
+			/*for (let i = 0; i < selected.length; i++) {
 				const item = selected[i].data;
 
 				context.translate(0.5, 0.5);
@@ -66,7 +66,7 @@ const ConstraintInspector = {
 
 				context.setLineDash([]);
 				context.translate(-0.5, -0.5);
-			}
+			}*/
 		},
 	},
 

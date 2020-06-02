@@ -27,6 +27,7 @@ import Forklift from '../../newModels/forklift';
 import ExcavatorTractor from '../../newModels/excavatorTractor';
 import Home from '../../pages/home';
 import JsLanguages from '../../newModels/jsLanguages';
+import Watch from '../../newModels/watch';
 
 const RootRouter = () => {
 	const home = useRouteMatch('/');
@@ -139,6 +140,11 @@ const RootRouter = () => {
 				{newModels.params.id === 'jsLanguages' && (
 					<LeftSideBar>
 						<JsLanguages />
+					</LeftSideBar>
+				)}
+				{newModels.params.id === 'watch' && (
+					<LeftSideBar>
+						<Watch />
 					</LeftSideBar>
 				)}
 			</>

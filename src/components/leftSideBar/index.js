@@ -299,7 +299,7 @@ const MenageElementsConstraint = props => {
 	const editObj = () => {
 		const constraintObj = Composite.get(inspector.world, obj.id, obj.type);
 		setConstraint(constraintObj);
-		addEditConstraint(obj.id !== editConstraintId ? obj.id : 0);
+		addEditConstraint(obj.id !== editConstraintId ? obj.id : '');
 	};
 	const codeObj = () => {
 		const constraintObj = Composite.get(inspector.world, obj.id, obj.type);
@@ -618,14 +618,17 @@ const LeftSideBar = props => {
 		const mouseConstraint = MouseConstraint.create(engine, {
 			mouse,
 			constraint: {
-				stiffness: 0.2,
+				// allow bodies on mouse to rotate
+				//stiffness: 0.2,
+				angularStiffness: 0,
 				render: {
 					visible: false,
 				},
 			},
 		});
 
-		World.add(inspector.world, [mouseConstraint]);
+		World.add(inspector.world, mouseConstraint);
+		inspector.render.mouse = mouse;
 		Events.on(mouseConstraint, 'startdrag', event => {
 			// console.log(event)
 			if (keyboardKey.ControlLeft) {
@@ -778,8 +781,6 @@ const LeftSideBar = props => {
 	);
 	// Main Accordion
 	const AccordionExampleNested = general => {
-		// console.log(_.times(5),Number)
-
 		const rootPanels = [];
 		general.forEach(obj => {
 			if (obj.type === 'body' && obj.children) {

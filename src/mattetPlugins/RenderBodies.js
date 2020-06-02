@@ -8,26 +8,29 @@ const RenderBodies = {
 	for: 'matter-js@0.14.2',
 
 	install: function install(base) {
-		base.after('Render.bodies', function(render, bodies, context) {
+		base.before('Render.bodies', function(render, bodies, context) {
 			RenderBodies.Render.bodies(render, bodies, context);
 		});
+		base.before('Render.bodyWireframes', function(render, bodies, context) {
+			RenderBodies.Render.bodyWireframes(render, bodies, context);
+		})
 	},
 	Render: {
 		bodies(render, bodies, context) {
 			let body;
 			const c = context;
-			// console.log(bodies)
 			for (let i = 0; i < bodies.length; i++) {
 				body = bodies[i];
-
+				if (bodies[i].render && bodies[i].render.pluginHide) {
+					bodies[i].render.visible = false;
+				}
+				//bodies[i].render.visible = false;
 				if (body.render.sprite && body.render.sprite.texture) {
 					const { sprite } = body.render;
 					const texture = RenderBodies.Render._getTexture(render, sprite.texture);
 
 					c.translate(body.position.x, body.position.y);
 					c.rotate(body.angle);
-					// console.log(texture)
-					// return
 
 					c.drawImage(
 						texture,
@@ -43,6 +46,13 @@ const RenderBodies = {
 				}
 			}
 			// console.log(bodies)
+		},
+		bodyWireframes(render, bodies, context) {
+			for (let i = 0; i < bodies.length; i++) {
+				if (bodies[i].render && bodies[i].render.pluginHide) {
+					bodies[i].render.visible = true;
+				}
+			}
 		},
 		_getTexture(render, imagePath) {
 			let image = render.textures[imagePath];

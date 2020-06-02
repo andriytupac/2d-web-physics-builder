@@ -39,6 +39,7 @@ const newModels = [
 	{ key: 'forklift', text: 'Forklift', value: 'forklift' },
 	{ key: 'excavatorTractor', text: 'Excavator Tractor', value: 'excavatorTractor' },
 	{ key: 'jsLanguages', text: 'Js Languages', value: 'jsLanguages' },
+	{ key: 'Watch', text: 'Watch', value: 'watch' },
 ];
 
 const getWidth = () => {
